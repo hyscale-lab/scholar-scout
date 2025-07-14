@@ -481,10 +481,22 @@ class ScholarClassifier:
         return from_query, since_query, encoded_subjects
 
     def _should_process_email(self, email_message):
-        """Check if email should be processed based on subject criteria."""
+        """Check if email should be processed based on subject criteria, including MIME encoded headers."""
+        from email.header import decode_header
         subject = email_message.get('subject', '')
         if not subject:
             return False
+        # 尝试解码MIME编码的subject
+        try:
+            decoded_parts = decode_header(subject)
+            subject_decoded = ''
+            for part, encoding in decoded_parts:
+                if isinstance(part, bytes):
+                    subject_decoded += part.decode(encoding or 'utf-8', errors='replace')
+                else:
+                    subject_decoded += part
+        except Exception:
+            subject_decoded = subject
         # Load search criteria
         with open('search_criteria.yml', 'r') as f:
             criteria = yaml.safe_load(f)['email_filter']
@@ -492,7 +504,7 @@ class ScholarClassifier:
         # Check if subject matches any of our target subjects
         for target_subject in target_subjects:
             # Handle both ASCII and Chinese subjects
-            if target_subject in subject:
+            if target_subject in subject_decoded:
                 return True
         return False
 
