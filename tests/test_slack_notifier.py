@@ -18,15 +18,14 @@ from unittest.mock import patch
 import os
 
 from slack_sdk.errors import SlackApiError
-
-from paper import Paper
-from slack_notifier import ResearchTopic, SlackNotifier
-from config import load_config
 from dotenv import load_dotenv
 
-# Add project root to Python path
-project_root = Path(__file__).parent.parent
-sys.path.append(str(project_root))
+# Add src directory to path
+sys.path.append(str(Path(__file__).parent.parent / "src"))
+
+from scholar_scout.models import Paper
+from scholar_scout.config import load_config
+from scholar_scout.notifications import SlackNotifier
 
 
 class TestSlackNotifier(unittest.TestCase):
@@ -42,9 +41,7 @@ class TestSlackNotifier(unittest.TestCase):
                 raise RuntimeError(f"Missing required environment variables: {missing_vars}")
         config_path = os.path.join(os.path.dirname(__file__), "test_config.yml")
         self.config = load_config(config_path)
-        self.token = self.config["slack"]["api_token"]
-        self.default_channel = self.config["slack"]["default_channel"]
-        self.notifier = SlackNotifier(self.token, self.default_channel, self.config)
+        self.notifier = SlackNotifier(self.config.slack)
 
         # Sample paper
         self.paper = Paper(
@@ -56,21 +53,8 @@ class TestSlackNotifier(unittest.TestCase):
         )
 
         # Sample topics from config
-        self.topic1 = ResearchTopic(
-            name=self.config["research_topics"][0]["name"],
-            description=self.config["research_topics"][0]["description"],
-            keywords=self.config["research_topics"][0]["keywords"],
-            slack_users=self.config["research_topics"][0]["slack_users"],
-            slack_channel=self.config["research_topics"][0]["slack_channel"],
-        )
-
-        self.topic2 = ResearchTopic(
-            name=self.config["research_topics"][1]["name"],
-            description=self.config["research_topics"][1]["description"],
-            keywords=self.config["research_topics"][1]["keywords"],
-            slack_users=self.config["research_topics"][1]["slack_users"],
-            slack_channel=self.config["research_topics"][1]["slack_channel"],
-        )
+        self.topic1 = self.config.research_topics[0]
+        self.topic2 = self.config.research_topics[1]
 
     @patch("slack_sdk.WebClient")
     def test_notify_matches_success(self, mock_client):
@@ -118,16 +102,19 @@ class TestSlackNotifier(unittest.TestCase):
         except Exception as e:
             self.fail(f"Should not raise exception, but raised {e}")
 
-    def test_format_paper_message(self):
-        message = self.notifier._format_paper_message(self.paper, self.topic1)
+    @patch("slack_sdk.WebClient")
+    def test_notify_matches_with_multiple_topics(self, mock_client):
+        """Test notification with multiple topics."""
+        # Setup mock
+        mock_client.return_value.chat_postMessage.return_value = {"ok": True}
+        self.notifier.client = mock_client.return_value
 
-        # Check message formatting
-        self.assertIn("*New paper matching topic: LLM Inference*", message)
-        self.assertIn("*Title:* Test Paper", message)
-        self.assertIn("*Authors:* Author One, Author Two", message)
-        self.assertIn("*Venue:* arXiv preprint", message)
-        self.assertIn("*URL:* https://example.com/paper", message)
-        self.assertIn("*Abstract:* This is a test abstract", message)
+        # Test with multiple topics
+        paper_results = [(self.paper, [self.topic1, self.topic2])]
+        self.notifier.notify_matches(paper_results)
+
+        # Should be called once for each topic
+        self.assertEqual(mock_client.return_value.chat_postMessage.call_count, 2)
 
 
 if __name__ == "__main__":

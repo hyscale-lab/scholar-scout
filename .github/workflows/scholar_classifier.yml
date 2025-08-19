@@ -24,7 +24,7 @@ jobs:
 
     - name: Create config files from template
       run: |
-        cp config.example.yml config.yml
+        cp config/config.example.yml config/config.yml
         
     - name: Run Scholar Classifier
       env:
@@ -32,4 +32,4 @@ jobs:
         GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
         SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}
         PPLX_API_KEY: ${{ secrets.PPLX_API_KEY }}
-      run: python scholar_classifier.py
+      run: python scripts/run_classifier.py
