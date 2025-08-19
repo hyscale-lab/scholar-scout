@@ -22,9 +22,9 @@ research_topics:
     keywords: ["llm", "inference", "serving", "latency", "throughput"]
     slack_users:
       - "@Ruiqi Lai"
+      - "@Yulin"
       - "@Yixin Zhang"
       - "@Hongrui Liu"
-      - "@Siyang Shao"
       - "@Colin Hong"
     slack_channel: "#systems-for-ai"
     description: >-
@@ -37,7 +37,6 @@ research_topics:
     slack_users:
       - "@Leonid Kondrashov"
       - "@Park JooYoung"
-      - "@Junke Mao"
     slack_channel: "#serverless-systems"
     description: >-
       Research on serverless computing platforms, Function-as-a-Service (FaaS), 
