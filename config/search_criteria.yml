@@ -4,3 +4,7 @@ email_filter:
     - "new articles"
     - "新文章"
   time_window: "7D"  # 7 days
+
+email_empty:
+  from: "scholaralerts-noreply@google.com"
+  time_window: "4W"

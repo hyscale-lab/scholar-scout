@@ -50,7 +50,55 @@ class EmailClient:
         if self.mail:
             self.mail.logout()
 
-    def _build_email_search_query(self) -> tuple[str, str, list[str]]:
+    def delete_old_emails(self) -> None:
+        """Deletes emails from the configured folder that are older than the time window."""
+        assert self.mail is not None
+
+        with open("config/search_criteria.yml", "r") as f:
+            criteria = yaml.safe_load(f).get("email_empty", {})
+
+        time_window = criteria.get("time_window")
+        if not time_window:
+            logger.info("No time_window for email_empty, skipping deletion.")
+            return
+
+        try:
+            amount = int(time_window[:-1])
+            unit = time_window[-1]
+            delta = timedelta()
+            if unit == "D":
+                delta = timedelta(days=amount)
+            elif unit == "W":
+                delta = timedelta(weeks=amount)
+            elif unit == "M":
+                delta = timedelta(days=amount * 30)  # Approximation
+            else:
+                logger.warning(f"Unknown time unit '{unit}', skipping deletion.")
+                return
+
+            before_date = (datetime.now() - delta).strftime("%d-%b-%Y")
+            search_criteria = f'(BEFORE "{before_date}")'
+
+            folder_name = self.config.folder
+            if " " in folder_name and not folder_name.startswith('"'):
+                folder_name = f'"{folder_name}"'
+
+            self.mail.select(folder_name, readonly=False)
+            status, msg_ids = self.mail.search(None, search_criteria)
+
+            if status == "OK":
+                email_ids = msg_ids[0].split()
+                if email_ids:
+                    logger.info(f"Deleting {len(email_ids)} old emails.")
+                    for eid in email_ids:
+                        self.mail.store(eid, "+FLAGS", "\\Deleted")
+                    self.mail.expunge()
+                else:
+                    logger.info("No old emails to delete.")
+        except Exception as e:
+            logger.error(f"Error deleting old emails: {e}")
+
+    def build_email_search_query(self) -> tuple[str, str, list[str]]:
         """Build the IMAP search query for finding Google Scholar alerts."""
         with open("config/search_criteria.yml", "r") as f:
             criteria = yaml.safe_load(f)["email_filter"]
@@ -75,7 +123,7 @@ class EmailClient:
         subjects = criteria.get("subject", [])
         return from_query, since_query, subjects
 
-    def _should_process_email(self, email_message: Message) -> bool:
+    def should_process_email(self, email_message: Message) -> bool:
         """Check if an email should be processed based on its subject."""
         subject = email_message.get("subject", "")
         if not subject:
@@ -116,7 +164,7 @@ class EmailClient:
             logger.error(f"Failed to select folder {folder_name}")
             return []
 
-        from_query, since_query, subjects = self._build_email_search_query()
+        from_query, since_query, subjects = self.build_email_search_query()
         all_message_numbers: Set[bytes] = set()
 
         base_search_terms = []
@@ -177,6 +225,6 @@ class EmailClient:
                 continue
 
             email_message = email.message_from_bytes(email_content)
-            if self._should_process_email(email_message):
+            if self.should_process_email(email_message):
                 emails.append(email_message)
         return emails

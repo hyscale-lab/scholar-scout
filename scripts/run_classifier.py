@@ -42,6 +42,7 @@ def main():
 
     with EmailClient(config.email) as email_client:
         emails = email_client.fetch_scholar_alerts()
+        email_client.delete_old_emails()
 
     classifier = ScholarClassifier(config)
     results = classifier.classify_papers(emails)
