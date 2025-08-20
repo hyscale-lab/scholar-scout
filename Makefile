@@ -19,6 +19,7 @@ test:
 	python -m unittest tests/test_gmail_connection.py -v
 	python -m unittest tests/test_scholar_classifier.py -v
 	python -m unittest tests/test_slack_notifier.py -v
+	python -m unittest tests/test_email_deletion.py -v
 
 # Clean up Python cache and build files
 clean:
@@ -44,4 +45,4 @@ install-dev:
 
 # Install production dependencies
 install:
-	pip install -r requirements.txt 
+	pip install -r requirements.txt

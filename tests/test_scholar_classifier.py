@@ -265,7 +265,7 @@ class TestEmailClient(TestCase):
         with mock.patch('builtins.open', mock.mock_open(read_data=mock_file_content)):
             with mock.patch('yaml.safe_load', return_value=mock_criteria):
                 # Test that Chinese subject should be processed
-                result = email_client._should_process_email(email_message)
+                result = email_client.should_process_email(email_message)
                 self.assertTrue(result, "Chinese subject should be processed")
 
     def test_should_process_email_with_unrelated_subject(self):
@@ -295,7 +295,7 @@ class TestEmailClient(TestCase):
         with mock.patch('builtins.open', mock.mock_open(read_data=mock_file_content)):
             with mock.patch('yaml.safe_load', return_value=mock_criteria):
                 # Test that unrelated subject should NOT be processed
-                result = email_client._should_process_email(email_message)
+                result = email_client.should_process_email(email_message)
                 self.assertFalse(result, "Unrelated subject should NOT be processed")
 
     def test_should_process_email_with_empty_subject(self):
@@ -325,7 +325,7 @@ class TestEmailClient(TestCase):
         with mock.patch('builtins.open', mock.mock_open(read_data=mock_file_content)):
             with mock.patch('yaml.safe_load', return_value=mock_criteria):
                 # Test that empty subject should NOT be processed
-                result = email_client._should_process_email(email_message)
+                result = email_client.should_process_email(email_message)
                 self.assertFalse(result, "Empty subject should NOT be processed")
 
     def test_build_email_search_query_with_chinese_subjects(self):
@@ -343,7 +343,7 @@ class TestEmailClient(TestCase):
 
         with mock.patch('builtins.open', mock.mock_open(read_data='email_filter:\n  from: "scholaralerts-noreply@google.com"\n  subject:\n    - "new articles"\n    - "新文章"\n  time_window: "7D"')):
             with mock.patch('yaml.safe_load', return_value=mock_criteria):
-                from_query, since_query, subjects = email_client._build_email_search_query()
+                from_query, since_query, subjects = email_client.build_email_search_query()
                 
                 # Verify FROM query
                 self.assertEqual(from_query, 'FROM "scholaralerts-noreply@google.com"')
@@ -397,7 +397,7 @@ class TestEmailClient(TestCase):
                     email_message = mock.Mock()
                     email_message.get.return_value = subject
                     
-                    result = email_client._should_process_email(email_message)
+                    result = email_client.should_process_email(email_message)
                     self.assertEqual(
                         result,
                         expected_result,

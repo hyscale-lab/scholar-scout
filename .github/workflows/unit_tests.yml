@@ -44,3 +44,4 @@ jobs:
         python -m unittest tests/test_gmail_connection.py -v
         python -m unittest tests/test_scholar_classifier.py -v 
         python -m unittest tests/test_slack_notifier.py -v 
+        python -m unittest tests/test_email_deletion.py -v
