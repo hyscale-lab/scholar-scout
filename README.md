@@ -2,11 +2,20 @@
 
 A tool to monitor Google Scholar alerts and classify research papers using Perplexity AI.
 
+## 🆕 NEW: MCP Server Support!
+
+Scholar Scout now supports **Model Context Protocol (MCP)**, allowing AI assistants like Claude Desktop to interact with your research workflow!
+
+**Quick Start with MCP:**
+- See [QUICKSTART_MCP.md](QUICKSTART_MCP.md) for 5-minute setup
+- See [MCP_README.md](MCP_README.md) for complete documentation
+
 ## Features
 - Connects to Gmail to fetch Google Scholar alert emails
 - Uses Perplexity AI to parse and extract paper information
 - Supports multiple research topics and keywords
 - Sends notifications to Slack
+- **NEW:** MCP Server for AI assistant integration
 
 ## Setup
 1. Clone the repository
@@ -59,9 +68,29 @@ To add researchers to the HyScale Scholar tracking:
    - Confirm once tracking is active
 
 ## Usage
-Run the main script:
+
+### Option 1: MCP Server (Recommended for AI Integration)
+
+Run as an MCP server for use with Claude Desktop or other MCP clients:
+
 ```bash
-python scholar_classifier.py
+# Quick setup
+./setup_mcp.sh
+
+# Run the MCP server
+python scripts/run_mcp_server.py
+
+# Test the server
+python scripts/test_mcp_server.py
+```
+
+See [QUICKSTART_MCP.md](QUICKSTART_MCP.md) for detailed setup instructions.
+
+### Option 2: Traditional Script
+
+Run the main script directly:
+```bash
+python scripts/run_classifier.py
 ```
 
 ## Testing

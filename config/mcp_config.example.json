@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "scholar-scout": {
+      "command": "python",
+      "args": [
+        "/path/to/scholar-scout/scripts/run_mcp_server.py",
+        "--config",
+        "/path/to/scholar-scout/config/config.yml"
+      ],
+      "env": {
+        "GMAIL_USERNAME": "your.email@gmail.com",
+        "GMAIL_APP_PASSWORD": "your-app-password",
+        "PPLX_API_KEY": "your-perplexity-key",
+        "SLACK_API_TOKEN": "your-slack-token"
+      }
+    }
+  }
+}
+
