@@ -58,7 +58,7 @@ class SlackNotifier:
                 )
 
                 try:
-                    self.client.chat_postMessage(channel=channel, text=message, unfurl_links=True)
+                    self.client.chat_postMessage(channel=channel, text=message, unfurl_links=True, link_names=True)
                     logger.info(f"Notification sent to channel {channel} for topic {topic.name}")
                 except SlackApiError as e:
                     logger.error(f"Failed to send notification to {channel}: {e.response['error']}")
