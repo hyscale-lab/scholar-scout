@@ -218,7 +218,7 @@ class ScholarClassifier:
                         authors=paper_data["authors"],
                         abstract=paper.abstract,
                         venue=paper_data.get("venue", ""),
-                        url=paper_data.get("link", ""),
+                        url=paper.url,
                     )
 
                     paper_relevant_topics = paper_data.get("relevant_topics", [])
