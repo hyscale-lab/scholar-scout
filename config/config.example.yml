@@ -10,6 +10,8 @@ slack:
   channel_topics:
     scholar-scout-llm:
       - "LLM Inference"
+    scholar-scout-vlm:
+      - "VLM Inference"
     scholar-scout-serverless:
       - "Serverless Computing"
 
@@ -41,6 +43,17 @@ research_topics:
     description: >-
       Research on serverless computing platforms, Function-as-a-Service (FaaS), 
       and cloud-native architectures
+
+  - name: "VLM Inference"
+    keywords: ["vlm", "vision-language", "vision language model", "multimodal", "inference", "serving", "latency", "throughput"]
+    slack_users:
+      - "<@U0618BHHTRR>" # "@Yulin"
+      - "<@U0973SVHUD6>" # "@Wenyan Chen"
+    slack_channel: "#systems-for-ai"
+    description: >-
+      Research on VLM inference and serving systems, including vision-language
+      model deployment, latency optimization, throughput improvement, and
+      multimodal inference pipelines
 
   - name: "Sustainable Computing"
     keywords: ["green computing", "energy efficiency", "carbon footprint"]
