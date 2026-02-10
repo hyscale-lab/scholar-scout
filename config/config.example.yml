@@ -22,7 +22,6 @@ research_topics:
     keywords: ["llm", "inference", "serving", "latency", "throughput"]
     slack_users:
       - "<@U04MG63BX1R>" # "@Ruiqi Lai"
-      - "<@U06L40H6D8Q>" # "@Yixin Zhang"
       - "<@U07J4DZRPB6>" # "@Hongrui Liu"
       - "<@U0618BHHTRR>" # "@Yulin"
       - "<@U058LPMQB6J>" # "@Colin Hong"
