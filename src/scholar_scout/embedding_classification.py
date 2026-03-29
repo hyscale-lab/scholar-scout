@@ -1,0 +1,188 @@
+from dotenv import load_dotenv
+
+from google import genai
+from google.genai import types
+from google.genai.errors import ServerError, ClientError
+import numpy as np
+from scipy.spatial.distance import cosine
+from .config import AppConfig, ResearchTopic
+
+
+import json
+
+
+class GeminiEmbeddingSetup:
+    CLASSIFICATION_THRESHOLD = 0.80
+    SINGLE_CLASSIFICATION = True
+    DEBUG = False
+
+    TAXONOMY = dict()
+    GEMINI_EMBEDDING_MODEL = ""
+
+    NOISE = "NONSENSE GARBAGE NEGATIVE"
+    CS = "COMPUTER SCIENCE RELATED RESEARCH PAPER"
+
+    SYSTEM_NULLS = ["null value placeholder", "NIL empty string", "undefined variable return", "None type object", "void N/A entry"]
+    CONVERSATIONAL = ["hello how can I help", "thanks for the update", "please let me know", "regards and best wishes", "okay cool sounds good"]
+    GIBBERISH = ["safasefseaawv", "reagregreea", "fbwafvbskj", "fwefhewilheWLSA"]
+    UI_JUNK = ["click here to subscribe", "navigation menu toggle", "footer copyright reserved", "login sign up button", "contact us for support"]
+    DOC_META = ["page number citations", "references bibliography list", "table of contents index", "author date published", "figure caption table"]
+
+
+    FILTER_NONSENSE_TAXONOMY = {
+        NOISE: [*SYSTEM_NULLS, *CONVERSATIONAL, *GIBBERISH, *UI_JUNK, *DOC_META],
+        CS: [
+            "coherent and relevant research paper",
+            "computer science research",
+            "computer engineering research",
+            "Computer science research and engineering principles.",
+            "Software systems architecture and implementation.",
+            #"Algorithmic complexity and data structures.",
+            "Distributed systems and network protocols.",
+            "Computational performance and hardware optimization.",
+        ]
+    }
+
+    STOPWORDS = {"i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself", "yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself", "they", "them", "their", "theirs", "themselves", "what", "which", "who", "whom", "this", "that", "these", "those", "am", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "having", "do", "does", "did", "doing", "a", "an", "the", "and", "but", "if", "or", "because", "as", "until", "while", "of", "at", "by", "for", "with", "about", "against", "between", "into", "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", "in", "out", "on", "off", "over", "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too", "very", "s", "t", "can", "will", "just", "don", "should", "now"}
+    WHITELIST = {"AI", "GPU", "SLA", "API", "CPU", "RAM", "LLM", "AWS", "FAAS", "PUE"}
+
+
+    def __init__(self, config: AppConfig):
+        load_dotenv()
+
+        self.client = genai.Client(
+            api_key=config.gemini.api_key
+        )
+        
+        GeminiEmbeddingSetup.TAXONOMY = {research_topic.name: research_topic.taxonomy for research_topic in config.research_topics}
+        GeminiEmbeddingSetup.GEMINI_EMBEDDING_MODEL = config.gemini.embedding_model
+
+        # Pre-compute Category Centroids
+        self.CATEGORY_EMBEDDINGS = {label: self.get_category_embeddings(keywords) for label, keywords in GeminiEmbeddingSetup.TAXONOMY.items()}
+        self.NEGATIVE_CS_EMBEDDINGS = {label: self.get_category_embeddings(keywords) for label, keywords in GeminiEmbeddingSetup.FILTER_NONSENSE_TAXONOMY.items()}
+
+
+    def get_category_embeddings(self, keywords):
+        # Get embeddings for all keywords in the list
+        result = self.client.models.embed_content(
+            model=GeminiEmbeddingSetup.GEMINI_EMBEDDING_MODEL,
+            contents=keywords,
+            config=types.EmbedContentConfig(task_type="CLASSIFICATION")
+        )
+        keyword_vectors = [keyword_ContentEmbedding.values for keyword_ContentEmbedding in result.embeddings]
+        # Calculate the mathematical average (mean) across all vectors
+        return keyword_vectors
+
+    def text_embedding_classification_result(self, text_vector, category_embeddings):
+        category_classification_result = {}
+
+        # Manual Cosine Similarity
+        for category, category_keywords_embeddings in category_embeddings.items():
+            scores = [1 - cosine(text_vector, keyword_vector) for keyword_vector in category_keywords_embeddings]
+            if GeminiEmbeddingSetup.DEBUG:
+                print(category, "@@", max(scores), f"\n{scores}", "!!\n")
+            category_classification_result[category] = max(scores)
+
+        if GeminiEmbeddingSetup.DEBUG:
+            print("###\n")
+
+        return category_classification_result
+        
+    def get_embedding(self, text):
+        text_result = self.client.models.embed_content(
+            model=GeminiEmbeddingSetup.GEMINI_EMBEDDING_MODEL,
+            contents=text,
+            config=types.EmbedContentConfig(task_type="CLASSIFICATION")
+        )
+        text_vector = text_result.embeddings[0].values
+        return text_vector
+
+    def is_garbage(self, text):
+        text = text.strip()
+
+        # 1. Length Filter (with Whitelist exception)
+        if len(text) < 5 and text.upper() not in GeminiEmbeddingSetup.WHITELIST:
+            return True, "Too short"
+
+        # 2. Alphabetical Ratio (Density check)
+        # Checks if the string is mostly symbols/numbers
+        alpha_chars = sum(c.isalpha() for c in text)
+        if alpha_chars / len(text) < 0.5:
+            return True, "Low alphabet density"
+
+        # 3. Stopword Check (Is it just filler?)
+        words = text.lower().split()
+        if all(word in GeminiEmbeddingSetup.STOPWORDS for word in words):
+            return True, "Only stopwords"
+
+        return False, "Pass"
+
+
+    def pre_classification_filter(self, text):
+        if GeminiEmbeddingSetup.DEBUG:
+            print(f"ABSTRACT FOR FILTERING: {text}")
+
+        # Step 1: Heuristics // without embedding
+        garbage, reason = self.is_garbage(text)
+        if garbage:
+            if GeminiEmbeddingSetup.DEBUG:
+                print(reason)
+            return None  # Discard
+        
+        # Step 2: Vectorize
+        input_vec = self.get_embedding(text)
+        
+        # Step 3: Compare to Anchors
+        # (Simplified logic)
+        noise_cs_similarities = self.text_embedding_classification_result(input_vec, self.NEGATIVE_CS_EMBEDDINGS)
+        sim_to_noise = noise_cs_similarities[GeminiEmbeddingSetup.NOISE]
+        sim_to_cs = noise_cs_similarities[GeminiEmbeddingSetup.CS]
+
+        if sim_to_noise > sim_to_cs:
+            return None # Noise
+        
+        return input_vec ## to use for classification into the categories
+
+
+    def geminiEmbeddingClassify(self, paper_abstract):
+        print(f"DEBUG MODE: {GeminiEmbeddingSetup.DEBUG}")
+        print(f"SINGLE_CLASSIFICATION: {GeminiEmbeddingSetup.SINGLE_CLASSIFICATION}")
+        print(f"CLASSIFICATION_THRESHOLD: {GeminiEmbeddingSetup.CLASSIFICATION_THRESHOLD}")
+
+        labels = list(GeminiEmbeddingSetup.TAXONOMY.keys())
+        print("labels:", labels, "\n")
+
+        if paper_abstract == "":
+            print("NO PAPER ABSTRACT")
+            return []
+
+        # 1. Embed your Abstract to check if is a paper to classify into categories
+        try:
+            paper_vector = self.pre_classification_filter(paper_abstract)
+        except ServerError as e:
+            print(f"Gemini is currently overloaded or down: {e.code} - {e.message}")                
+            print(f"{e.message}")
+            return []
+
+        if not paper_vector:
+            print("NOT CS RELATED, NO NEED FOR CLASSIFICATION")
+            return []
+
+        print("abstract:", paper_abstract[:50])
+
+        # 2. Manual Cosine Similarity
+        category_classification_result = self.text_embedding_classification_result(paper_vector, self.CATEGORY_EMBEDDINGS)
+
+        if GeminiEmbeddingSetup.SINGLE_CLASSIFICATION:
+            #print(np.argmax([category_classification_result[label] for label in labels[::-1]]))
+            best_labels = [labels[np.argmax([category_classification_result[label] for label in labels])]]
+            if category_classification_result[best_labels[0]] < GeminiEmbeddingSetup.CLASSIFICATION_THRESHOLD:
+                best_labels = [] # none of them, but this way only selects top 1 and >= threshold
+        else:
+            ## other approach using threshold
+            # >1 can be classified into
+            best_labels = [cat for cat, cat_score in category_classification_result.items() if cat_score >= GeminiEmbeddingSetup.CLASSIFICATION_THRESHOLD]
+            print(f"best_labels: {best_labels}")
+
+        print(best_labels)
+        return best_labels

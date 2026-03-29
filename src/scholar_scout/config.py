@@ -34,6 +34,13 @@ class PerplexityConfig(BaseModel):
     model: str = "sonar-pro"
 
 
+class GeminiConfig(BaseModel):
+    """Gemini AI client configuration."""
+    api_key: str
+    gen_ai_model: str = "gemini-2.5-flash"
+    embedding_model: str = "gemini-embedding-001"
+
+
 class ResearchTopic(BaseModel):
     """Research topic configuration."""
     name: str
@@ -41,6 +48,7 @@ class ResearchTopic(BaseModel):
     slack_users: List[str]
     slack_channel: Optional[str] = None
     description: str
+    taxonomy: List[str]
 
 
 class AppConfig(BaseModel):
@@ -48,6 +56,7 @@ class AppConfig(BaseModel):
     email: EmailConfig
     slack: SlackConfig
     perplexity: PerplexityConfig
+    gemini: GeminiConfig
     research_topics: List[ResearchTopic]
 
 

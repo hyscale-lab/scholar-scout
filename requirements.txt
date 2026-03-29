@@ -6,3 +6,5 @@ PyYAML>=6.0.1
 slack-sdk>=3.26.0
 pydantic
 beautifulsoup4
+google-genai
+scipy
