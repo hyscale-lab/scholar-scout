@@ -16,8 +16,12 @@ from typing import List, Tuple
 from bs4 import BeautifulSoup, Tag
 from openai import OpenAI
 
+from google import genai
+from google.genai.errors import ServerError, ClientError
+
 from .config import AppConfig, ResearchTopic
 from .models import Paper
+from .embedding_classification import GeminiEmbeddingSetup
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +37,17 @@ class ScholarClassifier:
             config: The application configuration.
         """
         self.config = config
+
+
+        self.gemini_embedding_model = GeminiEmbeddingSetup(config)
+
+        self.gemini_client = genai.Client(
+            api_key=config.gemini.api_key
+        )
+        self.gemini_gen_ai_model = config.gemini.gen_ai_model
+
+
+
         self.pplx_client = OpenAI(
             api_key=config.perplexity.api_key,
             base_url="https://api.perplexity.ai",
@@ -117,33 +132,22 @@ class ScholarClassifier:
         Title: {paper.title}
         Authors: {', '.join(paper.authors)}
         Abstract: {paper.abstract}
+        url: {paper.url}
 
         Return a SINGLE JSON object with ALL these required fields:
         {{
-            "title": "the paper title",
             "authors": ["list", "of", "authors"],
-            "abstract": "the paper abstract",
             "venue": "use these rules:
               - 'arXiv preprint' if author line has 'arXiv'
               - 'Patent Application' if author line has 'Patent'
               - text between dash and year for published papers
               - 'NOT-FOUND' otherwise",
-            "link": "the paper URL",
-            "relevant_topics": []  // ONLY choose from these topics:
-        {topics_list}
         }}
 
         CRITICAL RULES:
         1. Return ONLY ONE JSON object, NOT an array of objects
-        2. ALL fields (title, authors, abstract, venue, link, relevant_topics) are REQUIRED
-        3. For relevant_topics, ONLY include topics from the list above - do not create new topics
-        4. For LLM/VLM papers:
-           - Include ANY paper that uses or studies language/vision-language models
-           - Include papers about LLM/VLM applications, systems, or benchmarks
-           - Include papers about model serving, deployment, or optimization
-           - When in doubt about LLM/VLM relevance, include it
-        5. Leave relevant_topics as empty list if no topics match
-        6. Do not include any comments or signs in the JSON object
+        2. ALL fields (authors, venue) are REQUIRED
+        3. Do not include any comments or signs in the JSON object
 
         The response must be valid JSON with ALL required fields.
         """
@@ -191,14 +195,20 @@ class ScholarClassifier:
             for paper in filtered_papers:
                 prompt = self._generate_classification_prompt(paper)
                 try:
+                    """
                     response = self.pplx_client.chat.completions.create(
                         model=self.config.perplexity.model,
                         messages=[{"role": "user", "content": prompt}],
                     )
-                    
                     content = response.choices[0].message.content
+                    """
+                    response = self.gemini_client.models.generate_content(
+                        model=self.gemini_gen_ai_model, contents=prompt,
+                    )
+                    content = response.text
+
                     if not content:
-                        logger.error("Received empty content from Perplexity AI.")
+                        logger.error("Received empty content from Gemini AI.")
                         continue
                     content = content.strip()
 
@@ -221,7 +231,9 @@ class ScholarClassifier:
                         url=paper.url,
                     )
 
-                    paper_relevant_topics = paper_data.get("relevant_topics", [])
+                    #paper_relevant_topics = paper_data.get("relevant_topics", [])
+                    paper_relevant_topics = self.gemini_embedding_model.geminiEmbeddingClassify(paper.abstract)
+
                     relevant_topics = [
                         topic
                         for topic in self.config.research_topics
