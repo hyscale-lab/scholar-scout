@@ -122,7 +122,6 @@ class ScholarClassifier:
 
     def _generate_classification_prompt(self, paper: Paper) -> str:
         """Generate the prompt for classifying a paper."""
-
         return f"""
         Below is a paper from Google Scholar. Extract metadata and classify it:
 
