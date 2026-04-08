@@ -1,23 +1,18 @@
-from dotenv import load_dotenv
+import logging
 
 from google import genai
 from google.genai import types
-from google.genai.errors import ServerError, ClientError
+from google.genai.errors import ServerError
 import numpy as np
 from scipy.spatial.distance import cosine
-from .config import AppConfig, ResearchTopic
+from .config import AppConfig
 
-
-import json
-
+logger = logging.getLogger(__name__)
 
 class GeminiEmbeddingSetup:
     CLASSIFICATION_THRESHOLD = 0.80
     SINGLE_CLASSIFICATION = True
     DEBUG = False
-
-    TAXONOMY = dict()
-    GEMINI_EMBEDDING_MODEL = ""
 
     NOISE = "NONSENSE GARBAGE NEGATIVE"
     CS = "COMPUTER SCIENCE RELATED RESEARCH PAPER"
@@ -37,7 +32,7 @@ class GeminiEmbeddingSetup:
             "computer engineering research",
             "Computer science research and engineering principles.",
             "Software systems architecture and implementation.",
-            #"Algorithmic complexity and data structures.",
+            "Algorithmic complexity and data structures.",
             "Distributed systems and network protocols.",
             "Computational performance and hardware optimization.",
         ]
@@ -48,7 +43,6 @@ class GeminiEmbeddingSetup:
 
 
     def __init__(self, config: AppConfig):
-        load_dotenv()
 
         self.client = genai.Client(
             api_key=config.gemini.api_key
@@ -69,6 +63,13 @@ class GeminiEmbeddingSetup:
             contents=keywords,
             config=types.EmbedContentConfig(task_type="CLASSIFICATION")
         )
+        if result.embeddings is None:
+            logger.error("Failed to get embeddings for category keywords.")
+            return [[0.0] * 3072]
+        if result.embeddings[0].values is None:
+            logger.error("Embedding values are None for category keywords.")
+            return [[0.0] * 3072]
+
         keyword_vectors = [keyword_ContentEmbedding.values for keyword_ContentEmbedding in result.embeddings]
         # Calculate the mathematical average (mean) across all vectors
         return keyword_vectors
@@ -79,12 +80,15 @@ class GeminiEmbeddingSetup:
         # Manual Cosine Similarity
         for category, category_keywords_embeddings in category_embeddings.items():
             scores = [1 - cosine(text_vector, keyword_vector) for keyword_vector in category_keywords_embeddings]
-            if GeminiEmbeddingSetup.DEBUG:
-                print(category, "@@", max(scores), f"\n{scores}", "!!\n")
-            category_classification_result[category] = max(scores)
-
+            if scores:
+                if GeminiEmbeddingSetup.DEBUG:
+                    logger.debug("%s @ %f \n%s !!\n", category, max(scores), scores)
+                category_classification_result[category] = max(scores)
+            else:
+                category_classification_result[category] = 0.0
+                logger.error("Error computing cosine similarity for category '%s'. Check if embeddings are valid.", category)
         if GeminiEmbeddingSetup.DEBUG:
-            print("###\n")
+            logger.debug("###\n")
 
         return category_classification_result
         
@@ -120,13 +124,13 @@ class GeminiEmbeddingSetup:
 
     def pre_classification_filter(self, text):
         if GeminiEmbeddingSetup.DEBUG:
-            print(f"ABSTRACT FOR FILTERING: {text}")
+            logger.debug(f"ABSTRACT FOR FILTERING: {text}")
 
         # Step 1: Heuristics // without embedding
         garbage, reason = self.is_garbage(text)
         if garbage:
             if GeminiEmbeddingSetup.DEBUG:
-                print(reason)
+                logger.debug(reason)
             return None  # Discard
         
         # Step 2: Vectorize
@@ -141,48 +145,50 @@ class GeminiEmbeddingSetup:
         if sim_to_noise > sim_to_cs:
             return None # Noise
         
-        return input_vec ## to use for classification into the categories
+        return input_vec # to use for classification into the categories
 
 
     def geminiEmbeddingClassify(self, paper_abstract):
-        print(f"DEBUG MODE: {GeminiEmbeddingSetup.DEBUG}")
-        print(f"SINGLE_CLASSIFICATION: {GeminiEmbeddingSetup.SINGLE_CLASSIFICATION}")
-        print(f"CLASSIFICATION_THRESHOLD: {GeminiEmbeddingSetup.CLASSIFICATION_THRESHOLD}")
+        logger.info(f"DEBUG MODE: {GeminiEmbeddingSetup.DEBUG}")
+        logger.info(f"SINGLE_CLASSIFICATION: {GeminiEmbeddingSetup.SINGLE_CLASSIFICATION}")
+        logger.info(f"CLASSIFICATION_THRESHOLD: {GeminiEmbeddingSetup.CLASSIFICATION_THRESHOLD}")
 
         labels = list(GeminiEmbeddingSetup.TAXONOMY.keys())
-        print("labels:", labels, "\n")
+        if len(labels) == 0:
+            logger.error("No categories defined in taxonomy.")
+            return []
+        logger.info("labels: %s", labels)
 
         if paper_abstract == "":
-            print("NO PAPER ABSTRACT")
+            logger.info("NO PAPER ABSTRACT")
             return []
 
         # 1. Embed your Abstract to check if is a paper to classify into categories
         try:
             paper_vector = self.pre_classification_filter(paper_abstract)
         except ServerError as e:
-            print(f"Gemini is currently overloaded or down: {e.code} - {e.message}")                
-            print(f"{e.message}")
+            logger.error(f"Gemini is currently overloaded or down: {e.code} - {e.message}")                
+            logger.info(f"{e.message}")
             return []
 
         if not paper_vector:
-            print("NOT CS RELATED, NO NEED FOR CLASSIFICATION")
+            logger.info("NOT CS RELATED, NO NEED FOR CLASSIFICATION")
             return []
 
-        print("abstract:", paper_abstract[:50])
+        logger.info("abstract: %s", paper_abstract[:50])
 
         # 2. Manual Cosine Similarity
         category_classification_result = self.text_embedding_classification_result(paper_vector, self.CATEGORY_EMBEDDINGS)
 
         if GeminiEmbeddingSetup.SINGLE_CLASSIFICATION:
-            #print(np.argmax([category_classification_result[label] for label in labels[::-1]]))
             best_labels = [labels[np.argmax([category_classification_result[label] for label in labels])]]
             if category_classification_result[best_labels[0]] < GeminiEmbeddingSetup.CLASSIFICATION_THRESHOLD:
                 best_labels = [] # none of them, but this way only selects top 1 and >= threshold
         else:
-            ## other approach using threshold
+            # other approach using threshold
             # >1 can be classified into
             best_labels = [cat for cat, cat_score in category_classification_result.items() if cat_score >= GeminiEmbeddingSetup.CLASSIFICATION_THRESHOLD]
-            print(f"best_labels: {best_labels}")
+            logger.info(f"best_labels: {best_labels}")
 
-        print(best_labels)
+        logger.info(f"Final best labels: {best_labels}")
         return best_labels

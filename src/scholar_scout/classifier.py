@@ -17,7 +17,6 @@ from bs4 import BeautifulSoup, Tag
 from openai import OpenAI
 
 from google import genai
-from google.genai.errors import ServerError, ClientError
 
 from .config import AppConfig, ResearchTopic
 from .models import Paper
@@ -123,9 +122,7 @@ class ScholarClassifier:
 
     def _generate_classification_prompt(self, paper: Paper) -> str:
         """Generate the prompt for classifying a paper."""
-        topics_list = "\n".join(
-            f"- {topic.name}: {topic.description}" for topic in self.config.research_topics
-        )
+
         return f"""
         Below is a paper from Google Scholar. Extract metadata and classify it:
 
@@ -195,13 +192,6 @@ class ScholarClassifier:
             for paper in filtered_papers:
                 prompt = self._generate_classification_prompt(paper)
                 try:
-                    """
-                    response = self.pplx_client.chat.completions.create(
-                        model=self.config.perplexity.model,
-                        messages=[{"role": "user", "content": prompt}],
-                    )
-                    content = response.choices[0].message.content
-                    """
                     response = self.gemini_client.models.generate_content(
                         model=self.gemini_gen_ai_model, contents=prompt,
                     )
@@ -231,7 +221,7 @@ class ScholarClassifier:
                         url=paper.url,
                     )
 
-                    #paper_relevant_topics = paper_data.get("relevant_topics", [])
+                    # paper_relevant_topics is an empty list, [] when not part of any category
                     paper_relevant_topics = self.gemini_embedding_model.geminiEmbeddingClassify(paper.abstract)
 
                     relevant_topics = [
