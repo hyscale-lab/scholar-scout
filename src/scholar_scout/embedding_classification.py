@@ -63,12 +63,9 @@ class GeminiEmbeddingSetup:
             contents=keywords,
             config=types.EmbedContentConfig(task_type="CLASSIFICATION")
         )
-        if result.embeddings is None:
+        if not result.embeddings:
             logger.error("Failed to get embeddings for category keywords.")
-            raise ValueError("Embeddings result is None.")
-        if result.embeddings[0].values is None:
-            logger.error("Embedding values are None for category keywords.")
-            raise ValueError("Embedding values are None.")
+            raise ValueError("Embeddings result is None or empty.")
 
         keyword_vectors = [keyword_ContentEmbedding.values for keyword_ContentEmbedding in result.embeddings]
         # Return all keyword vectors for individual similarity comparison
@@ -152,9 +149,9 @@ class GeminiEmbeddingSetup:
 
 
     def gemini_embedding_classify(self, paper_abstract):
-        logger.info(f"DEBUG MODE: {GeminiEmbeddingSetup.DEBUG}")
-        logger.info(f"SINGLE_CLASSIFICATION: {GeminiEmbeddingSetup.SINGLE_CLASSIFICATION}")
-        logger.info(f"CLASSIFICATION_THRESHOLD: {GeminiEmbeddingSetup.CLASSIFICATION_THRESHOLD}")
+        logger.debug(f"DEBUG MODE: {GeminiEmbeddingSetup.DEBUG}")
+        logger.debug(f"SINGLE_CLASSIFICATION: {GeminiEmbeddingSetup.SINGLE_CLASSIFICATION}")
+        logger.debug(f"CLASSIFICATION_THRESHOLD: {GeminiEmbeddingSetup.CLASSIFICATION_THRESHOLD}")
 
         labels = list(self.TAXONOMY.keys())
         if len(labels) == 0:
