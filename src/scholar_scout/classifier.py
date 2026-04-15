@@ -36,12 +36,12 @@ class ScholarClassifier:
         """
         self.config = config
 
-
-        self.gemini_embedding_model = GeminiEmbeddingSetup(config)
-
         self.gemini_client = genai.Client(
             api_key=config.gemini.api_key
         )
+
+        self.gemini_embedding_model = GeminiEmbeddingSetup(config, self.gemini_client)
+
         self.gemini_gen_ai_model = config.gemini.gen_ai_model
 
         self._processed_titles = set()
