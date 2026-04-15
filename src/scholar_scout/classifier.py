@@ -14,7 +14,6 @@ from email.message import Message
 from typing import List, Tuple
 
 from bs4 import BeautifulSoup, Tag
-from openai import OpenAI
 
 from google import genai
 
