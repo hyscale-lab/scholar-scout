@@ -177,7 +177,7 @@ class GeminiEmbeddingSetup:
         try:
             paper_vector = self.pre_classification_filter(paper_abstract)
         except (ServerError, ClientError) as e:
-            logger.error(f"Gemini is currently overloaded or down: {e.code}")
+            logger.error(f"Gemini is currently overloaded or down: {e}")
             return []
 
         if not paper_vector:
