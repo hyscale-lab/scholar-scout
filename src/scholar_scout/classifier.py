@@ -45,12 +45,6 @@ class ScholarClassifier:
         )
         self.gemini_gen_ai_model = config.gemini.gen_ai_model
 
-
-
-        self.pplx_client = OpenAI(
-            api_key=config.perplexity.api_key,
-            base_url="https://api.perplexity.ai",
-        )
         self._processed_titles = set()
         self._processed_urls = set()
 
@@ -221,7 +215,7 @@ class ScholarClassifier:
                     )
 
                     # paper_relevant_topics is an empty list, [] when not part of any category
-                    paper_relevant_topics = self.gemini_embedding_model.geminiEmbeddingClassify(paper.abstract)
+                    paper_relevant_topics = self.gemini_embedding_model.gemini_embedding_classify(paper.abstract)
 
                     relevant_topics = [
                         topic

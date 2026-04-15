@@ -48,18 +48,18 @@ class GeminiEmbeddingSetup:
             api_key=config.gemini.api_key
         )
         
-        GeminiEmbeddingSetup.TAXONOMY = {research_topic.name: research_topic.taxonomy for research_topic in config.research_topics}
-        GeminiEmbeddingSetup.GEMINI_EMBEDDING_MODEL = config.gemini.embedding_model
+        self.TAXONOMY = {research_topic.name: research_topic.taxonomy for research_topic in config.research_topics}
+        self.GEMINI_EMBEDDING_MODEL = config.gemini.embedding_model
 
         # Pre-compute Category Centroids
-        self.CATEGORY_EMBEDDINGS = {label: self.get_category_embeddings(keywords) for label, keywords in GeminiEmbeddingSetup.TAXONOMY.items()}
-        self.NEGATIVE_CS_EMBEDDINGS = {label: self.get_category_embeddings(keywords) for label, keywords in GeminiEmbeddingSetup.FILTER_NONSENSE_TAXONOMY.items()}
+        self.CATEGORY_EMBEDDINGS = {label: self.get_category_embeddings(keywords) for label, keywords in self.TAXONOMY.items()}
+        self.NEGATIVE_CS_EMBEDDINGS = {label: self.get_category_embeddings(keywords) for label, keywords in self.FILTER_NONSENSE_TAXONOMY.items()}
 
 
     def get_category_embeddings(self, keywords):
         # Get embeddings for all keywords in the list
         result = self.client.models.embed_content(
-            model=GeminiEmbeddingSetup.GEMINI_EMBEDDING_MODEL,
+            model=self.GEMINI_EMBEDDING_MODEL,
             contents=keywords,
             config=types.EmbedContentConfig(task_type="CLASSIFICATION")
         )
@@ -94,7 +94,7 @@ class GeminiEmbeddingSetup:
         
     def get_embedding(self, text):
         text_result = self.client.models.embed_content(
-            model=GeminiEmbeddingSetup.GEMINI_EMBEDDING_MODEL,
+            model=self.GEMINI_EMBEDDING_MODEL,
             contents=text,
             config=types.EmbedContentConfig(task_type="CLASSIFICATION")
         )
@@ -151,12 +151,12 @@ class GeminiEmbeddingSetup:
         return input_vec # to use for classification into the categories
 
 
-    def geminiEmbeddingClassify(self, paper_abstract):
+    def gemini_embedding_classify(self, paper_abstract):
         logger.info(f"DEBUG MODE: {GeminiEmbeddingSetup.DEBUG}")
         logger.info(f"SINGLE_CLASSIFICATION: {GeminiEmbeddingSetup.SINGLE_CLASSIFICATION}")
         logger.info(f"CLASSIFICATION_THRESHOLD: {GeminiEmbeddingSetup.CLASSIFICATION_THRESHOLD}")
 
-        labels = list(GeminiEmbeddingSetup.TAXONOMY.keys())
+        labels = list(self.TAXONOMY.keys())
         if len(labels) == 0:
             logger.error("No categories defined in taxonomy.")
             return []
