@@ -53,10 +53,12 @@ class GeminiEmbeddingSetup:
     def precompute_category_embeddings(self):
         if self.precomputed:
             return  # Already pre-computed
-        self.precomputed = True
+        
         # Pre-compute Category Centroids
         self.CATEGORY_EMBEDDINGS = {label: self.get_category_embeddings(keywords) for label, keywords in self.TAXONOMY.items()}
         self.NEGATIVE_CS_EMBEDDINGS = {label: self.get_category_embeddings(keywords) for label, keywords in self.FILTER_NONSENSE_TAXONOMY.items()}
+
+        self.precomputed = True
 
 
     def get_category_embeddings(self, keywords):
