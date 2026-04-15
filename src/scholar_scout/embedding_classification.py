@@ -66,6 +66,9 @@ class GeminiEmbeddingSetup:
         if not result.embeddings:
             logger.error("Failed to get embeddings for category keywords.")
             raise ValueError("Embeddings result is None or empty.")
+        if result.embeddings[0].values is None:
+            logger.error("Embedding values are None for category keywords.")
+            raise ValueError("Embedding values are None.")
 
         keyword_vectors = [keyword_ContentEmbedding.values for keyword_ContentEmbedding in result.embeddings]
         # Return all keyword vectors for individual similarity comparison
@@ -167,8 +170,7 @@ class GeminiEmbeddingSetup:
         try:
             paper_vector = self.pre_classification_filter(paper_abstract)
         except ServerError as e:
-            logger.error(f"Gemini is currently overloaded or down: {e.code} - {e.message}")                
-            logger.info(f"{e.message}")
+            logger.error(f"Gemini is currently overloaded or down: {e.code}")
             return []
 
         if not paper_vector:

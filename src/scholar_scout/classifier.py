@@ -130,7 +130,7 @@ class ScholarClassifier:
               - 'arXiv preprint' if author line has 'arXiv'
               - 'Patent Application' if author line has 'Patent'
               - text between dash and year for published papers
-              - 'NOT-FOUND' otherwise",
+              - 'NOT-FOUND' otherwise"
         }}
 
         CRITICAL RULES:
