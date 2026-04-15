@@ -2,7 +2,7 @@ import logging
 
 from google import genai
 from google.genai import types
-from google.genai.errors import ServerError
+from google.genai.errors import ServerError, ClientError
 from scipy.spatial.distance import cosine
 from .config import AppConfig
 
@@ -71,8 +71,8 @@ class GeminiEmbeddingSetup:
         if not result.embeddings:
             logger.error("Failed to get embeddings for category keywords.")
             raise ValueError("Embeddings result is None or empty.")
-        if result.embeddings[0].values is None:
-            logger.error("Embedding values are None for category keywords.")
+        if any(emb.values is None for emb in result.embeddings):
+            logger.error("One or more embedding values are None for category keywords.")
             raise ValueError("Embedding values are None.")
 
         keyword_vectors = [keyword_ContentEmbedding.values for keyword_ContentEmbedding in result.embeddings]
@@ -176,7 +176,7 @@ class GeminiEmbeddingSetup:
         # 1. Embed your Abstract to check if is a paper to classify into categories
         try:
             paper_vector = self.pre_classification_filter(paper_abstract)
-        except ServerError as e:
+        except (ServerError, ClientError) as e:
             logger.error(f"Gemini is currently overloaded or down: {e.code}")
             return []
 
