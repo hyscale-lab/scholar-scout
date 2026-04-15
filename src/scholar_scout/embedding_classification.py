@@ -2,7 +2,7 @@ import logging
 
 from google import genai
 from google.genai import types
-from google.genai.errors import ServerError, ClientError
+from google.genai.errors import ClientError, ServerError
 from scipy.spatial.distance import cosine
 from .config import AppConfig
 
