@@ -3,7 +3,6 @@ import logging
 from google import genai
 from google.genai import types
 from google.genai.errors import ServerError
-import numpy as np
 from scipy.spatial.distance import cosine
 from .config import AppConfig
 
