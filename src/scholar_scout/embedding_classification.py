@@ -65,13 +65,13 @@ class GeminiEmbeddingSetup:
         )
         if result.embeddings is None:
             logger.error("Failed to get embeddings for category keywords.")
-            return [[0.0] * 3072]
+            raise ValueError("Embeddings result is None.")
         if result.embeddings[0].values is None:
             logger.error("Embedding values are None for category keywords.")
-            return [[0.0] * 3072]
+            raise ValueError("Embedding values are None.")
 
         keyword_vectors = [keyword_ContentEmbedding.values for keyword_ContentEmbedding in result.embeddings]
-        # Calculate the mathematical average (mean) across all vectors
+        # Return all keyword vectors for individual similarity comparison
         return keyword_vectors
 
     def text_embedding_classification_result(self, text_vector, category_embeddings):
@@ -98,6 +98,9 @@ class GeminiEmbeddingSetup:
             contents=text,
             config=types.EmbedContentConfig(task_type="CLASSIFICATION")
         )
+        if text_result.embeddings is None or len(text_result.embeddings) == 0:
+            logger.error("Failed to get embedding for text. Embeddings result is None or empty.")
+            raise ValueError("Embeddings result is None or empty.")
         text_vector = text_result.embeddings[0].values
         return text_vector
 

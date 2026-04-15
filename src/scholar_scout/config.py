@@ -27,13 +27,6 @@ class SlackConfig(BaseModel):
     default_channel: str
     channel_topics: Dict[str, List[str]] = Field(default_factory=dict)
 
-
-class PerplexityConfig(BaseModel):
-    """Perplexity AI client configuration."""
-    api_key: str
-    model: str = "sonar-pro"
-
-
 class GeminiConfig(BaseModel):
     """Gemini AI client configuration."""
     api_key: str
@@ -55,7 +48,6 @@ class AppConfig(BaseModel):
     """Main application configuration."""
     email: EmailConfig
     slack: SlackConfig
-    perplexity: PerplexityConfig
     gemini: GeminiConfig
     research_topics: List[ResearchTopic]
 
