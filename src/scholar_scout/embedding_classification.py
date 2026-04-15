@@ -42,15 +42,19 @@ class GeminiEmbeddingSetup:
     WHITELIST = {"AI", "GPU", "SLA", "API", "CPU", "RAM", "LLM", "AWS", "FAAS", "PUE"}
 
 
-    def __init__(self, config: AppConfig):
+    def __init__(self, config: AppConfig, gemini_client: genai.Client):
 
-        self.client = genai.Client(
-            api_key=config.gemini.api_key
-        )
+        self.client = gemini_client
         
         self.TAXONOMY = {research_topic.name: research_topic.taxonomy for research_topic in config.research_topics}
         self.GEMINI_EMBEDDING_MODEL = config.gemini.embedding_model
 
+        self.precomputed = False
+    
+    def precompute_category_embeddings(self):
+        if self.precomputed:
+            return  # Already pre-computed
+        self.precomputed = True
         # Pre-compute Category Centroids
         self.CATEGORY_EMBEDDINGS = {label: self.get_category_embeddings(keywords) for label, keywords in self.TAXONOMY.items()}
         self.NEGATIVE_CS_EMBEDDINGS = {label: self.get_category_embeddings(keywords) for label, keywords in self.FILTER_NONSENSE_TAXONOMY.items()}
@@ -98,8 +102,8 @@ class GeminiEmbeddingSetup:
             contents=text,
             config=types.EmbedContentConfig(task_type="CLASSIFICATION")
         )
-        if text_result.embeddings is None or len(text_result.embeddings) == 0:
-            logger.error("Failed to get embedding for text. Embeddings result is None or empty.")
+        if not text_result.embeddings or text_result.embeddings[0].values is None:
+            logger.error("Failed to get valid embedding for text.")
             raise ValueError("Embeddings result is None or empty.")
         text_vector = text_result.embeddings[0].values
         return text_vector
@@ -156,6 +160,8 @@ class GeminiEmbeddingSetup:
         logger.debug(f"SINGLE_CLASSIFICATION: {GeminiEmbeddingSetup.SINGLE_CLASSIFICATION}")
         logger.debug(f"CLASSIFICATION_THRESHOLD: {GeminiEmbeddingSetup.CLASSIFICATION_THRESHOLD}")
 
+        self.precompute_category_embeddings()
+
         labels = list(self.TAXONOMY.keys())
         if len(labels) == 0:
             logger.error("No categories defined in taxonomy.")
@@ -183,9 +189,8 @@ class GeminiEmbeddingSetup:
         category_classification_result = self.text_embedding_classification_result(paper_vector, self.CATEGORY_EMBEDDINGS)
 
         if GeminiEmbeddingSetup.SINGLE_CLASSIFICATION:
-            best_labels = [labels[np.argmax([category_classification_result[label] for label in labels])]]
-            if category_classification_result[best_labels[0]] < GeminiEmbeddingSetup.CLASSIFICATION_THRESHOLD:
-                best_labels = [] # none of them, but this way only selects top 1 and >= threshold
+            best_label = max(category_classification_result, key=category_classification_result.get)
+            best_labels = [best_label] if category_classification_result[best_label] >= self.CLASSIFICATION_THRESHOLD else []
         else:
             # other approach using threshold
             # >1 can be classified into
