@@ -36,7 +36,7 @@ from scholar_scout.email_client import EmailClient
 from scholar_scout.config import (
     AppConfig,
     EmailConfig,
-    PerplexityConfig,
+    GeminiConfig,
     ResearchTopic,
     SlackConfig,
     load_config,
@@ -49,8 +49,10 @@ def test_extract_and_classify_papers(mocker):
     # Create test config using Pydantic models
     email_config = EmailConfig(username="test@example.com", password="test")
     slack_config = SlackConfig(api_token="test-token", default_channel="#scholar-scout-default")
-    perplexity_config = PerplexityConfig(api_key="test-key")
-    
+    gemini_config = GeminiConfig(api_key="test-key",
+                                 gen_ai_model="gemini-2.5-flash",
+                                 embedding_model="gemini-embedding-001")
+
     research_topics = [
         ResearchTopic(
             name="LLM Inference",
@@ -69,7 +71,7 @@ def test_extract_and_classify_papers(mocker):
     config = AppConfig(
         email=email_config,
         slack=slack_config,
-        perplexity=perplexity_config,
+        gemini=gemini_config,
         research_topics=research_topics
     )
 
@@ -94,25 +96,21 @@ def test_extract_and_classify_papers(mocker):
     # Set up email structure
     email_message.walk.return_value = [email_part]
 
-    # Create mock response from Perplexity API
+    # Create mock response from Gemini API (uses .text, not .choices)
     mock_response = mocker.Mock()
-    mock_response.choices = [
-        mocker.Mock(
-            message=mocker.Mock(
-                content="""{
-                    "title": "Efficient LLM Inference on Serverless Platforms",
-                    "authors": ["John Doe", "Jane Smith"],
-                    "venue": "SOSP 2024",
-                    "link": "http://example.com/paper",
-                    "abstract": "This paper presents novel techniques for optimizing LLM inference in serverless environments.",
-                    "relevant_topics": ["LLM Inference", "Serverless Computing"]
-                }"""
-            )
-        )
-    ]
+    mock_response.text = """{
+        "authors": ["John Doe", "Jane Smith"],
+        "venue": "SOSP 2024"
+    }"""
 
-    # Mock the OpenAI/Perplexity API call
-    mocker.patch("scholar_scout.classifier.OpenAI").return_value.chat.completions.create.return_value = mock_response
+    # Mock genai.Client and .models.generate_content()
+    mocker.patch("scholar_scout.classifier.genai.Client").return_value.models.generate_content.return_value = mock_response
+
+    # Mock GeminiEmbeddingSetup.gemini_embedding_classify to return matching topic names
+    mocker.patch(
+        "scholar_scout.classifier.GeminiEmbeddingSetup.gemini_embedding_classify",
+        return_value=["LLM Inference", "Serverless Computing"]
+    )
 
     # Initialize classifier with test config
     classifier = ScholarClassifier(config)
@@ -147,15 +145,17 @@ class TestScholarClassifier(TestCase):
         env_path = os.path.join(os.path.dirname(__file__), ".env.test")
         if not load_dotenv(env_path, override=True):
             # For CI environment, ensure required env vars are set
-            required_vars = ["GMAIL_USERNAME", "GMAIL_APP_PASSWORD", "PPLX_API_KEY"]
+            required_vars = ["GMAIL_USERNAME", "GMAIL_APP_PASSWORD", "GEMINI_API_KEY"]
             missing_vars = [var for var in required_vars if not os.getenv(var)]
             if missing_vars:
                 raise RuntimeError(f"Missing required environment variables: {missing_vars}")
         config_path = os.path.join(os.path.dirname(__file__), "test_config.yml")
         self.config = load_config(config_path)
 
-    @mock.patch("scholar_scout.classifier.OpenAI")
-    def test_classify_papers(self, mock_openai_class):
+    @mock.patch("scholar_scout.classifier.GeminiEmbeddingSetup.gemini_embedding_classify",
+                return_value=["LLM Inference", "Serverless Computing"])
+    @mock.patch("scholar_scout.classifier.genai.Client")
+    def test_classify_papers(self, mock_gemini_client, mock_embedding_classify):
         """Test paper classification with unittest mocks."""
         # Set up mock email with Google Scholar format
         email_message = mock.Mock()
@@ -182,27 +182,17 @@ class TestScholarClassifier(TestCase):
 
         email_message.walk.return_value = [email_part]
 
-        # Set up OpenAI client mock
+        # Set up Google Generative AI client mock
         mock_client = mock.Mock()
-        mock_openai_class.return_value = mock_client
+        mock_gemini_client.return_value = mock_client
 
-        # Create mock API response
+        # Create mock API response (Gemini uses .text, not .choices)
         mock_response = mock.Mock()
-        mock_response.choices = [
-            mock.Mock(
-                message=mock.Mock(
-                    content="""{
-                        "title": "Efficient LLM Inference on Serverless Platforms",
-                        "authors": ["John Doe", "Jane Smith"],
-                        "venue": "SOSP 2024",
-                        "link": "http://example.com/paper",
-                        "abstract": "This paper presents novel techniques for optimizing LLM inference in serverless environments.",
-                        "relevant_topics": ["LLM Inference", "Serverless Computing"]
-                    }"""
-                )
-            )
-        ]
-        mock_client.chat.completions.create.return_value = mock_response
+        mock_response.text = """{
+            "authors": ["John Doe", "Jane Smith"],
+            "venue": "SOSP 2024"
+        }"""
+        mock_client.models.generate_content.return_value = mock_response
 
         # Execute test
         classifier = ScholarClassifier(self.config)

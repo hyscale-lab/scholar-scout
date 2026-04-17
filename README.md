@@ -21,7 +21,7 @@ Create a `.env` file with:
 ```
 GMAIL_USERNAME=your.email@gmail.com
 GMAIL_APP_PASSWORD=your-app-specific-password
-PPLX_API_KEY=your-perplexity-api-key
+GEMINI_API_KEY=your-gemini-api-key
 SLACK_API_TOKEN=your-slack-api-token
 ```
 

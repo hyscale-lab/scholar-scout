@@ -11,9 +11,10 @@ slack:
     scholar-scout-llm: ["LLM Inference"]
     scholar-scout-serverless: ["Serverless Computing"]
 
-perplexity:
-  api_key: ${PPLX_API_KEY}
-  model: "sonar-pro"
+gemini:
+  api_key: ${GEMINI_API_KEY}
+  gen_ai_model: "gemini-2.5-flash"
+  embedding_model: "gemini-embedding-001"
 
 research_topics:
   - name: "LLM Inference"

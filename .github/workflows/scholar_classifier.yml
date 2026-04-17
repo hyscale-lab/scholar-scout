@@ -31,6 +31,5 @@ jobs:
         GMAIL_USERNAME: ${{ secrets.GMAIL_USERNAME }}
         GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
         SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}
-        PPLX_API_KEY: ${{ secrets.PPLX_API_KEY }}
-        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        GEMINI_API_KEY: ${{ secrets.GOOGLE_CREDENTIALS }}
       run: python scripts/run_classifier.py
