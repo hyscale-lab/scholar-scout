@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class GeminiEmbeddingSetup:
     CLASSIFICATION_THRESHOLD = 0.80
-    SINGLE_CLASSIFICATION = True
+    SINGLE_CLASSIFICATION = False
     DEBUG = False
 
     NOISE = "NONSENSE GARBAGE NEGATIVE"
