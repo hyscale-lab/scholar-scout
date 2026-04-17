@@ -24,6 +24,10 @@ research_topics:
       - "@test2"
     slack_channel: "#scholar-scout-llm"
     description: "Test LLM inference research"
+    taxonomy:
+      - "Large language model inference speed and latency optimization"
+      - "LLM serving throughput and tokens per second"
+      - "Model quantization and accuracy trade-offs during inference"
 
   - name: "Serverless Computing"
     keywords: ["serverless", "faas", "function-as-a-service", "cloud"]
@@ -32,3 +36,7 @@ research_topics:
       - "@test4"
     slack_channel: "#scholar-scout-serverless"
     description: "Test serverless computing research"
+    taxonomy:
+      - "Serverless computing architecture and FaaS execution"
+      - "Cold start latency and function warm-up strategies"
+      - "Auto-scaling and elasticity in serverless environments"

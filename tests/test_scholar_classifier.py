@@ -58,13 +58,21 @@ def test_extract_and_classify_papers(mocker):
             name="LLM Inference",
             keywords=["llm", "inference"],
             slack_users=["@test1"],
-            description="LLM inference research"
+            description="LLM inference research",
+            taxonomy=[
+                "Large language model inference speed and latency optimization",
+                "LLM serving throughput and tokens per second",
+            ]
         ),
         ResearchTopic(
             name="Serverless Computing",
             keywords=["serverless"],
             slack_users=["@test2"],
-            description="Serverless computing research"
+            description="Serverless computing research",
+            taxonomy=[
+                "Serverless computing architecture and FaaS execution",
+                "Cold start latency and function warm-up strategies",
+            ]
         )
     ]
     
