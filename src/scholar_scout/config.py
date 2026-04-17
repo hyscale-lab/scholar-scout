@@ -8,7 +8,7 @@ and provides type hints for better code completion and analysis.
 
 import os
 from string import Template
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 import yaml
 from pydantic import BaseModel, Field
@@ -29,7 +29,7 @@ class SlackConfig(BaseModel):
 
 class GeminiConfig(BaseModel):
     """Gemini AI client configuration."""
-    api_key: str
+    api_key: Union[str, dict]
     gen_ai_model: str = "gemini-2.5-flash"
     embedding_model: str = "gemini-embedding-001"
 
