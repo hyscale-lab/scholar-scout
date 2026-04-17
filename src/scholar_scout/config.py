@@ -68,6 +68,4 @@ def load_config(config_file: str = "config/config.yml") -> AppConfig:
     config_str = template.safe_substitute(os.environ)
     config_data = yaml.safe_load(config_str)
 
-    print(config_data)  # Debug print to verify loaded configuration
-
     return AppConfig(**config_data)
