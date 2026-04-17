@@ -36,9 +36,12 @@ class ScholarClassifier:
         """
         self.config = config
 
-        self.gemini_client = genai.Client(
-            api_key=config.gemini.api_key
-        )
+        if isinstance(config.gemini.api_key, dict):
+            from google.oauth2 import service_account
+            credentials = service_account.Credentials.from_service_account_info(config.gemini.api_key)
+            self.gemini_client = genai.Client(credentials=credentials)
+        else:
+            self.gemini_client = genai.Client(api_key=config.gemini.api_key)
 
         self.gemini_embedding_model = GeminiEmbeddingSetup(config, self.gemini_client)
 
