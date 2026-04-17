@@ -35,7 +35,7 @@ class TestSlackNotifier(unittest.TestCase):
         env_path = os.path.join(os.path.dirname(__file__), ".env.test")
         if not load_dotenv(env_path, override=True):
             # For CI environment, ensure required env vars are set
-            required_vars = ["GMAIL_USERNAME", "GMAIL_APP_PASSWORD", "PPLX_API_KEY"]
+            required_vars = ["GMAIL_USERNAME", "GMAIL_APP_PASSWORD", "GEMINI_API_KEY"]
             missing_vars = [var for var in required_vars if not os.getenv(var)]
             if missing_vars:
                 raise RuntimeError(f"Missing required environment variables: {missing_vars}")

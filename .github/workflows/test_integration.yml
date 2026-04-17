@@ -29,15 +29,13 @@ jobs:
         echo "GMAIL_USERNAME=${{ secrets.GMAIL_USERNAME }}" >> .env
         echo "GMAIL_APP_PASSWORD=${{ secrets.GMAIL_APP_PASSWORD }}" >> .env
         echo "SLACK_API_TOKEN=${{ secrets.SLACK_API_TOKEN }}" >> .env
-        echo "PPLX_API_KEY=${{ secrets.PPLX_API_KEY }}" >> .env
-        echo "GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}" >> .env
+        echo "GEMINI_API_KEY: ${{ secrets.GOOGLE_CREDENTIALS }}" >> .env
         
     - name: Run tests
       env:
         GMAIL_USERNAME: ${{ secrets.GMAIL_USERNAME }}
         GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
-        PPLX_API_KEY: ${{ secrets.PPLX_API_KEY }}
         SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}
-        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        GEMINI_API_KEY: ${{ secrets.GOOGLE_CREDENTIALS }}
       run: |
         python -m unittest tests/test_integration.py -v 
