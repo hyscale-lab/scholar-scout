@@ -38,8 +38,8 @@ class ScholarClassifier:
 
         if isinstance(config.gemini.api_key, dict):
             from google.oauth2 import service_account
-            credentials = service_account.Credentials.from_service_account_info(config.gemini.api_key)
-            self.gemini_client = genai.Client(credentials=credentials)
+            credentials = service_account.Credentials.from_service_account_info(config.gemini.api_key, scopes=['https://www.googleapis.com/auth/cloud-platform'])
+            self.gemini_client = genai.Client(vertexai=True, project=credentials.project_id, location="global", credentials=credentials)
         else:
             self.gemini_client = genai.Client(api_key=config.gemini.api_key)
 
