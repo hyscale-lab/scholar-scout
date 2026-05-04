@@ -1,0 +1,79 @@
+gemini:
+  api_key: ${GEMINI_API_KEY}
+  gen_ai_model: "gemini-2.5-flash"
+  embedding_model: "gemini-embedding-001"
+
+slack:
+  api_token: ${SLACK_API_TOKEN}
+  default_channel_id: "C0B1ULL4FJM" ## use "C0B1DQV79LN" in prod, "C0B1ULL4FJM" for dev only
+
+conferences:
+  urls:
+    - "https://dblp.org/db/conf/osdi/index.html"
+    - "https://dblp.org/db/conf/sosp/index.html"
+    - "https://dblp.org/db/conf/asplos/index.html"
+    - "https://dblp.org/db/conf/nsdi/index.html"
+    - "https://dblp.org/db/conf/eurosys/index.html"
+    - "https://dblp.org/db/conf/cloud/index.html"
+    - "https://dblp.org/db/conf/mlsys/index.html"
+    - "https://dblp.org/db/conf/isca/index.html"
+    - "https://dblp.org/db/conf/micro/index.html"
+    - "https://dblp.org/db/conf/hpca/index.html"
+    - "https://dblp.org/db/conf/hotos/index.html"
+    - "https://dblp.org/db/conf/hotcarbon/index.html"
+    - "https://dblp.org/db/conf/words2/index.html"
+    - "https://dblp.org/db/conf/sesame/index.html"
+  max_volumes: 5
+  volume_date_filter_days: 30
+  semantic_scholar_api_key: ${SEMANTIC_SCHOLAR_API_KEY}
+
+research_topics:
+  - name: "LLM Inference"
+    keywords: ["llm", "inference", "serving", "latency", "throughput"]
+    description: >-
+      Research related to LLM inference serving systems, architectures, and
+      applications, including latency optimization, throughput improvement,
+      and deployment strategies
+    taxonomy:
+      - "Large language model inference speed and latency optimization"
+      - "LLM serving throughput and tokens per second"
+      - "Model quantization and accuracy trade-offs during inference"
+      - "Inference performance efficiency of generative transformers"
+      - "Optimizing GPU memory bandwidth for LLM deployment"
+
+  - name: "Serverless Computing"
+    keywords: ["serverless", "faas", "function-as-a-service", "cloud"]
+    description: >-
+      Research on serverless computing platforms, Function-as-a-Service (FaaS),
+      and cloud-native architectures
+    taxonomy:
+      - "Serverless computing architecture and FaaS execution"
+      - "Cold start latency and function warm-up strategies"
+      - "Auto-scaling and elasticity in serverless environments"
+      - "Event-driven cloud function performance and overhead"
+      - "Managing stateless microservices in serverless platforms"
+
+  - name: "VLM Inference"
+    keywords: ["vlm", "vision-language", "vision language model", "multimodal", "inference", "serving", "latency", "throughput"]
+    description: >-
+      Research on VLM inference and serving systems, including vision-language
+      model deployment, latency optimization, throughput improvement, and
+      multimodal inference pipelines
+    taxonomy:
+      - "Vision-language model deployment and multimodal serving systems"
+      - "Optimizing latency in multimodal inference pipelines and visual encoders"
+      - "Throughput improvement for high-concurrency VLM serving workloads"
+      - "Visual token compression and prefix caching for efficient VLM inference"
+      - "Hardware-aware acceleration of cross-modal attention in VLM deployment"
+
+  - name: "Sustainable Computing"
+    keywords: ["green computing", "energy efficiency", "carbon footprint"]
+    description: >-
+      Research on reducing the environmental impact of computing systems,
+      including energy efficiency and carbon footprint reduction
+    taxonomy:
+      - "Energy-efficient computing for same-outcome performance"
+      - "Reducing carbon footprint of data center workloads"
+      - "Green computing and power usage effectiveness PUE"
+      - "Cost-effective resource allocation for sustainable power"
+      - "Minimizing energy consumption without performance degradation"
