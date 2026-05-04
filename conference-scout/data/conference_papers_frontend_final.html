@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conference Papers Explorer</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f4f6fb;
+      --surface: #ffffff;
+      --primary: #4f46e5;
+      --primary-light: #e0e7ff;
+      --primary-dark: #3730a3;
+      --text: #1e293b;
+      --text-secondary: #64748b;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,.08);
+      --cat-bg: #fef3c7;
+      --cat-text: #92400e;
+      --cat-active-bg: #f59e0b;
+      --cat-active-text: #fff;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ---- Header ---- */
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      padding: 2.5rem 1.5rem 2rem;
+      text-align: center;
+    }
+    header h1 { font-size: 1.85rem; font-weight: 700; letter-spacing: -.02em; }
+    header p  { margin-top: .4rem; font-size: .95rem; opacity: .85; }
+
+    /* ---- Container ---- */
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 1.25rem; }
+
+    /* ---- Controls Bar ---- */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: -1.6rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Search row */
+    .search-row {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      padding: 1rem 1.25rem;
+    }
+    .search-row label {
+      display: block;
+      font-size: .75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--text-secondary);
+      margin-bottom: .45rem;
+    }
+    .search-row input {
+      width: 100%;
+      padding: .55rem .75rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: .9rem;
+      color: var(--text);
+      background: var(--bg);
+      transition: border-color .2s;
+      outline: none;
+    }
+    .search-row input:focus { border-color: var(--primary); }
+
+    /* Filter sections */
+    .filter-section {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      padding: 1rem 1.25rem;
+    }
+    .filter-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: .6rem;
+    }
+    .filter-header span {
+      font-size: .75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--text-secondary);
+    }
+    .clear-btn {
+      font-size: .72rem;
+      color: var(--primary);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      padding: .15rem .4rem;
+      border-radius: 4px;
+      transition: background .15s;
+    }
+    .clear-btn:hover { background: var(--primary-light); }
+    .clear-btn.hidden { visibility: hidden; }
+
+    .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .45rem;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      font-size: .78rem;
+      font-weight: 600;
+      padding: .3rem .7rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all .15s;
+      border: 1.5px solid transparent;
+      user-select: none;
+    }
+
+    /* Conference chips */
+    .chip-conf {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      border-color: var(--primary-light);
+    }
+    .chip-conf:hover {
+      border-color: var(--primary);
+    }
+    .chip-conf.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* Category chips */
+    .chip-cat {
+      background: var(--cat-bg);
+      color: var(--cat-text);
+      border-color: var(--cat-bg);
+    }
+    .chip-cat:hover {
+      border-color: var(--cat-active-bg);
+    }
+    .chip-cat.active {
+      background: var(--cat-active-bg);
+      color: var(--cat-active-text);
+      border-color: var(--cat-active-bg);
+    }
+
+    .chip .chip-count {
+      font-size: .68rem;
+      opacity: .7;
+    }
+
+    /* ---- Stats ---- */
+    .stats {
+      margin-top: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+    .stats span { font-size: .88rem; color: var(--text-secondary); }
+    .stats .count { font-weight: 700; color: var(--primary); }
+
+    /* ---- Paper Grid ---- */
+    .paper-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.1rem;
+      margin-top: 1rem;
+      padding-bottom: 3rem;
+    }
+
+    .paper-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.35rem 1.4rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow .2s, transform .2s;
+      border: 1px solid var(--border);
+    }
+    .paper-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .paper-card .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4rem;
+      margin-bottom: .7rem;
+    }
+    .badge {
+      display: inline-block;
+      font-size: .7rem;
+      font-weight: 600;
+      padding: .2rem .6rem;
+      border-radius: 999px;
+      letter-spacing: .02em;
+    }
+    .badge-conference {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+    }
+    .badge-category {
+      background: var(--cat-bg);
+      color: var(--cat-text);
+    }
+
+    .paper-card h3 {
+      font-size: .98rem;
+      font-weight: 600;
+      line-height: 1.45;
+      margin-bottom: .55rem;
+    }
+    .paper-card h3 a {
+      color: var(--text);
+      text-decoration: none;
+    }
+    .paper-card h3 a:hover {
+      color: var(--primary);
+      text-decoration: underline;
+    }
+
+    .paper-card .authors {
+      font-size: .82rem;
+      color: var(--text-secondary);
+      flex: 1;
+    }
+
+    .paper-card .link-row {
+      margin-top: .85rem;
+      padding-top: .65rem;
+      border-top: 1px solid var(--border);
+    }
+    .paper-card .link-row a {
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--primary);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+    }
+    .paper-card .link-row a:hover { text-decoration: underline; }
+
+    .no-results {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-secondary);
+      font-size: 1rem;
+    }
+
+    /* ---- Upload prompt ---- */
+    .upload-area {
+      margin-top: 2rem;
+      text-align: center;
+      padding: 3rem 1.5rem;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+    .upload-area:hover { border-color: var(--primary); background: var(--primary-light); }
+    .upload-area p { color: var(--text-secondary); font-size: .95rem; }
+    .upload-area .big { font-size: 2rem; margin-bottom: .5rem; }
+
+    #fileInput { display: none; }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 640px) {
+      header h1 { font-size: 1.35rem; }
+      .paper-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Conference Papers Explorer</h1>
+  <p>Browse, search and filter research papers across conferences</p>
+</header>
+
+<div class="container">
+  <!-- Controls -->
+  <div class="controls" id="controls" style="display:none;">
+    <div class="search-row">
+      <label for="searchInput">Search</label>
+      <input type="text" id="searchInput" placeholder="Search by title or author...">
+    </div>
+    <div class="filter-section">
+      <div class="filter-header">
+        <span>Conferences</span>
+        <button class="clear-btn hidden" id="clearConf" onclick="clearFilter('conf')">Clear</button>
+      </div>
+      <div class="chip-group" id="confChips"></div>
+    </div>
+    <div class="filter-section">
+      <div class="filter-header">
+        <span>Categories</span>
+        <button class="clear-btn hidden" id="clearCat" onclick="clearFilter('cat')">Clear</button>
+      </div>
+      <div class="chip-group" id="catChips"></div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats" id="stats" style="display:none;">
+    <span>Showing <span class="count" id="visibleCount">0</span> of <span class="count" id="totalCount">0</span> papers</span>
+  </div>
+
+  <!-- Upload Area -->
+  <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+    <div class="big">&#128196;</div>
+    <p><strong>Click to load a JSON file</strong><br>or drag &amp; drop it here</p>
+  </div>
+  <input type="file" id="fileInput" accept=".json">
+
+  <!-- Paper Grid -->
+  <div class="paper-grid" id="paperGrid"></div>
+</div>
+
+<script>
+  let papers = [];
+  const selectedConfs = new Set();
+  const selectedCats  = new Set();
+
+  const $ = id => document.getElementById(id);
+  const uploadArea  = $('uploadArea');
+  const fileInput   = $('fileInput');
+  const controls    = $('controls');
+  const stats       = $('stats');
+  const searchInput = $('searchInput');
+  const confChips   = $('confChips');
+  const catChips    = $('catChips');
+  const paperGrid   = $('paperGrid');
+
+  /* ---- File loading ---- */
+  fileInput.addEventListener('change', e => { if (e.target.files[0]) loadFile(e.target.files[0]); });
+
+  uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.style.borderColor = 'var(--primary)'; });
+  uploadArea.addEventListener('dragleave', () => { uploadArea.style.borderColor = ''; });
+  uploadArea.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadArea.style.borderColor = '';
+    if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+  });
+
+  function loadFile(file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (!Array.isArray(data)) throw new Error('JSON must be an array');
+        papers = data;
+        init();
+      } catch (err) {
+        alert('Invalid JSON file: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  /* ---- Initialise UI ---- */
+  function init() {
+    uploadArea.style.display = 'none';
+    controls.style.display = '';
+    stats.style.display = '';
+    selectedConfs.clear();
+    selectedCats.clear();
+
+    // Count papers per conference / category
+    const confCounts = {};
+    const catCounts  = {};
+    papers.forEach(p => {
+      confCounts[p.conference] = (confCounts[p.conference] || 0) + 1;
+      const cats = Array.isArray(p.category) ? p.category : [p.category];
+      cats.forEach(c => { catCounts[c] = (catCounts[c] || 0) + 1; });
+    });
+
+    const conferences = Object.keys(confCounts).sort();
+    const categories  = Object.keys(catCounts).sort();
+
+    confChips.innerHTML = conferences.map(c =>
+      `<span class="chip chip-conf" data-value="${esc(c)}" onclick="toggleChip(this,'conf')">${esc(c)} <span class="chip-count">(${confCounts[c]})</span></span>`
+    ).join('');
+
+    catChips.innerHTML = categories.map(c =>
+      `<span class="chip chip-cat" data-value="${esc(c)}" onclick="toggleChip(this,'cat')">${esc(c)} <span class="chip-count">(${catCounts[c]})</span></span>`
+    ).join('');
+
+    $('totalCount').textContent = papers.length;
+    render();
+  }
+
+  /* ---- Chip toggle ---- */
+  function toggleChip(el, type) {
+    const val = el.dataset.value;
+    const set = type === 'conf' ? selectedConfs : selectedCats;
+
+    if (set.has(val)) {
+      set.delete(val);
+      el.classList.remove('active');
+    } else {
+      set.add(val);
+      el.classList.add('active');
+    }
+
+    // Show / hide clear button
+    const clearBtn = type === 'conf' ? $('clearConf') : $('clearCat');
+    clearBtn.classList.toggle('hidden', set.size === 0);
+
+    render();
+  }
+
+  function clearFilter(type) {
+    const set       = type === 'conf' ? selectedConfs : selectedCats;
+    const container = type === 'conf' ? confChips : catChips;
+    set.clear();
+    container.querySelectorAll('.chip.active').forEach(c => c.classList.remove('active'));
+    (type === 'conf' ? $('clearConf') : $('clearCat')).classList.add('hidden');
+    render();
+  }
+
+  /* ---- Render ---- */
+  function render() {
+    const q = searchInput.value.toLowerCase().trim();
+
+    const filtered = papers.filter(p => {
+      if (selectedConfs.size > 0 && !selectedConfs.has(p.conference)) return false;
+      if (selectedCats.size  > 0) {
+        const cats = Array.isArray(p.category) ? p.category : [p.category];
+        if (!cats.some(c => selectedCats.has(c))) return false;
+      }
+      if (q) {
+        const hay = (p.paper_title + ' ' + p.authors).toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+
+    $('visibleCount').textContent = filtered.length;
+
+    if (filtered.length === 0) {
+      paperGrid.innerHTML = '<div class="no-results">No papers match your filters.</div>';
+      return;
+    }
+
+    paperGrid.innerHTML = filtered.map(p => `
+      <div class="paper-card">
+        <div class="badges">
+          <span class="badge badge-conference">${esc(p.conference)}</span>
+          ${(Array.isArray(p.category) ? p.category : [p.category]).map(c => `<span class="badge badge-category">${esc(c)}</span>`).join('')}
+        </div>
+        <h3><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.paper_title)}</a></h3>
+        <div class="authors">${esc(p.authors)}</div>
+        <div class="link-row">
+          <a href="${esc(p.url)}" target="_blank" rel="noopener">View paper &#8599;</a>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  /* ---- Listeners ---- */
+  searchInput.addEventListener('input', render);
+
+  /* ---- Utility ---- */
+  function esc(s) {
+    if (!s) return '';
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+</script>
+</body>
+</html>
