@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Papers Extractor — Combined DBLP Scraping + Abstract Enrichment Pipeline
+Papers Extractor — Combined dblp Scraping + Abstract Enrichment Pipeline
 
-Scrapes DBLP conference index pages, fetches paper metadata, filters by date,
+Scrapes dblp conference index pages, fetches paper metadata, filters by date,
 then attempts to fetch abstracts via Semantic Scholar. Outputs two files:
   1. Enriched papers (with abstracts) — ready for classification
   2. Unenriched papers (no abstract found) — for agentic AI to attempt scraping
@@ -28,9 +28,9 @@ from config import AppConfig, ConferencesConfig
 # Internal constants (not user-facing, not in config.yml)
 # ==============================================================================
 
-DBLP_BASE_URL = "https://dblp.org/"
-DBLP_HEADERS = {
-    "User-Agent": "DBLP-Scraper/1.0 (academic research; polite crawling)",
+dblp_BASE_URL = "https://dblp.org/"
+dblp_HEADERS = {
+    "User-Agent": "dblp-Scraper/1.0 (academic research; polite crawling)",
     "Accept": "application/xml, text/xml, */*",
 }
 SEMANTIC_SCHOLAR_BASE = "https://api.semanticscholar.org/graph/v1/paper"
@@ -38,19 +38,19 @@ MAX_RETRIES = 3
 RETRY_BACKOFF_BASE = 2  # seconds
 
 # Rate-limiting delays (internal, not in config.yml)
-DBLP_REQUEST_DELAY = 2.0
+dblp_REQUEST_DELAY = 2.0
 SEMANTIC_SCHOLAR_DELAY = 1.0
 
 logger = logging.getLogger(__name__)
 
 
 # ==============================================================================
-# DBLP Scraping Functions
+# dblp Scraping Functions
 # ==============================================================================
 
 
 def normalize_url_to_xml(url: str) -> str:
-    """Convert a DBLP HTML URL to its XML equivalent."""
+    """Convert a dblp HTML URL to its XML equivalent."""
     url = url.strip()
     if url.endswith(".html"):
         url = url[:-5] + ".xml"
@@ -63,23 +63,23 @@ def normalize_url_to_xml(url: str) -> str:
 
 
 def relative_url_to_absolute_xml(relative_path: str) -> str:
-    """Convert a relative DBLP path to an absolute XML URL."""
+    """Convert a relative dblp path to an absolute XML URL."""
     relative_path = relative_path.lstrip("/")
     if relative_path.endswith(".html"):
         relative_path = relative_path[:-5] + ".xml"
     elif not relative_path.endswith(".xml"):
         relative_path += ".xml"
-    return urljoin(DBLP_BASE_URL, relative_path)
+    return urljoin(dblp_BASE_URL, relative_path)
 
 
 def dblp_fetch(url: str, session: requests.Session) -> Optional[str]:
-    """Fetch a DBLP URL with retry logic and rate limiting."""
-    time.sleep(DBLP_REQUEST_DELAY)
+    """Fetch a dblp URL with retry logic and rate limiting."""
+    time.sleep(dblp_REQUEST_DELAY)
 
     attempt = 0
     while attempt < MAX_RETRIES:
         try:
-            response = session.get(url, headers=DBLP_HEADERS, timeout=30)
+            response = session.get(url, headers=dblp_HEADERS, timeout=30)
 
             if response.status_code == 200:
                 return response.text
@@ -138,7 +138,7 @@ def fetch_conference_volumes(index_url: str, session: requests.Session,
     """Fetch conference index and return (venue_name, volumes_list).
 
     Filters volumes by their proceedings mdate — only returns volumes
-    whose mdate is within volume_date_filter_days (i.e., newly added to DBLP).
+    whose mdate is within volume_date_filter_days (i.e., newly added to dblp).
     """
     xml_url = normalize_url_to_xml(index_url)
     logger.info(f"Fetching conference index: {xml_url}")
@@ -380,9 +380,9 @@ def run_pipeline(conferences_config: ConferencesConfig,
     else:
         logger.info("Semantic Scholar API key: not set (free tier)")
 
-    # ========== PHASE 1: DBLP Scraping ==========
+    # ========== PHASE 1: dblp Scraping ==========
     logger.info("=" * 60)
-    logger.info("PHASE 1: Scraping DBLP for papers")
+    logger.info("PHASE 1: Scraping dblp for papers")
     logger.info("=" * 60)
 
     all_papers = []

@@ -3,7 +3,7 @@
 Conference Scout Orchestrator — Runs the full pipeline end-to-end.
 
 Steps:
-    1. Extract papers from DBLP + fetch abstracts via Semantic Scholar
+    1. Extract papers from dblp + fetch abstracts via Semantic Scholar
     2. (Agent) Enrich unenriched papers — placeholder for OpenClaw API
     3. Classify papers via Gemini embeddings
     4. Upload classified_papers.json to Slack
@@ -48,11 +48,11 @@ logger = logging.getLogger(__name__)
 
 
 # ===========================================================================
-# Step 1 — Extract papers from DBLP + enrich with abstracts
+# Step 1 — Extract papers from dblp + enrich with abstracts
 # ===========================================================================
 def step_extract(config):
     logger.info("=" * 60)
-    logger.info("STEP 1: Extracting papers from DBLP")
+    logger.info("STEP 1: Extracting papers from dblp")
     logger.info("=" * 60)
 
     from papers_extractor import run_pipeline
