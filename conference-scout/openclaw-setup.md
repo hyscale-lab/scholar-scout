@@ -127,7 +127,7 @@ Host Machine                         Docker Container (openclaw-gateway)
 run_pipeline.py
   │
   ├─ Step 1: papers_extractor.py
-  │    → Scrapes DBLP, fetches abstracts via Semantic Scholar
+  │    → Scrapes dblp, fetches abstracts via Semantic Scholar
   │    → Writes papers_enriched.json + papers_unenriched.json
   │
   ├─ Step 2: openclaw_chat_completions.py
@@ -237,7 +237,7 @@ The Python pipeline ([`openclaw_chat_completions.py`](src/conference_scout/openc
 | [`config/config.yml`](config/config.yml) | Conference URLs, research topics, Slack/Gemini config |
 | [`prompt/openclaw_prompt.md`](prompt/openclaw_prompt.md) | Instructions sent to the OpenClaw agent |
 | [`scripts/run_pipeline.py`](scripts/run_pipeline.py) | Full pipeline orchestrator (all 4 steps) |
-| [`src/conference_scout/papers_extractor.py`](src/conference_scout/papers_extractor.py) | Step 1: DBLP scraping + Semantic Scholar abstracts |
+| [`src/conference_scout/papers_extractor.py`](src/conference_scout/papers_extractor.py) | Step 1: dblp scraping + Semantic Scholar abstracts |
 | [`src/conference_scout/openclaw_chat_completions.py`](src/conference_scout/openclaw_chat_completions.py) | Step 2: OpenClaw agent (fire task, poll, nudge) |
 | [`src/conference_scout/classify_papers.py`](src/conference_scout/classify_papers.py) | Step 3: Gemini embedding classification |
 | [`src/conference_scout/embedding_classification.py`](src/conference_scout/embedding_classification.py) | Embedding + cosine similarity logic |
