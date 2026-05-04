@@ -22,7 +22,7 @@ from urllib.parse import quote, urljoin
 
 import requests
 
-from config import AppConfig, ConferencesConfig
+from config import ConferencesConfig, load_config
 
 # ==============================================================================
 # Internal constants (not user-facing, not in config.yml)
@@ -395,7 +395,7 @@ def run_pipeline(conferences_config: ConferencesConfig,
             volume_date_filter_days=conferences_config.volume_date_filter_days,
         )
         if not volumes:
-            logger.info(f"  No new volumes found, skipping")
+            logger.info("  No new volumes found, skipping")
             continue
 
         for volume in volumes:
@@ -415,7 +415,7 @@ def run_pipeline(conferences_config: ConferencesConfig,
 
     for i, paper in enumerate(all_papers):
         title_short = paper.get("title", "")[:60]
-        logger.info(f"[{i+1}/{total}] {title_short}...")
+        logger.info(f"[{i + 1}/{total}] {title_short}...")
 
         time.sleep(SEMANTIC_SCHOLAR_DELAY)
         abstract = fetch_abstract(paper, session, ss_api_key)
@@ -426,7 +426,7 @@ def run_pipeline(conferences_config: ConferencesConfig,
             logger.info(f"  ✓ Abstract found ({len(abstract)} chars)")
         else:
             unenriched_papers.append(paper)
-            logger.info(f"  ✗ No abstract")
+            logger.info("  ✗ No abstract")
 
     # ========== PHASE 3: Write Outputs ==========
     logger.info("\n" + "=" * 60)

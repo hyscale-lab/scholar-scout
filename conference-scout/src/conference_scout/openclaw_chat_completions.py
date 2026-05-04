@@ -24,13 +24,8 @@ import requests
 
 logger = logging.getLogger(__name__)
 
-# --- Config (change OPENCLAW_URL if the container is remote) ---
-OPENCLAW_URL = "http://127.0.0.1:18789/v1/chat/completions"
-OPENCLAW_TOKEN = "b3f10c046f148490f021df404cb987984eea002632bb28462f68222188a705fe"
-HEADERS = {
-    "Authorization": f"Bearer {OPENCLAW_TOKEN}",
-    "Content-Type": "application/json",
-}
+# --- Config defaults ---
+_DEFAULT_OPENCLAW_URL = "http://127.0.0.1:18789/v1/chat/completions"
 
 MODEL = "openclaw:main"
 
@@ -39,19 +34,38 @@ NUDGE_AFTER = 60       # seconds before nudging (give agent time to use tools)
 MAX_TOTAL_TIME = 900   # 15 minutes max
 
 
+def _get_url() -> str:
+    """Get the OpenClaw API URL from environment or use default."""
+    return os.environ.get("OPENCLAW_URL", _DEFAULT_OPENCLAW_URL)
+
+
+def _get_headers() -> dict:
+    """Build request headers using the OPENCLAW_TOKEN env var."""
+    token = os.environ.get("OPENCLAW_TOKEN", "")
+    if not token:
+        logger.warning("OPENCLAW_TOKEN not set in environment.")
+    return {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+    }
+
+
 def _send_message(messages: list, session_id: str) -> str:
     """Send a chat completion request with session ID. Returns agent's text reply."""
+    url = _get_url()
     try:
         resp = requests.post(
-            OPENCLAW_URL,
-            headers=HEADERS,
+            url,
+            headers=_get_headers(),
             json={"model": MODEL, "user": session_id, "messages": messages},
             timeout=30,
         )
+        resp.raise_for_status()
         data = resp.json()
         return data.get("choices", [{}])[0].get("message", {}).get("content", "")
-    except (requests.Timeout, requests.ConnectionError):
-        return "(timeout)"
+    except (requests.RequestException, ValueError) as e:
+        logger.error(f"OpenClaw API error: {e}")
+        return "(error)"
 
 
 def _check_output_file(output_file: str) -> str | None:
@@ -92,7 +106,7 @@ def run_agent_enrichment(input_file: str, output_file: str, prompt_file: str) ->
     agent_output_path = f"data/{output_basename}"
 
     logger.info(f"Loaded {len(papers)} papers from {input_file}")
-    logger.info(f"Agent: {MODEL} @ {OPENCLAW_URL}")
+    logger.info(f"Agent: {MODEL} @ {_get_url()}")
     logger.info(f"Session: {session_id}")
     logger.info(f"Task: fetch abstracts → write to {agent_output_path}")
 
@@ -168,6 +182,9 @@ def run_agent_enrichment(input_file: str, output_file: str, prompt_file: str) ->
 # ==============================================================================
 
 def main():
+    """Run agent enrichment standalone."""
+    from dotenv import load_dotenv
+
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(message)s",
@@ -175,6 +192,8 @@ def main():
     )
 
     project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    load_dotenv(os.path.join(project_root, ".env"))
+
     data_dir = os.path.join(project_root, "data")
 
     input_file = os.path.join(data_dir, "papers_unenriched.json")

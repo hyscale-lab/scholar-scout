@@ -42,6 +42,7 @@ def load_papers(filepath: str) -> list:
 def validate_agent_enriched(filepath: str) -> list:
     """
     Load agent-enriched papers with format validation.
+
     Must be a JSON array of objects, each with at least "key" and "title".
     Skips malformed entries. Returns empty list if format is totally wrong.
     """
@@ -99,7 +100,7 @@ def classify_all_papers(papers: list, classifier: GeminiEmbeddingSetup,
     for i, paper in enumerate(papers):
         title = paper.get("title", "")
         title_short = title[:60]
-        logger.info(f"[{i+1}/{total}] Classifying: {title_short}...")
+        logger.info(f"[{i + 1}/{total}] Classifying: {title_short}...")
 
         # Build text for embedding
         text = build_classification_text(paper)
@@ -179,8 +180,7 @@ def run_classification(config: AppConfig,
         if not api_key or api_key.startswith("${"):
             api_key = os.environ.get("GEMINI_API_KEY", "")
         if not api_key:
-            logger.error("GEMINI_API_KEY not set. Add it to .env or export it.")
-            sys.exit(1)
+            raise RuntimeError("GEMINI_API_KEY not set. Add it to .env or export it.")
         client = genai.Client(api_key=api_key)
 
     classifier = GeminiEmbeddingSetup(config, client)
@@ -203,8 +203,7 @@ def run_classification(config: AppConfig,
                 f"({len(enriched)} enriched + {len(agent_enriched)} additional)")
 
     if not all_papers:
-        logger.error("No papers to classify. Check input files.")
-        sys.exit(1)
+        raise RuntimeError("No papers to classify. Check input files.")
 
     # Classify
     logger.info("=" * 60)
@@ -228,7 +227,7 @@ def run_classification(config: AppConfig,
     for r in results:
         for c in r["category"]:
             cat_counter[c] += 1
-    logger.info(f"  Category distribution:")
+    logger.info("  Category distribution:")
     for cat, count in cat_counter.most_common():
         logger.info(f"    {cat}: {count}")
 
@@ -256,11 +255,15 @@ if __name__ == "__main__":
 
     data_dir = os.path.join(project_root, "data")
 
-    run_classification(
-        config=config,
-        enriched_file=os.path.join(data_dir, "papers_enriched.json"),
-        agent_enriched_file=os.path.join(data_dir, "papers_agent_enriched.json"),
-        unenriched_file=os.path.join(data_dir, "papers_unenriched.json"),
-        output_file=os.path.join(data_dir, "classified_papers.json"),
-        minimal_output=True,
-    )
+    try:
+        run_classification(
+            config=config,
+            enriched_file=os.path.join(data_dir, "papers_enriched.json"),
+            agent_enriched_file=os.path.join(data_dir, "papers_agent_enriched.json"),
+            unenriched_file=os.path.join(data_dir, "papers_unenriched.json"),
+            output_file=os.path.join(data_dir, "classified_papers.json"),
+            minimal_output=True,
+        )
+    except RuntimeError as e:
+        logger.error(str(e))
+        sys.exit(1)

@@ -12,7 +12,7 @@ import os
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
-from config import AppConfig, SlackConfig
+from config import AppConfig
 
 logger = logging.getLogger(__name__)
 
@@ -31,9 +31,9 @@ class SlackNotifier:
         self.config = config
 
     def send_classified_papers(self, filepath: str) -> None:
-        """
-        Upload the classified papers JSON file to the default Slack channel,
-        pinging everyone in the channel.
+        """Upload the classified papers JSON file to the default Slack channel.
+
+        Pings everyone in the channel.
 
         Args:
             filepath: Path to the classified_papers.json file.
