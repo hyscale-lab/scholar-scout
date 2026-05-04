@@ -14,7 +14,12 @@
         "imaplib",
         "serverless",
         "arXiv",
-        "mdx"
+        "mdx",
+        "exfiltrate",
+        "Qwen",
+        "dblp",
+        "Pydantic",
+        "mdate"
     ],
     "ignorePaths": [
         "node_modules",
