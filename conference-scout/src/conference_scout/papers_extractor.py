@@ -84,7 +84,8 @@ def dblp_fetch(url: str, session: requests.Session) -> Optional[str]:
             if response.status_code == 200:
                 return response.text
             elif response.status_code == 429:
-                retry_after = int(response.headers.get("Retry-After", 10))
+                retry_after_val = response.headers.get("Retry-After", "10")
+                retry_after = int(retry_after_val) if str(retry_after_val).isdigit() else 10
                 retry_after = max(retry_after, 10)
                 logger.warning(f"Rate limited (429) for {url}. Waiting {retry_after}s...")
                 time.sleep(retry_after)
@@ -167,7 +168,7 @@ def fetch_conference_volumes(index_url: str, session: requests.Session,
         if url_elem is None or url_elem.text is None:
             continue
 
-        year = int(year_elem.text) if year_elem is not None and year_elem.text else 0
+        year = int(year_elem.text) if year_elem is not None and year_elem.text and year_elem.text.isdigit() else 0
         booktitle = booktitle_elem.text if booktitle_elem is not None else ""
 
         if not venue_name and booktitle:
@@ -297,7 +298,8 @@ def fetch_abstract_by_doi(doi_url: str, session: requests.Session, api_key: str)
             return None
         else:
             return None
-    except requests.exceptions.RequestException:
+    except requests.exceptions.RequestException as e:
+        logger.debug(f"Semantic Scholar DOI fetch failed: {e}")
         return None
 
 
@@ -321,7 +323,8 @@ def fetch_abstract_by_title(title: str, session: requests.Session, api_key: str)
             return None
         else:
             return None
-    except requests.exceptions.RequestException:
+    except requests.exceptions.RequestException as e:
+        logger.debug(f"Semantic Scholar title search failed: {e}")
         return None
 
 

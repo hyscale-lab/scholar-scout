@@ -100,9 +100,7 @@ def run_agent_enrichment(input_file: str, output_file: str, prompt_file: str) ->
         papers = json.load(f)
 
     session_id = f"paper-enrichment-{int(time.time())}"
-    output_basename = os.path.relpath(output_file, start=os.path.dirname(input_file))
-    # Normalize to forward slashes for the agent (running in Linux container)
-    output_basename = output_file.split("data/")[-1] if "data/" in output_file else os.path.basename(output_file)
+    output_basename = os.path.basename(output_file)
     agent_output_path = f"data/{output_basename}"
 
     logger.info(f"Loaded {len(papers)} papers from {input_file}")

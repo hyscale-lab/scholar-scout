@@ -5,7 +5,7 @@ gemini:
 
 slack:
   api_token: ${SLACK_API_TOKEN}
-  default_channel_id: "C0B1ULL4FJM" ## use "C0B1DQV79LN" in prod, "C0B1ULL4FJM" for dev only
+  default_channel_id: "C0B1DQV79LN"
 
 conferences:
   urls:
