@@ -102,7 +102,7 @@ def run_agent_enrichment(input_file: str, output_file: str, prompt_file: str) ->
 
     # Quick connectivity check (don't wait 15 min if agent is unreachable)
     try:
-        probe = requests.get(url.rsplit("/", 1)[0], timeout=5)
+        requests.get(url.rsplit("/", 1)[0], timeout=5)
     except requests.RequestException:
         logger.warning(f"OpenClaw API unreachable at {url} — skipping agent enrichment.")
         return False
