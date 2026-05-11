@@ -499,6 +499,23 @@
     d.textContent = s;
     return d.innerHTML;
   }
+
+  /* ---- Auto-load JSON ---- */
+  const AUTO_JSON = 'classified_papers.json'; // relative path to your JSON file
+
+  (async function autoLoad() {
+    try {
+      const res = await fetch(AUTO_JSON);
+      if (!res.ok) throw new Error(res.statusText);
+      const data = await res.json();
+      if (!Array.isArray(data)) throw new Error('JSON must be an array');
+      papers = data;
+      init();
+    } catch (e) {
+      console.warn('Auto-load failed (' + e.message + '), showing upload prompt.');
+      // Upload area stays visible as fallback
+    }
+  })();
 </script>
 </body>
 </html>

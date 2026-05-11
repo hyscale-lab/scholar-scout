@@ -93,11 +93,38 @@ def run_agent_enrichment(input_file: str, output_file: str, prompt_file: str) ->
         logger.info(f"Agent output file already exists: {output_file} — skipping agent call.")
         return True
 
-    # Load prompt and papers
-    with open(prompt_file) as f:
-        prompt = f.read()
-    with open(input_file) as f:
-        papers = json.load(f)
+    # Pre-flight checks: bail early if the agent infrastructure isn't available
+    token = os.environ.get("OPENCLAW_TOKEN", "")
+    url = _get_url()
+    if not token:
+        logger.warning("OPENCLAW_TOKEN not set — skipping agent enrichment.")
+        return False
+
+    # Quick connectivity check (don't wait 15 min if agent is unreachable)
+    try:
+        probe = requests.get(url.rsplit("/", 1)[0], timeout=5)
+    except requests.RequestException:
+        logger.warning(f"OpenClaw API unreachable at {url} — skipping agent enrichment.")
+        return False
+
+    # Load prompt and papers (handle missing files gracefully)
+    try:
+        with open(prompt_file) as f:
+            prompt = f.read()
+    except FileNotFoundError:
+        logger.warning(f"Prompt file not found: {prompt_file} — skipping agent enrichment.")
+        return False
+
+    try:
+        with open(input_file) as f:
+            papers = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        logger.warning(f"Cannot load input file {input_file}: {e} — skipping agent enrichment.")
+        return False
+
+    if not papers:
+        logger.info("No unenriched papers to process — skipping agent enrichment.")
+        return False
 
     session_id = f"paper-enrichment-{int(time.time())}"
     output_basename = os.path.basename(output_file)

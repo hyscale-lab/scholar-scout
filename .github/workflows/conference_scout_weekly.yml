@@ -1,0 +1,71 @@
+name: Weekly Conference Scout
+
+on:
+  schedule:
+    # Runs at 09:00 UTC every Monday
+    - cron: '0 9 * * 1'
+  workflow_dispatch:  # Allows manual triggering
+
+permissions:
+  pages: write
+  id-token: write
+
+defaults:
+  run:
+    working-directory: conference-scout
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Create config from template
+      run: |
+        cp config/config.example.yml config/config.yml
+
+    - name: Create data directory
+      run: mkdir -p data
+
+    - name: Run Conference Scout Pipeline
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}
+        OPENCLAW_TOKEN: ${{ secrets.OPENCLAW_TOKEN }}
+        OPENCLAW_URL: ${{ secrets.OPENCLAW_URL }}
+        SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
+      run: python scripts/run_pipeline.py
+
+    - name: Prepare Pages content
+      run: |
+        mkdir -p _site
+        cp conference_papers_frontend_final.html _site/index.html
+        cp data/classified_papers.json _site/classified_papers.json
+
+    - name: Upload Pages artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: conference-scout/_site
+
+  deploy:
+    needs: run-pipeline
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deploy
+      uses: actions/deploy-pages@v4
