@@ -40,7 +40,7 @@ jobs:
 
     - name: Run Conference Scout Pipeline
       env:
-        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        GEMINI_API_KEY: ${{ secrets.GOOGLE_CREDENTIALS }}
         SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}
         OPENCLAW_TOKEN: ${{ secrets.OPENCLAW_TOKEN }}
         OPENCLAW_URL: ${{ secrets.OPENCLAW_URL }}
