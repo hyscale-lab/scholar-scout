@@ -1,0 +1,45 @@
+name: Digest test post
+
+# Manual-dispatch only. Posts the v2 digest using config/subscriptions.test.yml
+# (which routes everything to #deadline-alarmer). Defaults to --dry-run so the
+# first invocations validate plumbing without calling Slack.
+#
+# The production cron belongs in a separate workflow (digest.yml) which we
+# haven't built yet.
+
+on:
+  workflow_dispatch:
+    inputs:
+      since_days:
+        description: "Look-back window in days"
+        default: "90"
+      dry_run:
+        description: "Skip the actual Slack post (recommended first)"
+        type: boolean
+        default: true
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install runtime deps
+        run: pip install --upgrade pip pydantic pyyaml httpx slack_sdk
+
+      - name: Run digest against test config
+        env:
+          SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}
+          S2_API_KEY: ${{ secrets.S2_API_KEY }}
+          SCHOLAR_SCOUT_CONTACT_EMAIL: ${{ secrets.SCHOLAR_SCOUT_CONTACT_EMAIL }}
+        run: |
+          ARGS="--config config/subscriptions.test.yml --since ${{ inputs.since_days }}"
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
+          echo "Running: python -m scholar_scout $ARGS"
+          PYTHONPATH=src python -m scholar_scout $ARGS
