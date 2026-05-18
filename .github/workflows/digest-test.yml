@@ -1,0 +1,62 @@
+name: Digest test post
+
+# Manual-dispatch only. Posts the v2 digest using config/subscriptions.test.yml
+# (which routes everything to #deadline-alarmer). Defaults to --dry-run so the
+# first invocations validate plumbing without calling Slack.
+#
+# The production cron belongs in a separate workflow (digest.yml) which we
+# haven't built yet.
+
+on:
+  workflow_dispatch:
+    inputs:
+      since_days:
+        description: "Look-back window in days (matches the weekly cadence)"
+        default: "7"
+      dry_run:
+        description: "Skip the actual Slack post (recommended first)"
+        type: boolean
+        default: true
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify ref ships v2 pipeline
+        run: |
+          missing=0
+          for f in src/scholar_scout/__main__.py config/subscriptions.test.yml; do
+            if [ ! -f "$f" ]; then
+              echo "::error::missing $f on ref ${GITHUB_REF}; dispatch with --ref pointing at a branch that has v2"
+              missing=1
+            fi
+          done
+          [ "$missing" -eq 0 ]
+
+      - name: Install runtime deps
+        run: pip install --upgrade pip pydantic pyyaml httpx slack_sdk
+
+      - name: Run digest against test config
+        env:
+          SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}
+          S2_API_KEY: ${{ secrets.S2_API_KEY }}
+          SCHOLAR_SCOUT_CONTACT_EMAIL: ${{ secrets.SCHOLAR_SCOUT_CONTACT_EMAIL }}
+          SINCE_DAYS: ${{ inputs.since_days }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          if ! [[ "$SINCE_DAYS" =~ ^[0-9]+$ ]]; then
+            echo "::error::since_days must be a positive integer; got '$SINCE_DAYS'"
+            exit 1
+          fi
+          ARGS="--config config/subscriptions.test.yml --since $SINCE_DAYS"
+          if [ "$DRY_RUN" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
+          echo "Running: python -m scholar_scout $ARGS"
+          PYTHONPATH=src python -m scholar_scout $ARGS
