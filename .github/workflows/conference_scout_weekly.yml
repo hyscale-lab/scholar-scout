@@ -1,12 +1,17 @@
 name: Weekly Conference Scout
 
+# =========================================================================
+# MODIFICATION FOR ISSUE 31: Change execution window from Weekly to Monthly
+# =========================================================================
 on:
   schedule:
-    # Runs at 09:00 UTC every Monday
-    - cron: '0 9 * * 1'
+    # Runs at 09:00 UTC on the 1st day of every month
+    - cron: '0 9 1 * *'
   workflow_dispatch:  # Allows manual triggering
+# =========================================================================
 
 permissions:
+  contents: write  # ADDED FOR ISSUE 30/31: Grants push privileges to save historic JSON
   pages: write
   id-token: write
 
@@ -46,6 +51,22 @@ jobs:
         OPENCLAW_URL: ${{ secrets.OPENCLAW_URL }}
         SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
       run: python scripts/run_pipeline.py
+
+    # =========================================================================
+    # START MODIFICATION FOR ISSUE 30 & 31: Persist Historic Data Across Runs
+    # Saves updated database to repository so next month's run can deduplicate
+    # =========================================================================
+    - name: Commit and Push Historic Data Updates
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add data/classified_papers.json
+        # Only commits if changes exist; [skip ci] prevents infinite build loops
+        git diff-index --quiet HEAD || git commit -m "chore: automated append to historic paper database [skip ci]"
+        git push origin HEAD
+    # =========================================================================
+    # END MODIFICATION FOR ISSUE 30 & 31
+    # =========================================================================
 
     - name: Prepare Pages content
       run: |

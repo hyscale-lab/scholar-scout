@@ -151,20 +151,11 @@ def run_classification(config: AppConfig,
                        minimal_output: bool = True) -> None:
     """
     Run the classification pipeline.
-
-    Args:
-        config: Full application config.
-        enriched_file: Path to papers_enriched.json.
-        agent_enriched_file: Path to papers_agent_enriched.json.
-        unenriched_file: Path to papers_unenriched.json (fallback).
-        output_file: Path to write classified_papers.json.
-        minimal_output: If True, output only essential fields.
     """
-    # Initialize Gemini client — supports both API key (string) and service account (dict)
+    # Initialize Gemini client
     api_key = config.gemini.api_key
 
     if isinstance(api_key, dict):
-        # Service account credentials (Vertex AI)
         from google.oauth2 import service_account
         credentials = service_account.Credentials.from_service_account_info(
             api_key, scopes=['https://www.googleapis.com/auth/cloud-platform']
@@ -176,7 +167,6 @@ def run_classification(config: AppConfig,
             credentials=credentials,
         )
     else:
-        # API key (string) — resolve from env if placeholder or empty
         if not api_key or api_key.startswith("${"):
             api_key = os.environ.get("GEMINI_API_KEY", "")
         if not api_key:
@@ -185,49 +175,82 @@ def run_classification(config: AppConfig,
 
     classifier = GeminiEmbeddingSetup(config, client)
 
-    # Load enriched papers
+    # Load incoming scraped papers
     enriched = load_papers(enriched_file)
-
-    # Load agent-enriched papers with format validation
     agent_enriched = validate_agent_enriched(agent_enriched_file)
     if not agent_enriched:
         logger.warning(
             f"Agent-enriched file not available or has wrong format. "
-            f"Falling back to unenriched papers (title-only classification): {unenriched_file}"
+            f"Falling back to unenriched papers: {unenriched_file}"
         )
         agent_enriched = load_papers(unenriched_file)
 
-    # Merge
     all_papers = enriched + agent_enriched
-    logger.info(f"Total papers to classify: {len(all_papers)} "
-                f"({len(enriched)} enriched + {len(agent_enriched)} additional)")
+    logger.info(f"Total candidate papers scraped: {len(all_papers)}")
 
     if not all_papers:
-        raise RuntimeError("No papers to classify. Check input files.")
+        raise RuntimeError("No candidate papers found to process. Check input files.")
 
-    # Classify
-    logger.info("=" * 60)
-    logger.info("Classifying papers via Gemini embeddings")
-    logger.info("=" * 60)
+    # =========================================================================
+    # START MODIFICATION FOR ISSUE 30 & 31: Historical Retention & Deduplication
+    # Target: Don't classify duplicates (31) and append history for hosting (30)
+    # =========================================================================
+    existing_results = []
+    if os.path.exists(output_file):
+        try:
+            with open(output_file, "r", encoding="utf-8") as f:
+                existing_results = json.load(f)
+            logger.info(f"Loaded {len(existing_results)} historical classifications from {output_file}")
+        except Exception as e:
+            logger.warning(f"Could not load existing classified papers database: {e}. Starting fresh.")
 
-    results = classify_all_papers(all_papers, classifier, minimal_output)
+    # Map existing titles for quick O(1) comparison (case-insensitive, stripped whitespace)
+    existing_titles = {
+        r["paper_title"].strip().lower() 
+        for r in existing_results 
+        if "paper_title" in r
+    }
 
-    # Write output
+    # Filter out candidates that already exist in history
+    new_papers = [
+        p for p in all_papers 
+        if p.get("title", "").strip().lower() not in existing_titles
+    ]
+    logger.info(f"Filtered out {len(all_papers) - len(new_papers)} duplicates. Unique new papers to classify: {len(new_papers)}")
+
+    # --- CLASSIFICATION LAYER ---
+    if new_papers:
+        logger.info("=" * 60)
+        logger.info(f"Classifying {len(new_papers)} new papers via LLM")
+        logger.info("=" * 60)
+        
+        new_results = classify_all_papers(new_papers, classifier, minimal_output)
+        # Append new findings to history
+        results = existing_results + new_results
+    else:
+        logger.info("No new papers detected. History remains unchanged.")
+        results = existing_results
+    # =========================================================================
+    # END MODIFICATION FOR ISSUE 30 & 31
+    # =========================================================================
+
+    # Write the entire continuous database back to disk
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
 
-    # Summary
+    # Summary Statistics
     logger.info("=" * 60)
-    logger.info("CLASSIFICATION COMPLETE")
+    logger.info("DATABASE STATUS UPDATE")
     logger.info("=" * 60)
-    logger.info(f"  Total classified: {len(results)}")
-    logger.info(f"  Output: {output_file}")
+    logger.info(f"  Total historical dataset size: {len(results)}")
+    if new_papers:
+        logger.info(f"  Newly added this run: {len(new_results)}")
 
     cat_counter = Counter()
     for r in results:
         for c in r["category"]:
             cat_counter[c] += 1
-    logger.info("  Category distribution:")
+    logger.info("  Cumulative Category distribution:")
     for cat, count in cat_counter.most_common():
         logger.info(f"    {cat}: {count}")
 
