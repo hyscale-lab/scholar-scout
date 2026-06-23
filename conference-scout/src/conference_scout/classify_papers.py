@@ -193,7 +193,7 @@ def run_classification(config: AppConfig,
 
     # =========================================================================
     # START MODIFICATION FOR ISSUE 30 & 31: Historical Retention & Deduplication
-    # Target: Don't classify duplicates (31) and append history for hosting (30)
+    # Target: Hybrid Deduplication (DBLP Key primary, Title fallback)
     # =========================================================================
     existing_results = []
     if os.path.exists(output_file):
@@ -204,18 +204,35 @@ def run_classification(config: AppConfig,
         except Exception as e:
             logger.warning(f"Could not load existing classified papers database: {e}. Starting fresh.")
 
-    # Map existing titles for quick O(1) comparison (case-insensitive, stripped whitespace)
+    # 1. Map existing DBLP keys (Primary ID)
+    existing_keys = {
+        r["key"] 
+        for r in existing_results 
+        if r.get("key")
+    }
+
+    # 2. Map existing titles for fallback (case-insensitive, stripped whitespace)
     existing_titles = {
         r["paper_title"].strip().lower() 
         for r in existing_results 
-        if "paper_title" in r
+        if r.get("paper_title")
     }
 
-    # Filter out candidates that already exist in history
-    new_papers = [
-        p for p in all_papers 
-        if p.get("title", "").strip().lower() not in existing_titles
-    ]
+    # 3. Filter out candidates using Hybrid Logic
+    new_papers = []
+    for p in all_papers:
+        key = p.get("key")
+        title = p.get("title", "").strip().lower()
+
+        # Check Primary ID first
+        if key and key in existing_keys:
+            continue
+        # Fallback to Title match if no key is present
+        elif title and title in existing_titles:
+            continue
+        else:
+            new_papers.append(p)
+
     logger.info(f"Filtered out {len(all_papers) - len(new_papers)} duplicates. Unique new papers to classify: {len(new_papers)}")
 
     # --- CLASSIFICATION LAYER ---
@@ -233,7 +250,6 @@ def run_classification(config: AppConfig,
     # =========================================================================
     # END MODIFICATION FOR ISSUE 30 & 31
     # =========================================================================
-
     # Write the entire continuous database back to disk
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
@@ -285,8 +301,11 @@ if __name__ == "__main__":
             agent_enriched_file=os.path.join(data_dir, "papers_agent_enriched.json"),
             unenriched_file=os.path.join(data_dir, "papers_unenriched.json"),
             output_file=os.path.join(data_dir, "classified_papers.json"),
-            minimal_output=True,
+            minimal_output=False,
+            #Changed from True to False for DBLP keys
         )
     except RuntimeError as e:
         logger.error(str(e))
         sys.exit(1)
+
+        
