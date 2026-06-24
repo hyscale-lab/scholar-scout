@@ -7,8 +7,8 @@ logger = logging.getLogger(__name__)
 
 class GeminiEmbeddingSetup:
     # --- MODIFIED PART: Replaced single threshold with dynamic thresholds ---
-    ABSTRACT_THRESHOLD = 0.67  # Use when we have a full 300-word abstract
-    TITLE_THRESHOLD = 0.60     # Use when Semantic Scholar fails and we only have a title
+    ABSTRACT_THRESHOLD = 0.64  # Use when we have a full 300-word abstract
+    TITLE_THRESHOLD = 0.64     # Use when Semantic Scholar fails and we only have a title
     
     SINGLE_CLASSIFICATION = False
     DEBUG = True
