@@ -1,0 +1,1251 @@
+[
+  {
+    "paper_title": "Mission-Critical Enterprise Systems... What's a Mission? And What's Critical?: Processor and technology requirements for enterprise computing.",
+    "authors": "Hillery C. Hunter",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3795613",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Unicorns, Centaurs, and Cyborgs: Co-design Powering the Intelligence Era.",
+    "authors": "Parthasarathy Ranganathan",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3795611",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Title: An AI Stack: From Scaling AI Workloads to Evaluating LLMs.",
+    "authors": "Ion Stoica",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3795612",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "A Cost-Effective Near-Storage Processing Solution for Offline Inference of Long-Context LLMs.",
+    "authors": "Hongsun Jang, Jaeyong Song 0002, Changmin Shin 0002, Si Ung Noh, Jaewon Jung 0001, Jisung Park 0001, Jinho Lee 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790119",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "A Framework for Developing and Optimizing Fully Homomorphic Encryption Programs on GPUs.",
+    "authors": "Jianyu Zhao 0004, Xueyu Wu 0001, Guang Fan 0001, Mingzhe Zhang 0005, Shoumeng Yan, Lei Ju 0001, Zhuoran Ji",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790120",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "A Programming Model for Disaggregated Memory over CXL.",
+    "authors": "Gal Assa, Moritz Lumme, Lucas Bürgi, Michal Friedman 0001, Ori Lahav 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790121",
+    "category": [
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "Accelerating Computation in Quantum LDPC Code.",
+    "authors": "Jungmin Cho, Hyeonseong Jeong, Junpyo Kim, Junhyuk Choi, Juwon Hong, Jangwoo Kim",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790122",
+    "category": [
+      "Sustainable Computing"
+    ]
+  },
+  {
+    "paper_title": "AlphaSyndrome: Tackling the Syndrome Measurement Circuit Scheduling Problem for QEC Codes.",
+    "authors": "Yuhao Liu 0017, Shuohao Ping, Junyu Zhou 0005, Ethan Decker, Justin Kalloor, Mathias Weiden, Kean Chen, Yunong Shi, Ali Javadi-Abhari, Costin Iancu, Gushu Li",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790123",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "An MLIR Lowering Pipeline for Stencils at Wafer-Scale.",
+    "authors": "Nicolai Stawinoga, David Katz, Anton Lydike, Justs Zarins, Nick Brown 0002, George Bisbas, Tobias Grosser",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790124",
+    "category": [
+      "Sustainable Computing"
+    ]
+  },
+  {
+    "paper_title": "APT: Securing Against DRAM Read Disturbance via Adaptive Probabilistic In-DRAM Trackers.",
+    "authors": "Runjin Wu, Meng Zhang 0014, You Zhou 0009, Changsheng Xie 0001, Fei Wu 0005",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790126",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Arancini: A Hybrid Binary Translator for Weak Memory Model Architectures.",
+    "authors": "Sebastian Reimers, Dennis Sprokholt, Martin Fink 0004, Theofilos Augoustis, Simon Kammermeier, Rodrigo C. O. Rocha, Tom Spink, Redha Gouicem, Soham Chakraborty 0001, Pramod Bhatotia",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790127",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Architecting Scalable Trapped Ion Quantum Computers using Surface Codes.",
+    "authors": "Scott Jones, Prakash Murali",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790128",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Arm Weak Memory Consistency on Apple Silicon: What Is It Good For?",
+    "authors": "Yossi Khayet, Adam Morrison 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790129",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Asynchrony and GPUs: Bridging this Dichotomy for I/O with AGIO.",
+    "authors": "Jihoon Han 0001, Anand Sivasubramaniam, Chia-Hao Chang, Vikram Sharma Mailthody, Zaid Qureshi, Wen-Mei Hwu",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790130",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Bat: Efficient Generative Recommender Serving with Bipartite Attention.",
+    "authors": "Jie Sun 0017, Shaohang Wang, Zimo Zhang, Zhengyu Liu, Yunlong Xu, Peng Sun 0006, Bo Zhao 0019, Bingsheng He, Fei Wu 0001, Zeke Wang",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790131",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "BitRed: Taming Non-Uniform Bit-Level Sparsity with a Programmable RISC-V ISA for DNN Acceleration.",
+    "authors": "Yanhuan Liu, Wenming Li, Kunming Zhang, Yuqun Liu, Siao Wen, Lexin Wang, Tianyu Liu 0007, Haibin Wu, Zhihua Fan, Xiaochun Ye, Dongrui Fan, Xuejun An",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790132",
+    "category": [
+      "Sustainable Computing"
+    ]
+  },
+  {
+    "paper_title": "BlendServe: Optimizing Offline Inference with Resource-Aware Batching.",
+    "authors": "Yilong Zhao 0002, Shuo Yang 0011, Kan Zhu, Lianmin Zheng, Baris Kasikci, Yifan Qiao 0002, Yang Zhou 0008, Jiarong Xing, Ion Stoica",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790133",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "Borrowing Dirty Qubits in Quantum Programs.",
+    "authors": "Bonan Su, Li Zhou 0013, Yuan Feng 0001, Mingsheng Ying",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790134",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Bullet: Boosting GPU Utilization for LLM Serving via Dynamic Spatial-Temporal Orchestration.",
+    "authors": "Zejia Lin 0001, Hongxin Xu, Guanyi Chen, Zhiguang Chen 0001, Yutong Lu, Xianwei Zhang 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790135",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "CacheMind: From Miss Rates to Why - Natural-Language, Trace-Grounded Reasoning for Cache Replacement.",
+    "authors": "Kaushal Mhapsekar, Azam Ghanbari, Bita Aslrousta, Samira Mirbagher Ajorpaz",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790136",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "CEMU: Enabling Full-System Emulation of Computational Storage Beyond Hardware Limits.",
+    "authors": "Qiuyang Zhang, Jiapin Wang, You Zhou 0009, Peng Xu, Kai Lu 0002, Jiguang Wan 0001, Fei Wu 0005, Tao Lu 0014",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790137",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Chips Need DIP: Time-Proportional Per-Instruction Cycle Stacks at Dispatch.",
+    "authors": "Silvio Heverton Campelo de Santana, Joseph Rogers, Lieven Eeckhout, Magnus Jahre",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790139",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "CLM: Removing the GPU Memory Barrier for 3D Gaussian Splatting.",
+    "authors": "Hexu Zhao, Xiwen Min, Xiaoteng Liu, Moonjun Gong, Yiming Li 0003, Ang Li 0006, Saining Xie, Jinyang Li 0001, Aurojit Panda",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790140",
+    "category": [
+      "LLM Inference"
+    ]
+  },
+  {
+    "paper_title": "Co-Exploration of RISC-V Processor Microarchitectures and FreeRTOS Extensions for Lower Context-Switch Latency.",
+    "authors": "Markus Scheck, Tammo Mürmann, Andreas Koch 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790141",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "CoGraf: Fully Accelerating Graph Applications with Fine-Grained PIM.",
+    "authors": "Ali Semi Yenimol, Anirban Nag, Chang Hyun Park 0001, David Black-Schaffer",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790142",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "COMPAS: A Distributed Multi-Party SWAP Test for Parallel Quantum Algorithms.",
+    "authors": "Brayden Goldstein-Gelb, Kun Liu, John M. Martyn, Hengyun (Harry) Zhou, Yongshan Ding 0001, Yuan Liu",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790143",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "Compass: Navigating the Design Space of Taint Schemes for RTL Security Verification.",
+    "authors": "Yuheng Yang, Qinhan Tan, Thomas Bourgeat, Sharad Malik, Mengjia Yan 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790144",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "CPU-Oblivious Offloading of Failure-Atomic Transactions for Disaggregated Memory.",
+    "authors": "Cheng Chen, Chencheng Ye 0001, Yuanchao Xu 0001, Xipeng Shen, Xiaofei Liao, Hai Jin 0001, Wenbin Jiang 0001, Yan Solihin",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790146",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "CREATE: Cross-Layer Resilience Characterization and Optimization for Efficient yet Reliable Embodied AI Systems.",
+    "authors": "Tong Xie, Yijiahao Qi, Jinqi Wen, Zishen Wan, Yanchi Dong, Zihao Wang, Shaofei Cai, Yitao Liang, Tianyu Jia, Yuan Wang 0001, Runsheng Wang, Meng Li 0004",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790147",
+    "category": [
+      "Sustainable Computing"
+    ]
+  },
+  {
+    "paper_title": "CREST: High-Performance Contention Resolution for Disaggregated Transactions.",
+    "authors": "Qihan Kang, Mi Zhang 0007, Patrick P. C. Lee, Yongkang Hu",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790148",
+    "category": [
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "Cxlalloc: Safe and Efficient Memory Allocation for a CXL Pod.",
+    "authors": "Newton Ni, Yan Sun, Zhiting Zhu, Emmett Witchel",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790149",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "CXLMC: Model Checking CXL Shared Memory Programs.",
+    "authors": "Simon Guo 0005, Conan Truong, Brian Demsky",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790150",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "DARTH-PUM: A Hybrid Processing-Using-Memory Architecture.",
+    "authors": "Ryan Wong 0001, Ben Feinberg, Saugata Ghose",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790151",
+    "category": [
+      "Sustainable Computing"
+    ]
+  },
+  {
+    "paper_title": "Detecting Inconsistencies in Arm CCA's Formally Verified Specification.",
+    "authors": "Changho Choi, Xiang Cheng, Bokdeuk Jeong, Taesoo Kim",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790152",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "DFVG: A Heterogeneous Architecture for Speculative Decoding with Draft-on-FPGA and Verify-on-GPU.",
+    "authors": "Shaoqiang Lu, Yangbo Wei, Junhong Qian, Dongge Qin, Shiji Gao, Yizhi Ding, Qifan Wang, Chen Wu, Xiao Shi 0001, Lei He 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790153",
+    "category": [
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "DIP: Efficient Large Multimodal Model Training with Dynamic Interleaved Pipeline.",
+    "authors": "Zhenliang Xue, Hanpeng Hu, Xing Chen 0009, Yimin Jiang, Yixin Song, Zeyu Mi, Yibo Zhu 0001, Daxin Jiang, Yubin Xia, Haibo Chen 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790154",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "EARTH: An Efficient MoE Accelerator with Entropy-Aware Speculative Prefetch and Result Reuse.",
+    "authors": "Fangxin Liu, Ning Yang, Jingkui Yang, Zongwu Wang, Chenyang Guan, Yu Feng 0007, Li Jiang 0002, Haibing Guan",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790155",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "Efficient Remote Memory Ordering for Non-Coherent Systems.",
+    "authors": "Wei Siew Liew, Md Ashfaqur Rahaman, Adarsh Patil 0002, Ryan Stutsman, Vijay Nagarajan",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790156",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Efficient Temporal Graph Network Training via Unified Redundancy Elimination.",
+    "authors": "Yiqing Wang, Hailong Yang 0002, Kejie Ma, Enze Yu, Pengbo Wang, Xin You 0001, Qingxiao Sun, Chenhao Xie 0001, Zhongzhi Luan, Yi Liu 0013, Depei Qian 0002",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790157",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Enabling Fast Networking in the Public Cloud.",
+    "authors": "Alireza Sanaee, Vahab Jabrayilov, Ilias Marinos, Farbod Shahinfar, Divyanshu Saxena, Gianni Antichi, Kostis Kaffes",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790158",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Evaluating Compiler Optimization Impacts on zkVM Performance.",
+    "authors": "Thomas Gassmann, Stefanos Chaliasos, Thodoris Sotiropoulos, Zhendong Su 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790159",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Falcon: Algorithm-Hardware Co-Design for Efficient Fully Homomorphic Encryption Accelerator.",
+    "authors": "Liang Kong 0005, Xianglong Deng, Guang Fan 0001, Shengyu Fan, Lei Chen, Yilan Zhu, Geng Yang 0001, Yisong Chang, Shoumeng Yan, Mingzhe Zhang 0005",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790160",
+    "category": [
+      "Sustainable Computing"
+    ]
+  },
+  {
+    "paper_title": "FastTTS: Accelerating Test-Time Scaling for Edge LLM Reasoning.",
+    "authors": "Hao Mark Chen, Zhiwen Mo, Guanxi Lu, Shuang Liang 0012, Lingxiao Ma, Wayne Luk, Hongxiang Fan",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790161",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "Finding Reusable Instructions via E-Graph Anti-Unification.",
+    "authors": "Youwei Xiao, Chenyun Yin, Yitian Sun, Yuyang Zou, Yun Liang 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790162",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Fine-grained and Non-intrusive LLM Training Monitoring via Microsecond-level Traffic Measurement.",
+    "authors": "Yibo Xiao, Hao Zheng, Haifeng Sun 0004, Qingkai Meng 0001, Jiong Duan, Xiaohe Hu, Rong Gu 0001, Guihai Chen, Chen Tian 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790163",
+    "category": [
+      "LLM Inference"
+    ]
+  },
+  {
+    "paper_title": "FlashMem: Supporting Modern DNN Workloads on Mobile with GPU Memory Hierarchy Optimizations.",
+    "authors": "Zhihao Shu, Md. Musfiqur Rahman Sanim, Hangyu Zheng, Kunxiong Zhu, Miao Yin, Gagan Agrawal, Wei Niu 0002",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790164",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "FuseFlow: A Fusion-Centric Compilation Framework for Sparse Deep Learning on Streaming Dataflow.",
+    "authors": "Rubens Lacouture, Nathan Zhang, Ritvik Sharma, Marco Siracusa, Fredrik Kjolstad, Kunle Olukotun, Olivia Hsu",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790165",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Graphiti: Formally Verified Out-of-Order Execution in Dataflow Circuits.",
+    "authors": "Yann Herklotz, Ayatallah Elakhras, Martina Camaioni, Paolo Ienne, Lana Josipovic, Thomas Bourgeat",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790166",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "gShare: Efficient GPU Sharing with Aggressive Scheduling in Multi-tenant FaaS platform.",
+    "authors": "Yanan Yang, Zhengxiong Jiang, Meiqi Zhu, Hongqiang Xu, Yujun Wang, Liang Li 0016, Jiansong Zhang, Jie Wu 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790168",
+    "category": [
+      "LLM Inference",
+      "Serverless Computing"
+    ]
+  },
+  {
+    "paper_title": "GS-Scale: Unlocking Large-Scale 3D Gaussian Splatting Training via Host Offloading.",
+    "authors": "Donghyun Lee 0005, Dawoon Jeong, Jae W. Lee, Hongil Yoon",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790167",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Hardwired-Neuron Language Processing Units as General-Purpose Cognitive Substrates.",
+    "authors": "Yang Liu 0466, Yi Chen, Yongwei Zhao 0001, Yifan Hao 0001, Zifu Zheng, Weihao Kong, Zhangmai Li, Dongchen Jiang, Ruiyang Xia, Zhihong Ma, Zisheng Liu, Zhaoyong Wan, Yunqi Lu, Ximing Liu, Hongrui Guo, Zhihao Yang, Zhe Wang 0017, Tianrui Ma, Mo Zou, Rui Zhang 0040, Ling Li 0001, Xing Hu 0001, Zidong Du, Zhiwei Xu 0002, Qi Guo 0001, Tianshi Chen 0002, Yunji Chen",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790169",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "HEPIC: Private Inference over Homomorphic Encryption with Client Intervention.",
+    "authors": "Kevin Nam, Youyeon Joo, Seungjin Ha, Hyungon Moon, Yunheung Paek",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790170",
+    "category": [
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "Highly Automated Verification of Security Properties for Unmodified System Software.",
+    "authors": "Ganxiang Yang, Wei Qiang, Yi Rong, Xuheng Li, Fanqi Yu, Jason Nieh, Ronghui Gu",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790171",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "History Doesn't Repeat Itself but Rollouts Rhyme: Accelerating Reinforcement Learning with RhymeRL.",
+    "authors": "Jingkai He, Tianjian Li, Erhu Feng, Dong Du 0003, Qian Liu 0033, Tao Liu, Yubin Xia, Haibo Chen 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790172",
+    "category": [
+      "LLM Inference"
+    ]
+  },
+  {
+    "paper_title": "Hitchhike: Efficient Request Submission via Deferred Enforcement of Address Contiguity.",
+    "authors": "Xuda Zheng, Jian Zhou 0004, Shuhan Bai, Runjin Wu, Xianlin Tang, Zhiyuan Li, Hong Jiang 0001, Fei Wu 0005",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790173",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "I/O Analysis is All You Need: An I/O Analysis for Long-Sequence Attention.",
+    "authors": "Xiaoyang Lu, Boyu Long, Xiaoming Chen 0003, Yinhe Han 0001, Xian-He Sun",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790174",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "ICARUS: Criticality and Reuse based Instruction Caching for Datacenter Applications.",
+    "authors": "Vedant Kalbande, Hrishikesh Jedhe Deshmukh, Alberto Ros 0001, Biswabandan Panda",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790175",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Insum: Sparse GPU Kernels Simplified and Optimized with Indirect Einsums.",
+    "authors": "Jaeyeon Won, Willow Ahrens, Saman P. Amarasinghe, Joel S. Emer",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790176",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "iSwitch: QEC on Demand via In-Situ Encoding of Bare Qubits for Ion Trap Architectures.",
+    "authors": "Keyi Yin, Xiang Fang, Zhuo Chen, David Hayes, Eneet Kaur, Reza Nejabati, Hartmut Haeffner, Wes Campbell, Eric R. Hudson, Jens Palsberg, Travis S. Humble, Yufei Ding 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790177",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "It Takes Two to Entangle.",
+    "authors": "Zhanghan Wang, Ding Ding, Hang Zhu, Haibin Lin, Aurojit Panda",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790178",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "JOSer: Just-In-Time Object Serialization for Heavy Java Serialization Workloads.",
+    "authors": "Chaokun Yang, Pengbo Nie, Ziyi Lin, Weipeng Wang, Qianwei Yu, Chengcheng Wan 0001, He Jiang 0001, Yuting Chen 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790179",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "LAER-MoE: Load-Adaptive Expert Re-layout for Efficient Mixture-of-Experts Training.",
+    "authors": "Xinyi Liu, Yujie Wang, Fangcheng Fu, Xuefeng Xiao 0001, Huixia Li, Jiashi Li, Bin Cui 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790180",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "LAIKA: Machine Learning-Assisted In-Kernel APU Acceleration.",
+    "authors": "Haoming Zhuo, Dingding Li, Ronghua Lin, Yong Tang 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790181",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "Lifetime-Aware Design for Item-Level Intelligence at the Extreme Edge.",
+    "authors": "Shvetank Prakash, Andrew Cheng, Olof Kindgren, Ashiq Ahamed, Graham Knight, Jedrzej Kufel, Francisco Rodriguez, Arya Tschand, David Kong 0001, Mariam Elgamal, Jerry Huang, Emma Chen, Gage Hills, Richard Price, Emre Ozer 0001, Vijay Janapa Reddi",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790182",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "LOOPRAG: Enhancing Loop Transformation Optimization with Retrieval-Augmented Large Language Models.",
+    "authors": "Yijie Zhi, Yayu Cao, Jianhua Dai 0004, Xiaoyang Han, Jingwen Pu, Qinran Wu, Sheng Cheng, Ming Cai",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790183",
+    "category": [
+      "LLM Inference"
+    ]
+  },
+  {
+    "paper_title": "LPO: Discovering Missed Peephole Optimizations with Large Language Models.",
+    "authors": "Zhenyang Xu, Hongxu Xu, Yongqiang Tian 0001, Xintong Zhou, Chengnian Sun",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790184",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "M2XFP: A Metadata-Augmented Microscaling Data Format for Efficient Low-bit Quantization.",
+    "authors": "Weiming Hu 0005, Zihan Zhang, Haoyan Zhang, Chen Zhang 0001, Cong Guo 0003, Yu Feng 0007, Tianchi Hu, Guanglin Li 0005, Guipeng Hu, Junsong Wang, Jingwen Leng",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790185",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Maverick: Rethinking TFHE Bootstrapping on GPUs via Algorithm-Hardware Co-Design.",
+    "authors": "Zhiwei Wang, Haoqi He, Lutan Zhao, Qingyun Niu, Dan Meng 0002, Rui Hou 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790186",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "MoE-APEX: An Efficient MoE Inference System with Adaptive Precision Expert Offloading.",
+    "authors": "Peng Tang, Jiacheng Liu 0001, Xiaofeng Hou, Yifei Pu, Jing Wang 0055, Pheng-Ann Heng, Chao Li 0009, Minyi Guo",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790187",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "MSCCL++: Rethinking GPU Communication Abstractions for AI Inference.",
+    "authors": "Changho Hwang, Peng Cheng 0005, Roshan Dathathri, Abhinav Jangda, Saeed Maleki, Madan Musuvathi, Olli Saarikivi, Aashaka Shah, Ziyue Yang, Binyang Li, Caio Rocha, Qinghua Zhou, Mahdieh Ghazimirsaeed, Sreevatsa Anantharamu, Jithin Jose",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790188",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "Mugi: Value Level Parallelism For Efficient LLMs.",
+    "authors": "Daniel Price, Prabhu Vellaisamy, John Paul Shen, Di Wu 0016",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790189",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "Nebula: Infinite-Scale 3D Gaussian Splatting in VR via Collaborative Rendering and Accelerated Stereo Rasterization.",
+    "authors": "He Zhu, Zheng Liu 0022, Xingyang Li, Anbang Wu, Jieru Zhao, Fangxin Liu, Yiming Gan, Jingwen Leng, Yu Feng 0007",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790190",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Nemo: A Low-Write-Amplification Cache for Tiny Objects on Log-Structured Flash Devices.",
+    "authors": "Xufeng Yang, Tingting Tan, Jingxin Hu, Congming Gao, Mingyang Liu, Tianyang Jiang, Jian Chen, Linbo Long, Yina Lv, Jiwu Shu",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790191",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Neo: Real-Time On-Device 3D Gaussian Splatting with Reuse-and-Update Sorting Acceleration.",
+    "authors": "Changhun Oh, Seongryong Oh, Jinwoo Hwang, Yoonsung Kim, Hardik Sharma, Jongse Park",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790192",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Neura: A Unified Framework for Hierarchical and Adaptive CGRAs.",
+    "authors": "Cheng Tan 0002, Miaomiao Jiang, Yuqi Sun, Ruihong Yin, Yanghui Ou, Qing Zhong, Lei Ju 0001, Jeff Zhang 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790193",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "oFFN: Outlier and Neuron-aware Structured FFN for Fast yet Accurate LLM Inference.",
+    "authors": "Geunsoo Song, Hoeseok Yang, Youngmin Yi",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790194",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "Once4All: Skeleton-Guided SMT Solver Fuzzing with LLM-Synthesized Generators.",
+    "authors": "Maolin Sun, Yibiao Yang, Yuming Zhou",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790195",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Optimizer-Friendly Instrumentation for Event Quantification with PRUE Algorithm.",
+    "authors": "Hao Ling, Yiyuan Guo, Charles Zhang 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790196",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Ouroboros: Wafer-Scale SRAM CIM with Token-Grained Pipelining for Large Language Model Inference.",
+    "authors": "Yiqi Liu, Yudong Pan, Mengdi Wang 0004, Shixin Zhao, Haonan Zhu, Yinhe Han 0001, Lei Zhang 0008, Ying Wang 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790197",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "PACT: A Criticality-First Design for Tiered Memory.",
+    "authors": "Hamid Hadian, Jinshu Liu, Hanchen Xu, Hansen Idden, Huaicheng Li",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790198",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Parameterized Hardware Design with Latency-Abstract Interfaces.",
+    "authors": "Rachit Nigam, Ethan Gabizon, Edmund Lam, Carolyn Zech, Jonathan Balkind, Adrian Sampson",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790199",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "PAT: Accelerating LLM Decoding via Prefix-Aware Attention with Resource Efficient Multi-Tile Kernel.",
+    "authors": "Jinjun Yi, Zhixin Zhao, Yitao Hu, Ke Yan, Weiwei Sun, Hao Wang 0022, Laiping Zhao, Yuhao Zhang 0006, Wenxin Li 0001, Keqiu Li",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790200",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "Performance Predictability in Heterogeneous Memory.",
+    "authors": "Jinshu Liu, Hanchen Xu, Daniel S. Berger, Marcos K. Aguilera, Huaicheng Li",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790201",
+    "category": [
+      "LLM Inference",
+      "VLM Inference",
+      "Sustainable Computing"
+    ]
+  },
+  {
+    "paper_title": "PF-LLM: Large Language Model Hinted Hardware Prefetching.",
+    "authors": "Ceyu Xu, Xiangfeng Sun, Weihang Li, Chen Bai, Bangyan Wang, Mengming Li, Zhiyao Xie, Yuan Xie 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790202",
+    "category": [
+      "LLM Inference"
+    ]
+  },
+  {
+    "paper_title": "PIPM: Partial and Incremental Page Migration for Multi-host CXL Disaggregated Shared Memory.",
+    "authors": "Gangqi Huang, Heiner Litz, Yuanchao Xu 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790203",
+    "category": [
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "PrioriFI: More Informed Fault Injection for Edge Neural Networks.",
+    "authors": "Olivia Weng, Andres Meza 0001, Nhan Tran, Ryan Kastner",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790204",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "PropHunt: Automated Optimization of Quantum Syndrome Measurement Circuits.",
+    "authors": "Joshua Viszlai, Satvik Maurya, Swamit Tannu, Margaret Martonosi, Frederic T. Chong",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790205",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "QoServe: Breaking the Silos of LLM Inference Serving.",
+    "authors": "Kanishk Goel, Jayashree Mohan, Nipun Kwatra, Ravi Shreyas Anupindi, Ramachandran Ramjee",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790206",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "Rage Against the State Machine: Type-Stated Hardware Peripherals for Increased Driver Correctness.",
+    "authors": "Tyler Potyondy, Anthony Tarbinian, Leon Schuermann, Eric Mugnier, Adin Ackerman, Amit Levy 0001, Pat Pannuto",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790207",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Reconfigurable Quantum Instruction Set Computers for High Performance Attainable on Hardware.",
+    "authors": "Zhaohui Yang, Dawei Ding 0002, Qi Ye 0005, Cupjin Huang, Jianxin Chen, Yuan Xie 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790208",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Reconfigurable Torus Fabrics for Multi-tenant ML.",
+    "authors": "Abhishek Vijaya Kumar, Eric Ding 0002, Arjun Devraj, Darius Bunandar, Rachee Singh",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790238",
+    "category": [
+      "LLM Inference",
+      "Serverless Computing"
+    ]
+  },
+  {
+    "paper_title": "RedFuser: An Automatic Operator Fusion Framework for Cascaded Reductions on AI Accelerators.",
+    "authors": "Xinsheng Tang, Yangcheng Li, Nan Wang, Zhiyi Shu, Xingyu Ling, Junna Xing, Peng Zhou 0030, Qiang Liu 0036",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790209",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Reducing T Gates with Unitary Synthesis.",
+    "authors": "Tianyi Hao 0003, Amanda Xu, Swamit Tannu",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790210",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "ReliaFHE: Resilient Design for Fully Homomorphic Encryption Accelerators.",
+    "authors": "Fan Li, Mayank Kumar, Ruizhi Zhu, Mengxin Zheng, Qian Lou, Xin Xin 0008",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790211",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "REPA: Reconfigurable PIM for the Joint Acceleration of KV Cache Offloading and Processing.",
+    "authors": "Yang Hong, Junlong Yang, Bo Peng 0043, Jianguo Yao 0002",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790212",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "RowArmor: Efficient and Comprehensive Protection Against DRAM Disturbance Attacks.",
+    "authors": "Minbok Wi, Yoonyul Yoo, Yoojin Kim, Jaeho Shin, Jumin Kim, Yesin Ryu, Saeid Gorgin 0001, Jung Ho Ahn, Jungrae Kim",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790213",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "RTeAAL Sim: Using Tensor Algebra to Represent and Accelerate RTL Simulation.",
+    "authors": "Yan Zhu, Boru Chen, Christopher W. Fletcher, Nandeeka Nayak",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790214",
+    "category": [
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "Scaling Automated Database System Testing.",
+    "authors": "Suyang Zhong, Manuel Rigger",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790215",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Segment Only Where You Look: Leveraging Human Gaze Behavior for Efficient Computer Vision Applications in Augmented Reality.",
+    "authors": "Tianhua Xia, Haiyu Wang, Sai Qian Zhang",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790216",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "SEVI: Silent Data Corruption of Vector Instructions in Hyper-Scale Datacenters.",
+    "authors": "Yixuan Mei, Shreya Varshini, Harish Dattatraya Dixit, Sriram Sankar, K. V. Rashmi",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790217",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "SG-IOV: Socket-Granular I/O Virtualization for SmartNIC-Based Container Networks.",
+    "authors": "Chenxingyu Zhao, Hongtao Zhang, Jaehong Min, Shengkai Lin, Wei Zhang 0052, Kaiyuan Zhang 0001, Ming Liu 0027, Arvind Krishnamurthy",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790218",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Shift Parallelism: Low-Latency, High-Throughput LLM Inference for Dynamic Workloads.",
+    "authors": "Mert Hidayetoglu, Aurick Qiao, Michael Wyatt, Jeff Rasley, Yuxiong He, Samyam Rajbhandari",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790219",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "Signal Breaker: Fuzzing Digital Signal Processors.",
+    "authors": "Cameron Santiago Garcia, Matthew Hicks",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790220",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Skyler: Static Analysis for Predicting API-Driven Costs in Serverless Applications.",
+    "authors": "Bernardo Ribeiro, Mafalda Ferreira, José Fragoso Santos, Rodrigo Bruno, Nuno Santos 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790221",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "SLAWS: Spatial Locality Analysis and Workload Orchestration for Sparse Matrix Multiplication.",
+    "authors": "Guoyu Li, Zheng Guan, Beichen Zhang, Jun Yu 0010, Kun Wang 0005",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790222",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "SNIP: An Adaptive Mixed Precision Framework for Subbyte Large Language Model Training.",
+    "authors": "Yunjie Pan, Yongyi Yang, Hanmei Yang, Scott Mahlke",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790223",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "SpeContext:  Enabling Efficient Long-context Reasoning with Speculative Context Sparsity in LLMs.",
+    "authors": "Jiaming Xu, Jiayi Pan, Hanzhen Wang, Yongkang Zhou, Jiancai Ye, Yu Wang 0002, Guohao Dai 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790224",
+    "category": [
+      "LLM Inference"
+    ]
+  },
+  {
+    "paper_title": "SpecProto: A Parallelizing Compiler for Speculative Decoding of Large Protocol Buffers Data.",
+    "authors": "Zhijie Wang, Chales Hong, Dhruv Parmar, Shengbo Ma, Zhijia Zhao 0001, Qidong Zhao, Xu Liu 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790225",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "STARC: Selective Token Access with Remapping and Clustering for Efficient LLM Decoding on PIM Systems.",
+    "authors": "Zehao Fan, Yunzhen Liu, Garrett Gagnon, Zhenyu Liu, Yayue Hou, Hadjer Benmeziane, Kaoutar El Maghraoui, Liu Liu 0017",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790226",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "Static Analysis for Efficient Streaming Tokenization.",
+    "authors": "Angela W. Li, Yudi Yang, Konstantinos Mamouras",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790227",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "STRAW: Stress-Aware WL-Based Read Disturbance Management for High-Density NAND Flash Memory.",
+    "authors": "Myoungjun Chun, Jaeyong Lee 0004, Inhyuk Choi, Jisung Park 0001, Myungsuk Kim, Jihong Kim 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790228",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Streaming Tensor Programs: A Streaming Abstraction for Dynamic Parallelism.",
+    "authors": "Gina Sohn, Genghan Zhang, Konstantin Hoßfeld, Jungwoo Kim 0002, Nathan Sobotka, Nathan Zhang, Olivia Hsu, Kunle Olukotun",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790229",
+    "category": [
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "Taming the Long-Tail: Efficient Reasoning RL Training with Adaptive Drafter.",
+    "authors": "Qinghao Hu 0004, Shang Yang, Junxian Guo, Xiaozhe Yao, Yujun Lin 0001, Yuxian Gu, Han Cai, Chuang Gan 0001, Ana Klimovic, Song Han 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790231",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "T-Control: An Efficient Dynamic Tensor Rematerialization System for DNN Training.",
+    "authors": "Zehua Wang, Junmin Xiao, Xiaochuan Deng, Huibing Wang, Hui Ma, Mingyi Li, Yunfei Pang, Guangming Tan",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790230",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "TEEM³: Core-Independent and Cooperating Trusted Execution Environments.",
+    "authors": "Nils Asmussen, Sebastian Haas, Carsten Weinhold, Nicholas Gordon, Stephan Gerhold, Friedrich Pauls, Nilanjana Das, Michael Roitzsch",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790232",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "TetriServe: Efficiently Serving Mixed DiT Workloads.",
+    "authors": "Runyu Lu, Shiqi He, Wenxuan Tan, Shenggui Li, Ruofan Wu, Jeff J. Ma, Ang Chen 0001, Mosharaf Chowdhury",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790233",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "TierX: A Simulation Framework for Multi-tier BCI System Design Evaluation and Exploration.",
+    "authors": "Seunghyun Song, Yeongwoo Jang, Daye Jung, Kyungsoo Park, Donghan Kim, Gwangjin Kim, Hunjun Lee, Jerald Yoo, Jangwoo Kim",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790234",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Toasty: Speeding Up Network I/O with Cache-Warm Buffers.",
+    "authors": "Preeti, Nitish Bhat, Ashwin Kumar, Mythili Vutukuru",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790235",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Towards High-Goodput LLM Serving with Prefill-decode Multiplexing.",
+    "authors": "Yukang Chen, Weihao Cui, Han Zhao 0005, Ziyi Xu, Xiaoze Fan, Xusheng Chen, Yangjie Zhou 0001, Shixuan Sun, Bingsheng He, Quan Chen 0002",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790236",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "TPLA: Tensor Parallel Latent Attention for Efficient Disaggregated Prefill & Decode Inference.",
+    "authors": "Xiaojuan Tang, Fanxu Meng 0003, Pingzhi Tang, Yuxuan Wang 0012, Di Yin, Xing Sun 0001, Muhan Zhang",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790237",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "TreeVQA: A Tree-Structured Execution Framework for Shot Reduction in Variational Quantum Algorithms.",
+    "authors": "Yuewen Hou, Dhanvi Bharadwaj, Gokul Subramanian Ravi",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790239",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Trinity: Three-Dimensional Tensor Program Optimization via Tile-level Equality Saturation.",
+    "authors": "Jaehyeong Park, Youngchan Kim, Haechan An, Gieun Jeong, Jeehoon Kang, Dongsu Han",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790240",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Triton-Sanitizer: A Fast and Device-Agnostic Memory Sanitizer for Triton with Rich Diagnostic Context.",
+    "authors": "Hao Wu 0077, Qidong Zhao, Songqing Chen, Yang Chen, Yueming Hao, Tony C. W. Liu, Sijia Chen, Adnan Aziz, Keren Zhou 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790241",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Trust-V: Toward Secure and Reliable Storage for Trusted Execution Environments.",
+    "authors": "Seung-Kyun Han, Jiyeon Yang, Jinsoo Jang",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790242",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Understanding and Optimizing Database Pushdown on Disaggregated Storage.",
+    "authors": "Hua Zhang, Xiao Li, Yuebin Bai, Ming Liu 0027",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790243",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "Understanding Query Optimization Bugs in Graph Database Systems.",
+    "authors": "Yuyu Chen, Zhongxing Yu",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790244",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "vCXLGen: Automated Synthesis and Verification of CXL Bridges for Heterogeneous Architectures.",
+    "authors": "Anatole Lefort, Julian Pritzi, Nicolò Carpentieri, David Schall, Simon Dittrich, Soham Chakraborty 0001, Nicolai Oswald, Pramod Bhatotia",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790245",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "SwiftSpec: Disaggregated Speculative Decoding and Fused Kernels for Low-Latency LLM Inference.",
+    "authors": "Ziyi Zhang, Ziheng Jiang, Chengquan Jiang, Menghan Yu, Size Zheng 0001, Haibin Lin, Xin Liu 0086, Henry Hoffmann",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790246",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "Wave: Leveraging Architecture Observation for Privacy-Preserving Model Oversight.",
+    "authors": "Haoxuan Xu, Chen Gong, Beijie Liu, Haizhong Zheng, Beidi Chen, Mengyuan Li 0004",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790247",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "Wax: Optimizing Data Center Applications With Stale Profile.",
+    "authors": "Tawhid Bhuiyan, Sumya Hoque, Angelica Aparecida Moreira, Tanvir Ahmed Khan 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790248",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "WorksetEnclave: Towards Optimizing Cold Starts in Confidential Serverless with Workset-Based Enclave Restore.",
+    "authors": "Xiaolong Yan, Qihang Zhou, Zisen Wan, Feifan Qian, Wentao Yao, Weijuan Zhang, Xiaoqi Jia",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790249",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "ZipServ: Fast and Memory-Efficient LLM Inference with Hardware-Aware Lossless Compression.",
+    "authors": "Ruibo Fan, Xiangrui Yu, Xinglin Pan, Zeyu Li, Weile Luo, Qiang Wang 0022, Wei Wang 0030, Xiaowen Chu 0001",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790250",
+    "category": [
+      "LLM Inference",
+      "VLM Inference"
+    ]
+  },
+  {
+    "paper_title": "Anvil: A General-Purpose Timing-Safe Hardware Description Language.",
+    "authors": "Jason Zhijingcheng Yu, Aditya Ranjan Jha, Umang Mathur 0001, Trevor E. Carlson, Prateek Saxena",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790125",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "CHEHAB RL: Learning to Optimize Fully Homomorphic Encryption Computations.",
+    "authors": "Bilel Sefsaf, Abderraouf Dandani, Abdessamed Seddiki, Arab Mohammed, Eduardo Chielle, Michail Maniatakos, Riyadh Baghdadi",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790138",
+    "category": [
+      "Others"
+    ]
+  },
+  {
+    "paper_title": "CounterPoint: Using Hardware Event Counters to Refute and Refine Microarchitectural Assumptions.",
+    "authors": "Nick Lindsay, Caroline Trippel, Anurag Khandelwal, Abhishek Bhattacharjee",
+    "conference": "ASPLOS",
+    "url": "https://doi.org/10.1145/3779212.3790145",
+    "category": [
+      "Others"
+    ]
+  }
+]
