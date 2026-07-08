@@ -57,6 +57,21 @@ research_topics:
       - "Auto-scaling and elasticity in serverless environments"
       - "Event-driven cloud function performance and overhead"
       - "Managing stateless microservices in serverless platforms"
+  
+  - name: "Agentic Execution Environment"
+    keywords: ["agentic execution", "environment", "agent sandbox", "tool execution"]
+    slack_users:
+      - "<@U04HALEGCD7>" # "@Leonid Kondrashov"
+      - "<@U04HVNW03QQ>" # "@Park JooYoung"
+    slack_channel: "#serverless-systems"
+    description: >-
+      Research on agentic execution environments, used for isolating tools executions
+    taxonomy:
+      - "Agentic execution environment design and implementation"
+      - "Isolation and sandboxing techniques for tool executions"
+      - "Resource management in agentic execution environments"
+      - "Security considerations in agentic execution environments"
+      - "Performance optimization for agentic execution environments"
 
   - name: "VLM Inference"
     keywords: ["vlm", "vision-language", "vision language model", "multimodal", "inference", "serving", "latency", "throughput"]
