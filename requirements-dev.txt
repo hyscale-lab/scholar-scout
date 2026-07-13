@@ -1,10 +1,10 @@
 # Code style and linting
-flake8>=6.1.0                  # Base linting tool
+flake8>=7.3.0                  # Base linting tool
 flake8-docstrings>=1.7.0       # Docstring style checking
-flake8-import-order>=0.18.2    # Import order checking
-black>=24.1.0                  # Code formatter
-autoflake>=2.2.0               # Remove unused imports and variables
+flake8-import-order>=0.19.2    # Import order checking
+black>=26.5.1                  # Code formatter
+autoflake>=2.3.3               # Remove unused imports and variables
 
 # Testing tools
-pytest>=7.4.0                  # Testing framework
-pytest-mock>=3.11.1            # Mocking library for tests 
+pytest>=9.1.1                  # Testing framework
+pytest-mock>=3.15.1            # Mocking library for tests 
