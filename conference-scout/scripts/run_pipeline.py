@@ -117,18 +117,39 @@ def step_classify(config):
     logger.info("Step 3 complete.\n")
 
 
+
 # ===========================================================================
 # Step 4 — Upload classified papers to Slack
 # ===========================================================================
 def step_notify(config):
     logger.info("=" * 60)
-    logger.info("STEP 4: Sending classified papers to Slack")
+    logger.info("STEP 4: Sending classified papers and Trend Report to Slack")
     logger.info("=" * 60)
 
     from notifications import SlackNotifier
+    import trend_analyzer
+    from slack_sdk import WebClient
 
-    notifier = SlackNotifier(config)
-    notifier.send_classified_papers(CLASSIFIED_FILE)
+    # 1. Generate and send the new Monthly Trend Report text
+    report_text = trend_analyzer.run_analytics_engine()
+    if report_text:
+        try:
+            client = WebClient(token=config.slack.api_token)
+            client.chat_postMessage(
+                channel=config.slack.default_channel_id, 
+                text=report_text
+            )
+            logger.info("Successfully sent Trend Report to Slack!")
+        except Exception as e:
+            logger.error(f"Failed to send Trend Report message: {e}")
+
+    # 2. Preserve original behavior: Upload the JSON file
+    try:
+        notifier = SlackNotifier(config)
+        notifier.send_classified_papers(CLASSIFIED_FILE)
+        logger.info("Successfully executed original JSON upload.")
+    except Exception as e:
+        logger.error(f"Failed to execute original JSON upload: {e}")
 
     logger.info("Step 4 complete.\n")
 

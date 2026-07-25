@@ -242,6 +242,12 @@ def run_classification(config: AppConfig,
         logger.info("=" * 60)
         
         new_results = classify_all_papers(new_papers, classifier, minimal_output)
+        
+         # --- NEW: DATE STAMPING LOGIC ---
+        today_str = datetime.now().strftime("%Y-%m-%d")
+        for r in new_results:
+            r["date_added"] = today_str
+            
         # Append new findings to history
         results = existing_results + new_results
     else:
