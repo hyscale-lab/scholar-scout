@@ -144,14 +144,14 @@ def step_notify(config):
             logger.error(f"Failed to send Trend Report message: {e}")
 
     # 2. Preserve original behavior: Upload the JSON file
-    # try:
-    #     notifier = SlackNotifier(config)
-    #     notifier.send_classified_papers(CLASSIFIED_FILE)
-    #     logger.info("Successfully executed original JSON upload.")
-    # except Exception as e:
-    #     logger.error(f"Failed to execute original JSON upload: {e}")
+    try:
+        notifier = SlackNotifier(config)
+        notifier.send_classified_papers(CLASSIFIED_FILE)
+        logger.info("Successfully executed original JSON upload.")
+    except Exception as e:
+        logger.error(f"Failed to execute original JSON upload: {e}")
 
-    # logger.info("Step 4 complete.\n")
+    logger.info("Step 4 complete.\n")
 
 
 # ===========================================================================
