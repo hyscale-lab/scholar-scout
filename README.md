@@ -1,3 +1,4 @@
+<!-- cspell:ignore nomic Optimisation maximising prioritises generalisation -->
 # Scholar Scout
 
 A tool to monitor Google Scholar alerts and classify research papers using Perplexity AI.
