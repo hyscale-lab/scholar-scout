@@ -119,6 +119,7 @@ def generate_trend_report(current_month_name, curr_stats, prev_stats):
 def run_analytics_engine(current_period=None, previous_period=None):
     """
     Reads the JSON ledger, buckets by date, and generates the report.
+    
     If periods are not provided, it defaults to the current month vs previous month.
     Periods should be in 'YYYY-MM' format.
     """
