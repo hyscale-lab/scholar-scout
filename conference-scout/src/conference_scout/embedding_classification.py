@@ -5,15 +5,13 @@ from config import AppConfig
 
 logger = logging.getLogger(__name__)
 
-class GeminiEmbeddingSetup:
-    # --- MODIFIED PART: Replaced single threshold with dynamic thresholds ---
+class NomicEmbeddingSetup:
     ABSTRACT_THRESHOLD = 0.64  # Use when we have a full 300-word abstract
     TITLE_THRESHOLD = 0.64     # Use when Semantic Scholar fails and we only have a title
     
     SINGLE_CLASSIFICATION = False
     DEBUG = True
 
-    # --- RESTORED PART: Re-enabling the Noise/Garbage filter anchors for vector distance checking ---
     NOISE = "NONSENSE GARBAGE NEGATIVE"
     CS = "COMPUTER SCIENCE RELATED RESEARCH PAPER"
     
@@ -37,66 +35,61 @@ class GeminiEmbeddingSetup:
         ]
     }
 
-    def __init__(self, config: AppConfig, gemini_client=None):
+    def __init__(self, config: AppConfig):
         self.TAXONOMY = {research_topic.name: research_topic.taxonomy for research_topic in config.research_topics}
         
-        # --- MODIFIED PART: Hitting LM Studio's native embedding endpoint ---
-        self.OLLAMA_URL = "http://100.105.99.33:11434/v1/embeddings"
-        # Using the exact strict model name Dmitrii requested
-        self.OLLAMA_MODEL = "text-embedding-nomic-embed-text-v1.5"
+        self.MODEL_ENDPOINT = "http://100.105.99.33:11434/v1/embeddings"
+        self.MODEL_NAME = "text-embedding-nomic-embed-text-v1.5"
         self.precomputed = False
 
-    # --- MODIFIED PART: Added manual batching and verbose server error logging ---
     def get_embedding(self, text_or_list):
         if isinstance(text_or_list, list):
             batch_results = []
             for text in text_or_list:
                 try:
-                    response = requests.post(self.OLLAMA_URL, json={
-                        "model": self.OLLAMA_MODEL,
+                    response = requests.post(self.MODEL_ENDPOINT, json={
+                        "model": self.MODEL_NAME,
                         "input": text
                     }, timeout=30)
                     
                     if response.status_code != 200:
-                        logger.error(f"LM Studio Error: {response.text}")
+                        logger.error(f"Endpoint Error: {response.text}")
                         
                     response.raise_for_status()
                     data = response.json().get("data", [])
                     if data:
                         batch_results.append(data[0]["embedding"])
                 except Exception as e:
-                    logger.error(f"Failed to fetch batch embedding from LM Studio: {e}")
+                    logger.error(f"Failed to fetch batch embedding from embedding endpoint: {e}")
                     raise
             return batch_results
 
         try:
-            response = requests.post(self.OLLAMA_URL, json={
-                "model": self.OLLAMA_MODEL,
+            response = requests.post(self.MODEL_ENDPOINT, json={
+                "model": self.MODEL_NAME,
                 "input": text_or_list
             }, timeout=30)
             
             if response.status_code != 200:
-                logger.error(f"LM Studio Error: {response.text}")
+                logger.error(f"Endpoint Error: {response.text}")
                 
             response.raise_for_status()
             
             data = response.json().get("data", [])
             if not data:
-                logger.error("No embedding data returned from LM Studio.")
+                logger.error("No embedding data returned from embedding endpoint.")
                 raise ValueError("Empty embeddings response.")
             
             return data[0]["embedding"]
             
         except Exception as e:
-            logger.error(f"Failed to fetch single embedding from LM Studio: {e}")
+            logger.error(f"Failed to fetch single embedding from Endpoint: {e}")
             raise
 
-    # --- RESTORED PART: The Vector Math Calculation Methods ---
     def precompute_category_embeddings(self):
         if self.precomputed:
             return
         
-        # Pre-compute Category Centroids using LM Studio
         self.CATEGORY_EMBEDDINGS = {label: self.get_embedding(keywords) for label, keywords in self.TAXONOMY.items()}
         self.NEGATIVE_CS_EMBEDDINGS = {label: self.get_embedding(keywords) for label, keywords in self.FILTER_NONSENSE_TAXONOMY.items()}
         self.precomputed = True
@@ -134,8 +127,7 @@ class GeminiEmbeddingSetup:
             
         return input_vec 
 
-    # --- RESTORED PART: Reverting back to the geometric categorization bounds ---
-    def gemini_embedding_classify(self, paper_abstract):
+    def nomic_embedding_classify(self, paper_abstract):
         if not paper_abstract:
             return []
             
@@ -153,11 +145,10 @@ class GeminiEmbeddingSetup:
         # Calculate similarity against all configured topics
         category_classification_result = self.text_embedding_classification_result(paper_vector, self.CATEGORY_EMBEDDINGS)
         
-        if GeminiEmbeddingSetup.DEBUG:
+        if NomicEmbeddingSetup.DEBUG:
             for category, cat_score in category_classification_result.items():
                 logger.info(f"CALIBRATION -> Paper vs {category} @ {cat_score:.4f}")
         
-        # --- THE DYNAMIC DBLP FALLBACK THRESHOLD ---
         # If the string is long (> 30 words), it has an abstract. Use our high threshold.
         # If it's short (Title only fallback), drop the threshold to catch it.
         word_count = len(paper_abstract.split())

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Paper Classifier — Reads enriched + agent-enriched papers, classifies via Gemini embeddings.
+Paper Classifier — Reads enriched + agent-enriched papers, classifies via Nomic embeddings.
 
 Combines papers_enriched.json and papers_agent_enriched.json (or falls back to
 papers_unenriched.json), runs embedding-based classification on each paper's
@@ -17,10 +17,8 @@ import sys
 from collections import Counter
 from datetime import datetime
 
-from google import genai
-
 from config import AppConfig, load_config
-from embedding_classification import GeminiEmbeddingSetup
+from embedding_classification import NomicEmbeddingSetup
 
 logger = logging.getLogger(__name__)
 
@@ -92,7 +90,7 @@ def build_classification_text(paper: dict) -> str:
         return title
 
 
-def classify_all_papers(papers: list, classifier: GeminiEmbeddingSetup,
+def classify_all_papers(papers: list, classifier: NomicEmbeddingSetup,
                         minimal_output: bool = True) -> list:
     """Classify all papers and return the final output list."""
     results = []
@@ -107,7 +105,7 @@ def classify_all_papers(papers: list, classifier: GeminiEmbeddingSetup,
         text = build_classification_text(paper)
 
         # Classify using embeddings
-        categories = classifier.gemini_embedding_classify(text)
+        categories = classifier.nomic_embedding_classify(text)
 
         if not categories:
             categories = ["Others"]
@@ -153,28 +151,8 @@ def run_classification(config: AppConfig,
     """
     Run the classification pipeline.
     """
-    # Initialize Gemini client
-    api_key = config.gemini.api_key
-
-    if isinstance(api_key, dict):
-        from google.oauth2 import service_account
-        credentials = service_account.Credentials.from_service_account_info(
-            api_key, scopes=['https://www.googleapis.com/auth/cloud-platform']
-        )
-        client = genai.Client(
-            vertexai=True,
-            project=credentials.project_id,
-            location="global",
-            credentials=credentials,
-        )
-    else:
-        if not api_key or api_key.startswith("${"):
-            api_key = os.environ.get("GEMINI_API_KEY", "")
-        if not api_key:
-            raise RuntimeError("GEMINI_API_KEY not set. Add it to .env or export it.")
-        client = genai.Client(api_key=api_key)
-
-    classifier = GeminiEmbeddingSetup(config, client)
+    # Initialize classifier
+    classifier = NomicEmbeddingSetup(config)
 
     # Load incoming scraped papers
     enriched = load_papers(enriched_file)
@@ -192,10 +170,7 @@ def run_classification(config: AppConfig,
     if not all_papers:
         raise RuntimeError("No candidate papers found to process. Check input files.")
 
-    # =========================================================================
-    # START MODIFICATION FOR ISSUE 30 & 31: Historical Retention & Deduplication
-    # Target: Hybrid Deduplication (DBLP Key primary, Title fallback)
-    # =========================================================================
+    # Historical Retention & Deduplication
     existing_results = []
     if os.path.exists(output_file):
         try:
@@ -244,7 +219,6 @@ def run_classification(config: AppConfig,
         
         new_results = classify_all_papers(new_papers, classifier, minimal_output)
         
-         # --- NEW: DATE STAMPING LOGIC ---
         today_str = datetime.now().strftime("%Y-%m-%d")
         for r in new_results:
             r["date_added"] = today_str
@@ -254,9 +228,7 @@ def run_classification(config: AppConfig,
     else:
         logger.info("No new papers detected. History remains unchanged.")
         results = existing_results
-    # =========================================================================
-    # END MODIFICATION FOR ISSUE 30 & 31
-    # =========================================================================
+
     # Write the entire continuous database back to disk
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
@@ -309,7 +281,6 @@ if __name__ == "__main__":
             unenriched_file=os.path.join(data_dir, "papers_unenriched.json"),
             output_file=os.path.join(data_dir, "classified_papers.json"),
             minimal_output=False,
-            #Changed from True to False for DBLP keys
         )
     except RuntimeError as e:
         logger.error(str(e))

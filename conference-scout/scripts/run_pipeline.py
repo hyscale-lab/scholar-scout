@@ -5,7 +5,7 @@ Conference Scout Orchestrator — Runs the full pipeline end-to-end.
 Steps:
     1. Extract papers from dblp + fetch abstracts via Semantic Scholar
     2. (Agent) Enrich unenriched papers — placeholder for OpenClaw API
-    3. Classify papers via Gemini embeddings
+    3. Classify papers via Nomic embeddings
     4. Upload classified_papers.json to Slack
 
 Usage:
@@ -96,11 +96,11 @@ def step_agent_enrich(config):
 
 
 # ===========================================================================
-# Step 3 — Classify papers via Gemini embeddings
+# Step 3 — Classify papers via Nomic embeddings
 # ===========================================================================
 def step_classify(config):
     logger.info("=" * 60)
-    logger.info("STEP 3: Classifying papers via Gemini embeddings")
+    logger.info("STEP 3: Classifying papers via Nomic embeddings")
     logger.info("=" * 60)
 
     from classify_papers import run_classification
@@ -119,14 +119,13 @@ def step_classify(config):
 
 
 # ===========================================================================
-# Step 4 — Upload classified papers to Slack
+# Step 4 — Upload Trend Report to Slack
 # ===========================================================================
 def step_notify(config):
     logger.info("=" * 60)
-    logger.info("STEP 4: Sending classified papers and Trend Report to Slack")
+    logger.info("STEP 4: Sending Trend Report to Slack")
     logger.info("=" * 60)
 
-    from notifications import SlackNotifier
     import trend_analyzer
     from slack_sdk import WebClient
 
@@ -142,16 +141,6 @@ def step_notify(config):
             logger.info("Successfully sent Trend Report to Slack!")
         except Exception as e:
             logger.error(f"Failed to send Trend Report message: {e}")
-
-    # 2. Preserve original behavior: Upload the JSON file
-    try:
-        notifier = SlackNotifier(config)
-        notifier.send_classified_papers(CLASSIFIED_FILE)
-        logger.info("Successfully executed original JSON upload.")
-    except Exception as e:
-        logger.error(f"Failed to execute original JSON upload: {e}")
-
-    logger.info("Step 4 complete.\n")
 
 
 # ===========================================================================
