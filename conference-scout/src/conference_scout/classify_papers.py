@@ -179,6 +179,7 @@ def run_classification(config: AppConfig,
             logger.info(f"Loaded {len(existing_results)} historical classifications from {output_file}")
         except Exception as e:
             logger.warning(f"Could not load existing classified papers database: {e}. Starting fresh.")
+            raise
 
     # 1. Map existing DBLP keys (Primary ID)
     existing_keys = {
@@ -214,7 +215,7 @@ def run_classification(config: AppConfig,
     # --- CLASSIFICATION LAYER ---
     if new_papers:
         logger.info("=" * 60)
-        logger.info(f"Classifying {len(new_papers)} new papers via LLM")
+        logger.info(f"Classifying {len(new_papers)} new papers via embeddings")
         logger.info("=" * 60)
         
         new_results = classify_all_papers(new_papers, classifier, minimal_output)

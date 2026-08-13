@@ -111,7 +111,7 @@ def step_classify(config):
         agent_enriched_file=AGENT_ENRICHED_FILE,
         unenriched_file=UNENRICHED_FILE,
         output_file=CLASSIFIED_FILE,
-        minimal_output=True,
+        minimal_output=False,
     )
 
     logger.info("Step 3 complete.\n")

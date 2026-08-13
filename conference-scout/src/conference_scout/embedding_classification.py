@@ -6,8 +6,7 @@ from config import AppConfig
 logger = logging.getLogger(__name__)
 
 class NomicEmbeddingSetup:
-    ABSTRACT_THRESHOLD = 0.64  # Use when we have a full 300-word abstract
-    TITLE_THRESHOLD = 0.64     # Use when Semantic Scholar fails and we only have a title
+    SIMILARITY_THRESHOLD = 0.64  
     
     SINGLE_CLASSIFICATION = False
     DEBUG = True
@@ -149,10 +148,8 @@ class NomicEmbeddingSetup:
             for category, cat_score in category_classification_result.items():
                 logger.info(f"CALIBRATION -> Paper vs {category} @ {cat_score:.4f}")
         
-        # If the string is long (> 30 words), it has an abstract. Use our high threshold.
-        # If it's short (Title only fallback), drop the threshold to catch it.
-        word_count = len(paper_abstract.split())
-        applied_threshold = self.ABSTRACT_THRESHOLD if word_count > 30 else self.TITLE_THRESHOLD
+        
+        applied_threshold = self.SIMILARITY_THRESHOLD_THRESHOLD 
         
         if self.SINGLE_CLASSIFICATION:
             best_label = max(category_classification_result, key=category_classification_result.get)

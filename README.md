@@ -7,10 +7,14 @@ A tool to monitor Google Scholar alerts and classify research papers using Perpl
 - Connects to Gmail to fetch Google Scholar alert emails
 - Uses Perplexity AI to parse and extract paper information
 - Supports multiple research topics and keywords
+- Sends notifications to Slack
+
+## Conference Scout
+
+A pipeline to monitor and classify bulk research papers from conference proceedings.
+
 - Uses locally hosted Nomic embeddings for research topic classification
 - Maintains a persistent database of classified papers with automatic deduplication
-- Generates monthly trend analytics from historical classifications
-- Sends notifications to Slack
 
 ## Setup
 1. Clone the repository
