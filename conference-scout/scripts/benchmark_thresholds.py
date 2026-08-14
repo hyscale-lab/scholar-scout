@@ -11,7 +11,7 @@ project_root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."
 sys.path.insert(0, os.path.join(project_root_path, "src", "conference_scout"))
 sys.path.insert(0, os.path.join(project_root_path, "src"))
 
-from embedding_classification import GeminiEmbeddingSetup
+from embedding_classification import NomicEmbeddingSetup
 from config import load_config
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -20,10 +20,12 @@ logger = logging.getLogger(__name__)
 SERVER_URL = "http://100.105.99.33:11434"
 GEN_MODEL = "qwen/qwen3.6-35b-a3b"
 
-def ask_qwen_judge(title: str, abstract: str) -> dict:
+def ask_qwen_judge(title: str, abstract: str, category_list: list[str]) -> dict:
     """Uses the generative model to establish a high-confidence Multi-Label Silver Ground Truth."""
+
+    categories_str = f"[{', '.join(category_list)}]"
     prompt = f"""Task: Classify this computer science paper into the relevant categories from this list:
-[LLM Inference, Serverless Computing, VLM Inference, Sustainable Computing]
+{categories_str}
 A paper can belong to multiple categories (1 to 3 max). If it fits none of these, use ["Others"].
 
 Paper Title: {title}
@@ -37,12 +39,11 @@ Output EXACTLY in this JSON format, nothing else:
             "model": GEN_MODEL,
             "messages": [{"role": "user", "content": prompt}],
             "temperature": 0.0
-        # Increased timeout to 180 seconds because 35B parameter models take time to process
         }, timeout=180) 
         response.raise_for_status()
         content = response.json()["choices"][0]["message"]["content"]
         
-        # Extract JSON safely
+       
         match = re.search(r'\{.*?\}', content.replace('\n', ''), re.DOTALL)
         return json.loads(match.group()) if match else None
     except Exception as e:
@@ -64,12 +65,15 @@ def run_benchmark():
     logger.info("="*60)
     logger.info(f"PHASE 1: Generating Multi-Label Silver Labels via {GEN_MODEL}")
     logger.info("="*60)
-    
+
+    category_names = [topic.name for topic in config.research_topics]
+
     for p in sample_papers:
         title = p.get("title", "")
         abstract = p.get("abstract", "")
         
-        judge_result = ask_qwen_judge(title, abstract)
+
+        judge_result = ask_qwen_judge(title, abstract, category_names)
         if judge_result and judge_result.get("Confidence", 0) >= 90:
             silver_dataset.append({
                 "text": f"{title} {abstract}",
@@ -85,7 +89,7 @@ def run_benchmark():
     logger.info("PHASE 2: Extracting Raw Cosine Scores via Nomic Embeddings")
     logger.info("="*60)
     
-    classifier = GeminiEmbeddingSetup(config)
+    classifier = NomicEmbeddingSetup(config)
     classifier.precompute_category_embeddings()
     
     all_raw_scores = []
