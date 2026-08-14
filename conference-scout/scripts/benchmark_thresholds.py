@@ -22,7 +22,6 @@ GEN_MODEL = "qwen/qwen3.6-35b-a3b"
 
 def ask_qwen_judge(title: str, abstract: str, category_list: list[str]) -> dict:
     """Uses the generative model to establish a high-confidence Multi-Label Silver Ground Truth."""
-
     categories_str = f"[{', '.join(category_list)}]"
     prompt = f"""Task: Classify this computer science paper into the relevant categories from this list:
 {categories_str}
