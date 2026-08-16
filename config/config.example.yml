@@ -26,10 +26,11 @@ research_topics:
     keywords: ["llm", "inference", "serving", "latency", "throughput"]
     slack_users:
       - "<@U04MG63BX1R>" # "@Ruiqi Lai"
-      - "<@U06L40H6D8Q>" # "@Yixin Zhang"
       - "<@U07J4DZRPB6>" # "@Hongrui Liu"
-      - "<@U0618BHHTRR>" # "@Yulin"
-      - "<@U058LPMQB6J>" # "@Colin Hong"
+      - "<@U058LPMQB6J>" # "@Colin"
+      - "<@U08RPU2EN6R>" # "@Pang Wei Siong"
+      - "<@U07LK4BKPPW>" # "@Boxi Zhou"
+      - "<@U0968F9G9GB>" # "@Chengzhi Lu"
     slack_channel: "#systems-for-ai"
     description: >-
       Research related to LLM inference serving systems, architectures, and 
@@ -63,7 +64,7 @@ research_topics:
     slack_users:
       - "<@U04HALEGCD7>" # "@Leonid Kondrashov"
       - "<@U04HVNW03QQ>" # "@Park JooYoung"
-    slack_channel: "#serverless-systems"
+    slack_channel: "#aries-agents"
     description: >-
       Research on agentic execution environments, used for isolating tools executions
     taxonomy:
@@ -78,7 +79,7 @@ research_topics:
     slack_users:
       - "<@U0618BHHTRR>" # "@Yulin"
       - "<@U0973SVHUD6>" # "@Wenyan Chen"
-    slack_channel: "#systems-for-ai"
+    slack_channel: "#vlm-streaming"
     description: >-
       Research on VLM inference and serving systems, including vision-language
       model deployment, latency optimization, throughput improvement, and
