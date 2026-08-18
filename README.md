@@ -1,3 +1,4 @@
+<!-- cspell:ignore nomic Optimisation maximising prioritises generalisation -->
 # Scholar Scout
 
 A tool to monitor Google Scholar alerts and classify research papers using Perplexity AI.
@@ -7,6 +8,13 @@ A tool to monitor Google Scholar alerts and classify research papers using Perpl
 - Uses Perplexity AI to parse and extract paper information
 - Supports multiple research topics and keywords
 - Sends notifications to Slack
+
+## Conference Scout
+
+A pipeline to monitor and classify bulk research papers from conference proceedings.
+
+- Uses locally hosted Nomic embeddings for research topic classification
+- Maintains a persistent database of classified papers with automatic deduplication
 
 ## Setup
 1. Clone the repository
@@ -85,6 +93,7 @@ Note:
 - You'll need to [create an App Password](https://support.google.com/accounts/answer/185833) for Gmail
 - The tests expect Google Scholar alert emails from January 5th, 2025 in the specified folder
 - Make sure your Scholar alerts are being properly filtered to the specified folder, namely provide the correct path to the folder in the `config.yml` file
+
 
 ## License
 MIT

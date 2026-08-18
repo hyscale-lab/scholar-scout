@@ -1,12 +1,13 @@
-name: Weekly Conference Scout
+name: Monthly Conference Scout
 
 on:
   schedule:
-    # Runs at 09:00 UTC every Monday
-    - cron: '0 9 * * 1'
+    # Runs at 09:00 UTC on the 1st day of every month
+    - cron: '0 9 1 * *'
   workflow_dispatch:  # Allows manual triggering
 
 permissions:
+  contents: write  #Grants push privileges to save JSON
   pages: write
   id-token: write
 
@@ -16,7 +17,8 @@ defaults:
 
 jobs:
   run-pipeline:
-    runs-on: ubuntu-latest
+    #runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
     - uses: actions/checkout@v4
@@ -40,12 +42,21 @@ jobs:
 
     - name: Run Conference Scout Pipeline
       env:
-        GEMINI_API_KEY: ${{ secrets.GOOGLE_CREDENTIALS }}
         SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}
         OPENCLAW_TOKEN: ${{ secrets.OPENCLAW_TOKEN }}
         OPENCLAW_URL: ${{ secrets.OPENCLAW_URL }}
         SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
       run: python scripts/run_pipeline.py
+
+
+    - name: Commit and Push Historical Data Updates
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add data/classified_papers.json
+        # Only commits if changes exist; [skip ci] prevents infinite build loops
+        git diff-index --quiet HEAD || git commit -m "chore: automated append to historical paper database [skip ci]"
+        git push origin HEAD
 
     - name: Prepare Pages content
       run: |
@@ -60,7 +71,8 @@ jobs:
 
   deploy:
     needs: run-pipeline
-    runs-on: ubuntu-latest
+    #runs-on: ubuntu-latest
+    runs-on: self-hosted
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
