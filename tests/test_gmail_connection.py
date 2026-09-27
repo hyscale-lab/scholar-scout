@@ -38,6 +38,7 @@ from scholar_scout.classifier import ScholarClassifier
 from scholar_scout.email_client import EmailClient
 
 
+@unittest.skipUnless(os.getenv("RUN_LIVE_TESTS") == "1", "Live services require explicit opt-in")
 class TestGmailConnection(unittest.TestCase):
     def setUp(self):
         """Set up test environment."""

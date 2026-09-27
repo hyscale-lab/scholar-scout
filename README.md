@@ -1,11 +1,11 @@
 # Scholar Scout
 
-A tool to monitor Google Scholar alerts and classify research papers using Perplexity AI.
+A tool to monitor Google Scholar alerts and classify research papers using Gemini 3.8 Flash LOW.
 
 ## Features
 - Connects to Gmail to fetch Google Scholar alert emails
-- Uses Perplexity AI to parse and extract paper information
-- Supports multiple research topics and keywords
+- Resolves source abstracts before classifying papers with verified contribution evidence
+- Supports multiple research topics with explicit classification scopes
 - Sends notifications to Slack
 
 ## Setup
@@ -13,8 +13,8 @@ A tool to monitor Google Scholar alerts and classify research papers using Perpl
 2. Create a virtual environment: `python -m venv .venv`
 3. Activate the virtual environment: `source .venv/bin/activate` (Unix) or `.venv\Scripts\activate` (Windows)
 4. Install dependencies: `pip install -r requirements.txt`
-5. Copy `.env.example` to `.env` and fill in your credentials
-6. Copy `config.example.yml` to `config.yml` and customize settings
+5. Create `.env` using the example below and fill in your credentials
+6. Copy `config/config.example.yml` to `config/config.yml` and customize settings
 
 ## Configuration
 Create a `.env` file with:
@@ -23,29 +23,54 @@ GMAIL_USERNAME=your.email@gmail.com
 GMAIL_APP_PASSWORD=your-app-specific-password
 GEMINI_API_KEY=your-gemini-api-key
 SLACK_API_TOKEN=your-slack-api-token
+IEEE_API_KEY=your-ieee-api-key
+SEMANTIC_SCHOLAR_API_KEY=your-semantic-scholar-api-key
 ```
+
+IEEE and Semantic Scholar keys are optional; IEEE retrieval requires its key.
+In GitHub Actions, use the `GOOGLE_CREDENTIALS` secret for Gemini and
+add `IEEE_API_KEY` and `SEMANTIC_SCHOLAR_API_KEY` if using those services.
+
+### Gmail Setup
+
+1. Enable 2-Step Verification on your Google Account, then create an [App Password](https://support.google.com/accounts/answer/185833) for Scholar Scout.
+2. Set `GMAIL_USERNAME` to your Gmail address and `GMAIL_APP_PASSWORD` to that app password in `.env`. Do not use your normal Google password or commit credentials to Git.
+3. Create a dedicated Gmail label, such as `Google Scholar Alerts`, and [create a filter](https://support.google.com/mail/answer/6579) for `scholaralerts-noreply@google.com` that applies this label. Apply the label to existing alerts too if you want them included.
+4. Set the matching folder name in `config/config.yml`:
+
+```yaml
+email:
+  username: ${GMAIL_USERNAME}
+  password: ${GMAIL_APP_PASSWORD}
+  folder: "Google Scholar Alerts"
+```
+
+Use a dedicated label: normal runs clean up emails older than four weeks in this folder.
+If App Passwords are unavailable, check your account's security settings or ask your
+Workspace administrator; this client requires IMAP access with an app password.
+
+For GitHub Actions, add `GMAIL_USERNAME` and `GMAIL_APP_PASSWORD` as repository secrets.
+Set the folder in `config/config.example.yml`, which the workflow copies on each run.
 
 ### Adding Users to Track
 1. Go to [Google Scholar](https://scholar.google.com/)
 2. Search for the researcher you want to track
 3. Click on their profile
 4. Click the "Follow" button (bell icon) to receive email alerts for new papers
-5. In Gmail, create a filter to move these alerts to your designated Scholar folder
-6. Update your `config.yml` to include any Slack users to notify:
+5. Route these alerts to the Gmail label configured above
+6. Update `config/config.yml` to include any Slack users to notify:
 
 ```yaml
 research_topics:
   - name: "LLM Inference"
-    description: "Papers about large language model inference, optimization, and deployment"
-    keywords:
-      - "language model inference"
-      - "LLM serving"
-      - "model optimization"
     slack_users:
       - "@user1"
       - "@user2"
     slack_channel: "#llm-papers"  # optional
 ```
+
+Topic scopes are defined in `src/scholar_scout/topic_policy.json`; YAML entries
+configure subscriptions and Slack routing. Use the same topic name in both files.
 
 ### HyScale Scholar Account
 To add researchers to the HyScale Scholar tracking:
@@ -61,31 +86,25 @@ To add researchers to the HyScale Scholar tracking:
 ## Usage
 Run the main script:
 ```bash
-python scholar_classifier.py
+python scripts/run_classifier.py
 ```
 
 ## Testing
 
+Unit tests run in GitHub Actions using simulated services; no API keys are needed.
+
 ### Integration Tests
-To run the integration tests under the root directory:
+
+For a live service check, use the same Gmail credentials in `tests/.env.test` and
+set the matching folder in `tests/test_config.yml`, then run:
+
 ```bash
-python -m unittest tests/test_integration.py -v
+RUN_LIVE_TESTS=1 python -m unittest discover -s tests -p test_integration.py -v
 ```
 
-The integration tests require a `test_config.yml` file in the `tests/` directory with your Gmail credentials and settings. Example structure:
-
-```yaml
-email:
-  username: your.email@gmail.com
-  password: your-app-specific-password  # Gmail App Password, not your regular password
-  folder: "Inbox"      # IMAP folder where Scholar alerts are stored
-```
-
-Note: 
-- You'll need to [create an App Password](https://support.google.com/accounts/answer/185833) for Gmail
-- The tests expect Google Scholar alert emails from January 5th, 2025 in the specified folder
-- Make sure your Scholar alerts are being properly filtered to the specified folder, namely provide the correct path to the folder in the `config.yml` file
+Live tests are skipped by default. They connect to Gmail and may call model and
+abstract services, but do not send Slack messages. The Weekly Scholar Classifier
+workflow is a production run, not a test; it can delete old emails and send notifications.
 
 ## License
 MIT
-# scholar-scout

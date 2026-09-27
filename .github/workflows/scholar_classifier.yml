@@ -5,9 +5,15 @@ on:
     - cron: '0 0 * * MON'  # Runs at 00:00 every Monday
   workflow_dispatch:  # Allows manual triggering
 
+concurrency:
+  group: scholar-classifier-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   run-classifier:
     runs-on: ubuntu-latest
+    env:
+      STATE_CACHE_KEY: scholar-state-v1-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
     
     steps:
     - uses: actions/checkout@v4
@@ -26,10 +32,75 @@ jobs:
       run: |
         cp config/config.example.yml config/config.yml
         
+    - name: Restore abstract and pending state
+      id: restore_state
+      uses: actions/cache/restore@v4
+      with:
+        path: .scholar-scout
+        key: ${{ env.STATE_CACHE_KEY }}
+        restore-keys: |
+          scholar-state-v1-${{ github.ref_name }}-
+
+    - name: Report state restoration
+      if: always() && steps.restore_state.outcome != 'skipped'
+      env:
+        RESTORE_OUTCOME: ${{ steps.restore_state.outcome }}
+        RESTORED_KEY: ${{ steps.restore_state.outputs.cache-matched-key }}
+      run: |
+        if [ "$RESTORE_OUTCOME" != "success" ]; then
+          echo "::error::State cache restoration failed. Prior pending papers could not be recovered."
+          echo 'State restore: **failed**. See the restore step logs.' >> "$GITHUB_STEP_SUMMARY"
+          exit 1
+        elif [ -n "$RESTORED_KEY" ]; then
+          printf 'State restored from: %s\n' "$RESTORED_KEY"
+          printf 'State restore: `%s`\n' "$RESTORED_KEY" >> "$GITHUB_STEP_SUMMARY"
+        else
+          echo "::warning::No prior state cache was restored (first run, expiration, eviction, or unavailable cache). Starting without previous pending papers."
+          echo 'State restore: **cache miss**; previous pending papers are unavailable.' >> "$GITHUB_STEP_SUMMARY"
+        fi
+
     - name: Run Scholar Classifier
+      id: classify
       env:
         GMAIL_USERNAME: ${{ secrets.GMAIL_USERNAME }}
         GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
         SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}
         GEMINI_API_KEY: ${{ secrets.GOOGLE_CREDENTIALS }}
+        IEEE_API_KEY: ${{ secrets.IEEE_API_KEY }}
+        SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
       run: python scripts/run_classifier.py
+
+    - name: Save abstract and pending state
+      id: save_state
+      if: always() && steps.classify.outcome != 'skipped'
+      uses: actions/cache/save@v4
+      with:
+        path: .scholar-scout
+        key: ${{ env.STATE_CACHE_KEY }}
+
+    - name: Verify saved state cache
+      id: verify_state
+      if: always() && steps.save_state.outcome != 'skipped'
+      uses: actions/cache/restore@v4
+      with:
+        path: .scholar-scout
+        key: ${{ env.STATE_CACHE_KEY }}
+        lookup-only: true
+
+    - name: Report state persistence
+      if: always()
+      env:
+        SAVE_OUTCOME: ${{ steps.save_state.outcome }}
+        VERIFY_OUTCOME: ${{ steps.verify_state.outcome }}
+        SAVED_KEY: ${{ steps.verify_state.outputs.cache-matched-key }}
+      run: |
+        if [ "$SAVE_OUTCOME" = "skipped" ]; then
+          echo 'State save: **skipped**; classification did not run.' >> "$GITHUB_STEP_SUMMARY"
+        elif [ "$SAVE_OUTCOME" = "success" ] && [ "$VERIFY_OUTCOME" = "success" ] && [ "$SAVED_KEY" = "$STATE_CACHE_KEY" ]; then
+          printf 'State cache confirmed: %s\n' "$SAVED_KEY"
+          printf 'State save: **confirmed**, `%s`.\n' "$SAVED_KEY" >> "$GITHUB_STEP_SUMMARY"
+        else
+          echo "::error::State cache save could not be confirmed. This run's pending updates may be lost."
+          printf 'State save: **unconfirmed**, expected `%s`. Check save and verification logs.\n' "$STATE_CACHE_KEY" >> "$GITHUB_STEP_SUMMARY"
+          exit 1
+        fi

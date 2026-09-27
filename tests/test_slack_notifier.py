@@ -11,110 +11,156 @@ copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 """
 
+from pathlib import Path
 import sys
 import unittest
-from pathlib import Path
 from unittest.mock import patch
-import os
 
 from slack_sdk.errors import SlackApiError
-from dotenv import load_dotenv
 
-# Add src directory to path
-sys.path.append(str(Path(__file__).parent.parent / "src"))
-
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+from scholar_scout.config import ResearchTopic, SlackConfig
 from scholar_scout.models import Paper
-from scholar_scout.config import load_config
 from scholar_scout.notifications import SlackNotifier
 
 
 class TestSlackNotifier(unittest.TestCase):
     def setUp(self):
-        """Set up test fixtures."""
-        # Load test configuration
-        env_path = os.path.join(os.path.dirname(__file__), ".env.test")
-        if not load_dotenv(env_path, override=True):
-            # For CI environment, ensure required env vars are set
-            required_vars = ["GMAIL_USERNAME", "GMAIL_APP_PASSWORD", "GEMINI_API_KEY"]
-            missing_vars = [var for var in required_vars if not os.getenv(var)]
-            if missing_vars:
-                raise RuntimeError(f"Missing required environment variables: {missing_vars}")
-        config_path = os.path.join(os.path.dirname(__file__), "test_config.yml")
-        self.config = load_config(config_path)
-        self.notifier = SlackNotifier(self.config.slack)
-
-        # Sample paper
+        self.config = SlackConfig(
+            api_token="test", default_channel="#default", pending_user_id="U123456789"
+        )
+        self.topics = [
+            ResearchTopic(
+                name="Serverless Computing", slack_users=["@one"], slack_channel="C123456789"
+            ),
+            ResearchTopic(
+                name="Sustainable Computing", slack_users=["@two"], slack_channel="C123456789"
+            ),
+            ResearchTopic(name="LLM Inference", slack_users=["@three"], slack_channel="#inference"),
+        ]
+        client = patch("scholar_scout.notifications.WebClient")
+        self.client = client.start().return_value
+        self.addCleanup(client.stop)
+        self.notifier = SlackNotifier(self.config, self.topics)
         self.paper = Paper(
-            title="Test Paper",
-            authors=["Author One", "Author Two"],
-            abstract="This is a test abstract",
-            url="https://example.com/paper",
-            venue="arXiv preprint",
+            title="Example Paper",
+            authors=["A Author"],
+            abstract="Example abstract",
+            url="https://example.org/paper",
+            venue="Example Conference",
         )
 
-        # Sample topics from config
-        self.topic1 = self.config.research_topics[0]
-        self.topic2 = self.config.research_topics[1]
+    def pending(self, count=1):
+        return {
+            f"paper-{i}": {
+                "paper": dict(self.paper.model_dump(), title=f"Pending {i:03d} " + "x" * 180),
+                "status": "pending_abstract",
+            }
+            for i in range(count)
+        }
 
-    @patch("slack_sdk.WebClient")
-    def test_notify_matches_success(self, mock_client):
-        # Setup mock
-        mock_client.return_value.chat_postMessage.return_value = {"ok": True}
-        self.notifier.client = mock_client.return_value
-
-        # Test with multiple topics
-        topics = [self.topic1, self.topic2]
-        # Create a list of paper-topic pairs
-        paper_results = [(self.paper, topics)]
-        self.notifier.notify_matches(paper_results)
-
-        # Check calls to Slack API
-        calls = mock_client.return_value.chat_postMessage.call_args_list
-        self.assertEqual(len(calls), 2)
-
-        # Check first call (topic with specific channel)
-        self.assertEqual(calls[0][1]["channel"], "#scholar-scout-llm")
-        self.assertIn("@test1", calls[0][1]["text"])
-        self.assertIn("Test Paper", calls[0][1]["text"])
-
-        # Check second call (topic using default channel)
-        self.assertEqual(calls[1][1]["channel"], "#scholar-scout-serverless")
-        self.assertIn("@test3", calls[1][1]["text"])
-
-    @patch("slack_sdk.WebClient")
-    def test_notify_matches_empty_topics(self, mock_client):
-        # Should not make any API calls if no topics
-        self.notifier.notify_matches([])
-        mock_client.return_value.chat_postMessage.assert_not_called()
-
-    @patch("slack_sdk.WebClient")
-    def test_notify_matches_api_error(self, mock_client):
-        # Setup mock to raise error
-        mock_client.return_value.chat_postMessage.side_effect = SlackApiError(
-            "Error", {"error": "channel_not_found"}
+    def test_paper_and_summary_routing_keeps_topics_independent(self):
+        papers = [self.paper.model_copy(update={"title": f"Paper {i}"}) for i in range(3)]
+        self.notifier.notify_matches(
+            [(paper, [topic]) for paper, topic in zip(papers, self.topics)]
         )
-        self.notifier.client = mock_client.return_value
+        calls = self.client.chat_postMessage.call_args_list
+        self.assertEqual(len(calls), 3)
+        for call, paper, topic in zip(calls, papers, self.topics):
+            self.assertEqual(call.kwargs["channel"], topic.slack_channel)
+            for text in (topic.name, topic.slack_users[0], paper.title, paper.url):
+                self.assertIn(text, call.kwargs["text"])
+        self.client.reset_mock()
+        self.notifier.send_weekly_update(
+            {topic.name: [paper] for topic, paper in zip(self.topics, papers)}
+        )
+        calls = self.client.chat_postMessage.call_args_list
+        self.assertEqual(len(calls), len(self.topics))
+        for call, topic in zip(calls, self.topics):
+            self.assertEqual(call.kwargs["channel"], topic.slack_channel)
+            text = call.kwargs["text"]
+            for other_topic, paper in zip(self.topics, papers):
+                if other_topic.name == topic.name:
+                    self.assertIn(other_topic.name, text)
+                    self.assertIn(paper.title, text)
+                else:
+                    self.assertNotIn(other_topic.name, text)
+                    self.assertNotIn(paper.title, text)
 
-        # Should handle error gracefully
-        try:
-            paper_results = [(self.paper, [self.topic1])]
-            self.notifier.notify_matches(paper_results)
-        except Exception as e:
-            self.fail(f"Should not raise exception, but raised {e}")
+    def test_empty_and_unmatched_results_never_send_paper_notifications(self):
+        for results in ([], [(self.paper, [])]):
+            self.notifier.notify_matches(results)
+        self.client.chat_postMessage.assert_not_called()
+        self.notifier.send_weekly_update({"Others": [self.paper]})
+        self.assertEqual(self.client.chat_postMessage.call_count, len(self.topics))
+        for call, topic in zip(self.client.chat_postMessage.call_args_list, self.topics):
+            self.assertEqual(call.kwargs["channel"], topic.slack_channel)
+            self.assertIn(topic.name, call.kwargs["text"])
+            self.assertNotIn(self.paper.title, call.kwargs["text"])
+            self.assertNotIn("Others", call.kwargs["text"])
 
-    @patch("slack_sdk.WebClient")
-    def test_notify_matches_with_multiple_topics(self, mock_client):
-        """Test notification with multiple topics."""
-        # Setup mock
-        mock_client.return_value.chat_postMessage.return_value = {"ok": True}
-        self.notifier.client = mock_client.return_value
+    def test_pending_is_private_and_batched_without_lost_records(self):
+        for count in (1, 40):
+            with self.subTest(count=count):
+                self.client.reset_mock()
+                self.notifier.send_pending_update(self.pending(count))
+                calls = self.client.chat_postMessage.call_args_list
+                self.assertGreaterEqual(len(calls), 1)
+                if count == 40:
+                    self.assertGreater(len(calls), 1)
+                for call in calls:
+                    self.assertEqual(call.kwargs["channel"], self.config.pending_user_id)
+                    self.assertLessEqual(len(call.kwargs["text"]), 3500)
+                    self.assertFalse(call.kwargs["mrkdwn"])
+                    self.assertFalse(call.kwargs["unfurl_links"])
+                combined = "\n".join(call.kwargs["text"] for call in calls)
+                for i in range(count):
+                    self.assertEqual(combined.count(f"Pending {i:03d}"), 1)
+                self.client.reset_mock()
+                self.notifier.send_weekly_update({})
+                for call in self.client.chat_postMessage.call_args_list:
+                    self.assertNotIn("Pending", call.kwargs["text"])
 
-        # Test with multiple topics
-        paper_results = [(self.paper, [self.topic1, self.topic2])]
-        self.notifier.notify_matches(paper_results)
+    def test_missing_or_invalid_dm_recipient_never_falls_back_to_channels(self):
+        self.notifier.send_pending_update({})
+        self.config.pending_user_id = None
+        with self.assertLogs("scholar_scout.notifications", level="WARNING"):
+            self.notifier.send_pending_update(self.pending())
+        self.client.chat_postMessage.assert_not_called()
+        for recipient in ("#channel", "C123456789", "G123456789", "D123456789"):
+            with self.subTest(recipient=recipient), self.assertRaises(ValueError):
+                SlackConfig(api_token="test", default_channel="#default", pending_user_id=recipient)
 
-        # Should be called once for each topic
-        self.assertEqual(mock_client.return_value.chat_postMessage.call_count, 2)
+    def test_dm_failure_raises_without_broadcast_or_secret_logging(self):
+        for error in (
+            SlackApiError("secret-token", {"error": "missing_scope"}),
+            TimeoutError("secret-token"),
+        ):
+            with self.subTest(error=type(error).__name__):
+                self.client.reset_mock()
+                self.client.chat_postMessage.side_effect = error
+                with self.assertLogs("scholar_scout.notifications", level="ERROR") as logs:
+                    with self.assertRaises(RuntimeError):
+                        self.notifier.send_pending_update(self.pending())
+                self.assertNotIn("secret-token", str(logs.output))
+                self.client.chat_postMessage.assert_called_once()
+                self.assertEqual(
+                    self.client.chat_postMessage.call_args.kwargs["channel"],
+                    self.config.pending_user_id,
+                )
+
+    def test_paper_send_failure_is_logged_and_other_topics_continue(self):
+        self.client.chat_postMessage.side_effect = [
+            SlackApiError("Error", {"error": "channel_not_found"}),
+            {"ok": True},
+        ]
+        with self.assertLogs("scholar_scout.notifications", level="ERROR") as logs:
+            self.notifier.notify_matches([(self.paper, [self.topics[0], self.topics[2]])])
+        self.assertIn("channel_not_found", str(logs.output))
+        self.assertEqual(
+            [call.kwargs["channel"] for call in self.client.chat_postMessage.call_args_list],
+            ["C123456789", "#inference"],
+        )
 
 
 if __name__ == "__main__":

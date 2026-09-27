@@ -1,63 +1,40 @@
-"""
-Tests for the email deletion functionality in the EmailClient.
-"""
+"""Verify cleanup targets with a simulated mailbox only."""
 
-import sys
+from datetime import datetime
 from pathlib import Path
+import sys
 import unittest
-from datetime import datetime, timedelta
-from unittest.mock import MagicMock, patch
-    
-sys.path.append(str(Path(__file__).parent.parent / "src"))
+from unittest.mock import Mock, call, mock_open, patch
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from scholar_scout.config import EmailConfig
 from scholar_scout.email_client import EmailClient
 
 
 class TestEmailDeletion(unittest.TestCase):
-    """Test suite for the email deletion functionality."""
-
-    def setUp(self):
-        """Set up the test environment."""
-        self.config = EmailConfig(
-            username="test@example.com",
-            password="password",
-            folder="INBOX",
+    def test_cleanup_targets_only_the_selected_old_message_ids(self):
+        client = EmailClient(EmailConfig(username="test", password="test", folder="Scholar Alerts"))
+        client.mail = Mock()
+        client.mail.select.return_value = ("OK", [])
+        client.mail.search.return_value = ("OK", [b"2 5"])
+        client.mail.store.return_value = ("OK", [])
+        client.mail.expunge.return_value = ("OK", [])
+        with (
+            patch("builtins.open", mock_open(read_data='email_empty:\n  time_window: "4W"\n')),
+            patch("scholar_scout.email_client.datetime") as clock,
+        ):
+            clock.now.return_value = datetime(2026, 9, 27, 15, 30)
+            client.delete_old_emails()
+        self.assertEqual(
+            client.mail.method_calls,
+            [
+                call.select('"Scholar Alerts"', readonly=False),
+                call.search(None, '(BEFORE "30-Aug-2026")'),
+                call.store(b"2", "+FLAGS", "\\Deleted"),
+                call.store(b"5", "+FLAGS", "\\Deleted"),
+                call.expunge(),
+            ],
         )
-
-    @patch("scholar_scout.email_client.imaplib.IMAP4_SSL")
-    @patch("builtins.open")
-    @patch("scholar_scout.email_client.yaml.safe_load")
-    def test_delete_old_emails(self, mock_safe_load, mock_open, mock_imaplib):
-        """Test that old emails are correctly deleted."""
-        # Mock the IMAP server and its methods
-        mock_imap_server = MagicMock()
-        mock_imaplib.return_value = mock_imap_server
-
-        # Mock the search criteria
-        mock_safe_load.return_value = {
-            "email_empty": {
-                "time_window": "4W",
-            }
-        }
-
-        # Configure the mock to return some email IDs
-        mock_imap_server.search.return_value = ("OK", [b"1 2 3"])
-
-        # Create an instance of the EmailClient and run the deletion method
-        with EmailClient(self.config) as email_client:
-            email_client.delete_old_emails()
-
-        # Verify that the correct IMAP commands were called
-        mock_imap_server.select.assert_called_with("INBOX", readonly=False)
-        self.assertTrue(mock_imap_server.search.called)
-        self.assertTrue(mock_imap_server.store.called)
-        self.assertTrue(mock_imap_server.expunge.called)
-
-        # Check the search criteria
-        search_criteria = mock_imap_server.search.call_args[0][1]
-        four_weeks_ago = (datetime.now() - timedelta(weeks=4)).strftime("%d-%b-%Y")
-        self.assertIn(f'BEFORE "{four_weeks_ago}"', search_criteria)
 
 
 if __name__ == "__main__":

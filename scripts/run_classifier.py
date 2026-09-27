@@ -31,7 +31,7 @@ def main():
     )
     args = parser.parse_args()
 
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
 
     load_dotenv()
@@ -41,14 +41,15 @@ def main():
     config = load_config()
 
     with EmailClient(config.email) as email_client:
-        emails = email_client.fetch_scholar_alerts()
-        email_client.delete_old_emails()
+        emails = email_client.fetch_scholar_alerts(readonly=args.debug)
+        if not args.debug:
+            email_client.delete_old_emails()
 
     classifier = ScholarClassifier(config)
     results = classifier.classify_papers(emails)
 
     if not args.debug:
-        notifier = SlackNotifier(config.slack)
+        notifier = SlackNotifier(config.slack, config.research_topics)
         notifier.notify_matches(results)
 
         papers_by_topic = {}
@@ -58,6 +59,7 @@ def main():
                     papers_by_topic[topic.name] = []
                 papers_by_topic[topic.name].append(paper)
         notifier.send_weekly_update(papers_by_topic)
+        notifier.send_pending_update(classifier.pending)
 
 
 if __name__ == "__main__":

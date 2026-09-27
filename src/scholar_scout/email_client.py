@@ -12,7 +12,7 @@ import logging
 from datetime import datetime, timedelta
 from email.header import decode_header
 from email.message import Message
-from typing import List, Set
+from typing import List
 
 import yaml
 
@@ -146,12 +146,15 @@ class EmailClient:
 
         return any(target_subject in subject_decoded for target_subject in target_subjects)
 
-    def fetch_scholar_alerts(self) -> List[Message]:
+    def fetch_scholar_alerts(self, readonly: bool = False) -> List[Message]:
         """
         Fetch Google Scholar alert emails from the configured folder.
 
         Returns:
             A list of email messages.
+
+        Raises:
+            RuntimeError: A mailbox operation fails or returns malformed data.
         """
         assert self.mail is not None
         folder_name = self.config.folder
@@ -159,13 +162,11 @@ class EmailClient:
             folder_name = f'"{folder_name}"'
         logger.info(f"Attempting to access folder: {folder_name}")
 
-        status, _ = self.mail.select(folder_name)
+        status, _ = self.mail.select(folder_name, readonly=readonly)
         if status != "OK":
-            logger.error(f"Failed to select folder {folder_name}")
-            return []
+            raise RuntimeError(f"Failed to select email folder {folder_name}")
 
-        from_query, since_query, subjects = self.build_email_search_query()
-        all_message_numbers: Set[bytes] = set()
+        from_query, since_query, _ = self.build_email_search_query()
 
         base_search_terms = []
         if from_query:
@@ -173,56 +174,46 @@ class EmailClient:
         if since_query:
             base_search_terms.append(since_query)
 
-        if base_search_terms:
-            base_criteria = " ".join(base_search_terms)
-            logger.info(f"Using base search query: {base_criteria}")
-            status, message_numbers = self.mail.search(None, base_criteria)
-            if status == "OK":
-                all_message_numbers.update(message_numbers[0].split())
-            else:
-                logger.error(f"Base search failed: {message_numbers}")
-
-        if not all_message_numbers:
-            for subj in subjects:
-                search_terms = []
-                if from_query:
-                    search_terms.append(from_query)
-                if since_query:
-                    search_terms.append(since_query)
-                search_terms.append(f'SUBJECT "{subj}"')
-                search_criteria = " ".join(search_terms)
-                logger.info(f"Using search query: {search_criteria}")
-                status, message_numbers = self.mail.search(None, search_criteria)
-                if status == "OK":
-                    all_message_numbers.update(message_numbers[0].split())
-                else:
-                    logger.error(f"Search failed for subject {subj}: {message_numbers}")
+        if not base_search_terms:
+            raise RuntimeError("Email search criteria are empty")
+        base_criteria = " ".join(base_search_terms)
+        logger.info(f"Using base search query: {base_criteria}")
+        status, message_numbers = self.mail.search(None, base_criteria)
+        if status != "OK":
+            raise RuntimeError("Failed to search Scholar emails")
+        if (
+            not isinstance(message_numbers, list)
+            or len(message_numbers) != 1
+            or not isinstance(message_numbers[0], bytes)
+        ):
+            raise RuntimeError("Invalid email search response")
+        all_message_numbers = message_numbers[0].split()
+        if any(not num.isdigit() or int(num) < 1 for num in all_message_numbers):
+            raise RuntimeError("Invalid message numbers in email search response")
 
         logger.info(f"Found {len(all_message_numbers)} messages to process")
 
         emails = []
         for num in all_message_numbers:
-            # The message number needs to be decoded from bytes to a string
-            status, msg_data = self.mail.fetch(num.decode("utf-8"), "(RFC822)")
+            message_number = num.decode("ascii")
+            status, msg_data = self.mail.fetch(
+                message_number, "(BODY.PEEK[])" if readonly else "(RFC822)"
+            )
             if status != "OK":
-                logger.warning(f"Failed to fetch email with number: {num.decode('utf-8')}")
-                continue
+                raise RuntimeError(f"Failed to fetch email {message_number}")
 
             # Ensure msg_data is not empty and has the expected structure
             if not msg_data or not isinstance(msg_data, list) or len(msg_data) < 1:
-                logger.warning(f"No data returned for email number: {num.decode('utf-8')}")
-                continue
+                raise RuntimeError(f"No data returned for email {message_number}")
 
             # The actual email content is in the second part of the first tuple
             email_body = msg_data[0]
             if not isinstance(email_body, tuple) or len(email_body) < 2:
-                logger.warning(f"Unexpected data structure for email number: {num.decode('utf-8')}")
-                continue
+                raise RuntimeError(f"Invalid fetch response for email {message_number}")
 
             email_content = email_body[1]
-            if not isinstance(email_content, bytes):
-                logger.warning(f"Email content is not bytes for email number: {num.decode('utf-8')}")
-                continue
+            if not isinstance(email_content, bytes) or not email_content.strip():
+                raise RuntimeError(f"Invalid content returned for email {message_number}")
 
             email_message = email.message_from_bytes(email_content)
             if self.should_process_email(email_message):

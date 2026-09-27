@@ -1,0 +1,318 @@
+"""Offline source resolution, identity checks, and request safety."""
+
+import json
+from pathlib import Path
+import sys
+import tempfile
+import unittest
+from unittest.mock import patch
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+from scholar_scout import abstract_sources as sources
+
+ABSTRACT = "This system improves scheduling efficiency with a measured implementation. " * 8
+
+
+class Response:
+    def __init__(self, data=None, status=200, headers=None):
+        self.status_code = status
+        self.headers = headers or {}
+        self.data = json.dumps(data or {}).encode()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        pass
+
+    def iter_content(self, size):
+        yield self.data
+
+
+class AbstractSourceTests(unittest.TestCase):
+    def setUp(self):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        self.root = Path(temp.name)
+        self.resolver = sources.AbstractResolver(self.root / "cache", state_dir=self.root / "state")
+        self.resolver.keys = {
+            "IEEE_API_KEY": "secret-ieee",
+            "SEMANTIC_SCHOLAR_API_KEY": "secret-s2",
+        }
+        self.paper = {
+            "id": "sample",
+            "title": "Paper One",
+            "url": "https://doi.org/10.1145/123.456",
+            "email_metadata": "A Author - Conference, 2026",
+        }
+        self.record = {
+            "title": "Paper One",
+            "abstract": ABSTRACT,
+            "authors": ["Alice Author"],
+            "doi": "10.1145/123.456",
+            "source": "fixture",
+            "url": self.paper["url"],
+        }
+
+    def test_identity_rejects_conflicts_but_accepts_name_normalization(self):
+        self.assertTrue(sources.identity_matches(self.paper, self.record))
+        for changes in (
+            {"title": "Wrong paper"},
+            {"doi": "10.1145/123.999"},
+            {"authors": ["Another Person"]},
+            {"authors": []},
+        ):
+            with self.subTest(changes=changes):
+                self.assertFalse(sources.identity_matches(self.paper, dict(self.record, **changes)))
+        for paper, record in (
+            (
+                {"title": "Café Systems", "email_metadata": "JF Martínez… - Venue"},
+                {"title": "Cafe Systems", "authors": ["Jose F. Martinez"]},
+            ),
+            (
+                {"title": "Paper One", "email_metadata": "T Li, Q Zhang… - Venue"},
+                dict(self.record, authors=["Li, Tianyu", "Zhang, Qingang"]),
+            ),
+        ):
+            with self.subTest(paper=paper):
+                self.assertTrue(sources.identity_matches(paper, record))
+
+    def test_missing_or_truncated_abstract_is_not_usable(self):
+        for text in (None, "", "too short", ABSTRACT + "…", ABSTRACT + "View full abstract"):
+            self.assertFalse(sources.is_usable_abstract(dict(self.record, abstract=text)))
+        self.assertTrue(sources.is_usable_abstract(self.record))
+
+    def test_ieee_links_resolve_article_metadata(self):
+        payload = {
+            "articles": [
+                {
+                    "title": "Paper One",
+                    "abstract": ABSTRACT,
+                    "article_number": "11684999",
+                    "doi": "10.1109/example",
+                    "authors": {"authors": [{"full_name": "Alice Author"}]},
+                }
+            ]
+        }
+        for url in (
+            "https://ieeexplore.ieee.org/iel8/40/123/11684999.pdf",
+            "https://ieeexplore.ieee.org/abstract/document/11684999/",
+            "https://ieeexplore.ieee.org/document/11684999",
+            "https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=11684999",
+        ):
+            with (
+                self.subTest(url=url),
+                patch.object(self.resolver, "get", return_value=json.dumps(payload)) as get,
+            ):
+                rows = self.resolver.ieee(dict(self.paper, url=url))
+            self.assertEqual(get.call_args.args[1]["article_number"], "11684999")
+            self.assertEqual(rows[0]["title"], "Paper One")
+            self.assertEqual(rows[0]["authors"], ["Alice Author"])
+            self.assertEqual(rows[0]["abstract"], ABSTRACT)
+            self.assertNotIn("apikey", rows[0]["url"])
+
+    def test_usenix_page_and_pdf_fallback_extract_target_abstract(self):
+        page = (
+            '<h1>Paper One</h1><meta name="citation_author" content="Alice Author">'
+            '<div class="field-name-field-paper-description-long">' + ABSTRACT + "</div>"
+        )
+        program = (
+            '<article class="node-paper"><h2>'
+            '<a href="/conference/osdi26/presentation/author">Paper One</a></h2>'
+            '<div class="field-name-field-paper-description">' + ABSTRACT + "</div></article>"
+        )
+        for url, responses in (
+            ("https://www.usenix.org/conference/osdi26/presentation/author", [page]),
+            ("https://www.usenix.org/system/files/osdi26-author.pdf", [program, page]),
+        ):
+            with self.subTest(url=url), patch.object(self.resolver, "get", side_effect=responses):
+                rows = self.resolver.usenix(dict(self.paper, url=url))
+            self.assertEqual(rows[0]["title"], "Paper One")
+            self.assertEqual(rows[0]["authors"], ["Alice Author"])
+            self.assertEqual(rows[0]["abstract"], ABSTRACT.strip())
+
+    def test_crossref_doi_without_abstract_is_passed_to_s2(self):
+        paper = dict(self.paper, url="https://example.org/paper")
+        with (
+            patch.object(self.resolver, "ieee", return_value=[]),
+            patch.object(self.resolver, "usenix", return_value=[]),
+            patch.object(self.resolver, "arxiv_html", return_value=[]),
+            patch.object(self.resolver, "institutional", return_value=[]),
+            patch.object(self.resolver, "crossref", return_value=[dict(self.record, abstract="")]),
+            patch.object(self.resolver, "semantic_scholar", return_value=[self.record]) as s2,
+        ):
+            record, _ = self.resolver.resolve(paper)
+        self.assertEqual(s2.call_args.args[0]["doi"], self.record["doi"])
+        self.assertEqual(record["abstract"], ABSTRACT)
+        self.assertNotIn("doi", paper)
+
+    def test_s2_fallback_distinguishes_missing_wrong_and_rate_limited_records(self):
+        record = {
+            "title": "Paper One",
+            "abstract": ABSTRACT,
+            "authors": [{"name": "Alice Author"}],
+            "externalIds": {"DOI": self.record["doi"]},
+        }
+        wrong = dict(record, title="Wrong Paper", externalIds={"DOI": "10.1145/999"})
+        cases = (
+            ("missing", [sources.SourceFailure("http_404"), json.dumps({"data": [record]})], True),
+            ("wrong", [json.dumps(wrong), json.dumps({"data": [wrong]})], False),
+            ("limited", [sources.SourceFailure("http_429", 5000)], None),
+        )
+        for label, responses, accepted in cases:
+            with (
+                self.subTest(label=label),
+                patch.object(self.resolver, "get", side_effect=responses) as get,
+            ):
+                if accepted is None:
+                    with self.assertRaises(sources.SourceFailure):
+                        self.resolver.semantic_scholar(self.paper)
+                    get.assert_called_once()
+                else:
+                    rows = self.resolver.semantic_scholar(self.paper)
+                    self.assertEqual(
+                        any(sources.identity_matches(self.paper, row) for row in rows), accepted
+                    )
+                    self.assertEqual(get.call_count, 2)
+                    self.assertTrue(get.call_args.args[0].endswith("/search"))
+
+    def test_requests_keep_credentials_on_allowed_hosts_and_out_of_errors(self):
+        with (
+            patch.object(self.resolver.limiter, "before"),
+            patch.object(sources.requests, "get", return_value=Response()) as get,
+        ):
+            self.resolver.get("https://api.semanticscholar.org/graph/v1/paper/search")
+            self.assertEqual(get.call_args.kwargs["headers"]["x-api-key"], "secret-s2")
+            self.assertFalse(get.call_args.kwargs["allow_redirects"])
+            self.resolver.get("https://ieeexploreapi.ieee.org/api/v1/search/articles")
+            self.assertEqual(get.call_args.kwargs["params"]["apikey"], "secret-ieee")
+            self.assertNotIn("x-api-key", get.call_args.kwargs["headers"])
+            self.resolver.get("https://api.crossref.org/works")
+            self.assertNotIn("apikey", get.call_args.kwargs["params"])
+            self.assertNotIn("x-api-key", get.call_args.kwargs["headers"])
+            get.reset_mock()
+            for url in (
+                "https://localhost/",
+                "http://api.crossref.org/works",
+                "https://user:secret@api.crossref.org/works",
+                "https://api.crossref.org:8443/works",
+            ):
+                with self.subTest(url=url), self.assertRaises(ValueError):
+                    self.resolver.get(url)
+            get.assert_not_called()
+            get.return_value = Response(status=302)
+            with self.assertRaisesRegex(sources.SourceFailure, "http_302"):
+                self.resolver.get("https://api.crossref.org/works")
+            get.assert_called_once()
+            get.side_effect = sources.requests.ConnectionError("apikey=secret-ieee")
+            with self.assertRaises(sources.SourceFailure) as error:
+                self.resolver.get("https://ieeexploreapi.ieee.org/api/v1/search/articles")
+            self.assertEqual(str(error.exception), "transport_error")
+
+    def test_rate_limits_and_cooldown_survive_new_instances_and_metadata(self):
+        now, sleeps = [100.0], []
+
+        def sleep(delay):
+            sleeps.append(delay)
+            now[0] += delay
+
+        self.resolver.limiter = sources.SharedLimiter(self.root / "state", lambda: now[0], sleep)
+        other = sources.SharedLimiter(self.root / "state", lambda: now[0], sleep)
+        self.resolver.limiter.before("semantic_scholar")
+        other.before("semantic_scholar")
+        self.resolver.limiter.before("semantic_scholar")
+        self.assertEqual(sleeps, [2.0, 2.0])
+        with patch.object(
+            sources.requests,
+            "get",
+            return_value=Response(status=429, headers={"Retry-After": "120"}),
+        ) as get:
+            with self.assertRaises(sources.SourceFailure):
+                self.resolver.get("https://api.semanticscholar.org/graph/v1/paper/search")
+            restarted = sources.AbstractResolver(
+                self.root / "other-cache", state_dir=self.root / "state"
+            )
+            restarted.limiter = other
+            with self.assertRaisesRegex(sources.SourceFailure, "cooldown_active"):
+                restarted.get("https://api.semanticscholar.org/graph/v1/paper/DOI:test")
+            get.assert_called_once()
+        self.resolver.limiter.defer("ieee", "120")
+        updated = dict(
+            self.paper, urls=[self.paper["url"], "https://ieeexplore.ieee.org/document/11684999"]
+        )
+        with (
+            patch.object(self.resolver, "usenix", return_value=[]),
+            patch.object(self.resolver, "arxiv_html", return_value=[]),
+            patch.object(self.resolver, "institutional", return_value=[]),
+            patch.object(self.resolver, "crossref", return_value=[]),
+            patch.object(self.resolver, "semantic_scholar", return_value=[]),
+            patch.object(self.resolver, "arxiv", return_value=[]),
+            patch.object(sources.requests, "get") as get,
+        ):
+            record, notes = self.resolver.resolve(updated)
+        self.assertIsNone(record)
+        self.assertIn("ieee: cooldown_active", notes)
+        get.assert_not_called()
+        self.assertNotIn("secret", (self.root / "state/limits.json").read_text())
+
+    def test_ambiguous_abstract_is_deferred_and_retried_when_due(self):
+        with (
+            patch.object(self.resolver, "ieee", return_value=[self.record, self.record]),
+            patch.object(self.resolver, "usenix", return_value=[]),
+            patch.object(self.resolver, "arxiv_html", return_value=[]),
+            patch.object(self.resolver, "institutional", return_value=[]),
+            patch.object(self.resolver, "crossref", return_value=[]),
+            patch.object(self.resolver, "semantic_scholar", return_value=[]),
+            patch.object(self.resolver, "arxiv", return_value=[]),
+        ):
+            record, _ = self.resolver.resolve(self.paper)
+        self.assertIsNone(record)
+        self.assertEqual(self.resolver.last_pending["attempts"], 1)
+        with patch.object(sources.requests, "get") as get:
+            record, notes = self.resolver.resolve(self.paper)
+        get.assert_not_called()
+        self.assertIn("deferred", notes[-1])
+        pending = self.root / "cache/pending-abstracts/sample.json"
+        data = json.loads(pending.read_text())
+        data["next_retry_at"] = 0
+        sources.atomic_json(pending, data)
+        with patch.object(self.resolver, "ieee", return_value=[self.record]):
+            record, _ = self.resolver.resolve(self.paper)
+        self.assertEqual(record["title"], "Paper One")
+        self.assertEqual(json.loads(pending.read_text())["status"], "resolved")
+
+    def test_cached_abstract_identity_is_rechecked(self):
+        sources.atomic_json(
+            self.root / "cache/sample.json", dict(self.record, authors=["Wrong Person"])
+        )
+        self.resolver.offline = True
+        with patch.object(sources.requests, "get") as get:
+            record, _ = self.resolver.resolve(self.paper)
+        self.assertIsNone(record)
+        get.assert_not_called()
+
+    def test_new_pending_link_is_tried_before_paper_retry_deadline(self):
+        sources.atomic_json(
+            self.root / "cache/pending-abstracts/sample.json",
+            {"paper": self.paper, "attempts": 1, "next_retry_at": sources.time.time() + 3600},
+        )
+        new_url = "https://www.usenix.org/conference/osdi26/presentation/author"
+        updated = dict(self.paper, urls=[self.paper["url"], new_url])
+        with (
+            patch.object(self.resolver, "ieee", return_value=[]),
+            patch.object(
+                self.resolver,
+                "usenix",
+                side_effect=lambda p: [self.record] if p["url"] == new_url else [],
+            ) as usenix,
+            patch.object(self.resolver, "crossref") as crossref,
+            patch.object(sources.requests, "get", side_effect=AssertionError("Network forbidden")),
+        ):
+            record, _ = self.resolver.resolve(updated)
+        self.assertEqual(record["abstract"], ABSTRACT)
+        self.assertEqual([call.args[0]["url"] for call in usenix.call_args_list], updated["urls"])
+        crossref.assert_not_called()
+
+
+if __name__ == "__main__":
+    unittest.main()

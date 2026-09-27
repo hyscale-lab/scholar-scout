@@ -8,7 +8,7 @@ and provides type hints for better code completion and analysis.
 
 import os
 from string import Template
-from typing import Dict, List, Optional, Union
+from typing import List, Optional, Union
 
 import yaml
 from pydantic import BaseModel, Field
@@ -25,23 +25,20 @@ class SlackConfig(BaseModel):
     """Slack notifier configuration."""
     api_token: str
     default_channel: str
-    channel_topics: Dict[str, List[str]] = Field(default_factory=dict)
+    pending_user_id: Optional[str] = Field(default=None, pattern=r"^U[A-Z0-9]+$")
 
 class GeminiConfig(BaseModel):
     """Gemini AI client configuration."""
     api_key: Union[str, dict]
-    gen_ai_model: str = "gemini-2.5-flash"
+    gen_ai_model: str = "gemini-3.8-flash"
     embedding_model: str = "gemini-embedding-001"
 
 
 class ResearchTopic(BaseModel):
     """Research topic configuration."""
     name: str
-    keywords: List[str]
     slack_users: List[str]
     slack_channel: Optional[str] = None
-    description: str
-    taxonomy: List[str]
 
 
 class AppConfig(BaseModel):
@@ -50,6 +47,7 @@ class AppConfig(BaseModel):
     slack: SlackConfig
     gemini: GeminiConfig
     research_topics: List[ResearchTopic]
+    state_dir: str = ".scholar-scout"
 
 
 def load_config(config_file: str = "config/config.yml") -> AppConfig:
