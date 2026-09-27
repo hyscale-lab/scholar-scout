@@ -8,3 +8,4 @@ pydantic
 beautifulsoup4
 google-genai
 scipy
+requests>=2.31.0

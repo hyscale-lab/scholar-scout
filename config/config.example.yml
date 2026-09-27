@@ -7,23 +7,16 @@ email:
 slack:
   api_token: ${SLACK_API_TOKEN}
   default_channel: "scholar-scout-default"
-  channel_topics:
-    scholar-scout-llm:
-      - "LLM Inference"
-    scholar-scout-vlm:
-      - "VLM Inference"
-    scholar-scout-serverless:
-      - "Serverless Computing"
+  pending_user_id: "U0618BHHTRR" # Yulin; pending reports are sent only by DM.
 
 gemini:
   api_key: ${GEMINI_API_KEY}
-  gen_ai_model: "gemini-2.5-flash"
+  gen_ai_model: "gemini-3.8-flash"
   embedding_model: "gemini-embedding-001"
 
 
 research_topics:
   - name: "LLM Inference"
-    keywords: ["llm", "inference", "serving", "latency", "throughput"]
     slack_users:
       - "<@U04MG63BX1R>" # "@Ruiqi Lai"
       - "<@U07J4DZRPB6>" # "@Hongrui Liu"
@@ -32,75 +25,26 @@ research_topics:
       - "<@U07LK4BKPPW>" # "@Boxi Zhou"
       - "<@U0968F9G9GB>" # "@Chengzhi Lu"
     slack_channel: "#systems-for-ai"
-    description: >-
-      Research related to LLM inference serving systems, architectures, and 
-      applications, including latency optimization, throughput improvement, 
-      and deployment strategies"
-    taxonomy:
-      - "Large language model inference speed and latency optimization"
-      - "LLM serving throughput and tokens per second"
-      - "Model quantization and accuracy trade-offs during inference"
-      - "Inference performance efficiency of generative transformers"
-      - "Optimizing GPU memory bandwidth for LLM deployment"
 
   - name: "Serverless Computing"
-    keywords: ["serverless", "faas", "function-as-a-service", "cloud"]
     slack_users:
       - "<@U04HALEGCD7>" # "@Leonid Kondrashov"
       - "<@U04HVNW03QQ>" # "@Park JooYoung"
-    slack_channel: "#serverless-systems"
-    description: >-
-      Research on serverless computing platforms, Function-as-a-Service (FaaS), 
-      and cloud-native architectures
-    taxonomy:
-      - "Serverless computing architecture and FaaS execution"
-      - "Cold start latency and function warm-up strategies"
-      - "Auto-scaling and elasticity in serverless environments"
-      - "Event-driven cloud function performance and overhead"
-      - "Managing stateless microservices in serverless platforms"
+    slack_channel: "C086LJ25U8L" # serverless-systems
   
   - name: "Agentic Execution Environment"
-    keywords: ["agentic execution", "environment", "agent sandbox", "tool execution"]
     slack_users:
       - "<@U04HALEGCD7>" # "@Leonid Kondrashov"
       - "<@U04HVNW03QQ>" # "@Park JooYoung"
     slack_channel: "#aries-agents"
-    description: >-
-      Research on agentic execution environments, used for isolating tools executions
-    taxonomy:
-      - "Agentic execution environment design and implementation"
-      - "Isolation and sandboxing techniques for tool executions"
-      - "Resource management in agentic execution environments"
-      - "Security considerations in agentic execution environments"
-      - "Performance optimization for agentic execution environments"
 
-  - name: "VLM Inference"
-    keywords: ["vlm", "vision-language", "vision language model", "multimodal", "inference", "serving", "latency", "throughput"]
+  - name: "Video & Embodied Intelligence"
     slack_users:
       - "<@U0618BHHTRR>" # "@Yulin"
       - "<@U0973SVHUD6>" # "@Wenyan Chen"
-    slack_channel: "#vlm-streaming"
-    description: >-
-      Research on VLM inference and serving systems, including vision-language
-      model deployment, latency optimization, throughput improvement, and
-      multimodal inference pipelines
-    taxonomy:
-      - "Vision-language model deployment and multimodal serving systems"
-      - "Optimizing latency in multimodal inference pipelines and visual encoders"
-      - "Throughput improvement for high-concurrency VLM serving workloads"
-      - "Visual token compression and prefix caching for efficient VLM inference"
-      - "Hardware-aware acceleration of cross-modal attention in VLM deployment"
+    slack_channel: "#video-intelligence"
 
   - name: "Sustainable Computing"
-    keywords: ["green computing", "energy efficiency", "carbon footprint"]
     slack_users:
       - "@jim"
-    description: >-
-      Research on reducing the environmental impact of computing systems, 
-      including energy efficiency and carbon footprint reduction
-    taxonomy:
-      - "Energy-efficient computing for same-outcome performance"
-      - "Reducing carbon footprint of data center workloads"
-      - "Green computing and power usage effectiveness PUE"
-      - "Cost-effective resource allocation for sustainable power"
-      - "Minimizing energy consumption without performance degradation"
+    slack_channel: "C086LJ25U8L" # serverless-systems

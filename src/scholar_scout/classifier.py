@@ -1,234 +1,174 @@
-"""
-Core logic for the Scholar Scout application.
+"""Resolve Scholar abstracts before classifying their systems contributions."""
 
-This module contains the main classifier class that orchestrates the entire
-process of fetching emails, parsing them, classifying papers, and sending
-notifications.
-"""
-
+import hashlib
 import json
 import logging
+from pathlib import Path
 import re
-import urllib.parse
-from email.message import Message
-from typing import List, Tuple
+from urllib.parse import parse_qs, urlparse
 
 from bs4 import BeautifulSoup, Tag
-
 from google import genai
+from google.genai import types
 
-from .config import AppConfig, ResearchTopic
+from .abstract_sources import AbstractResolver, atomic_json, normalized
+from .config import AppConfig
 from .models import Paper
-from .embedding_classification import GeminiEmbeddingSetup
+from .topic_classification import TopicClassifier
 
 logger = logging.getLogger(__name__)
 
 
 class ScholarClassifier:
-    """The main classifier for processing Google Scholar alerts."""
-
     def __init__(self, config: AppConfig):
-        """
-        Initialize the classifier with the application configuration.
-
-        Args:
-            config: The application configuration.
-        """
         self.config = config
-
+        options = {
+            "http_options": types.HttpOptions(
+                timeout=90000, retry_options=types.HttpRetryOptions(attempts=1)
+            )
+        }
         if isinstance(config.gemini.api_key, dict):
             from google.oauth2 import service_account
-            credentials = service_account.Credentials.from_service_account_info(config.gemini.api_key, scopes=['https://www.googleapis.com/auth/cloud-platform'])
-            self.gemini_client = genai.Client(vertexai=True, project=credentials.project_id, location="global", credentials=credentials)
+
+            credentials = service_account.Credentials.from_service_account_info(
+                config.gemini.api_key, scopes=["https://www.googleapis.com/auth/cloud-platform"]
+            )
+            options.update(
+                vertexai=True,
+                project=credentials.project_id,
+                location="global",
+                credentials=credentials,
+            )
         else:
-            self.gemini_client = genai.Client(api_key=config.gemini.api_key)
+            options["api_key"] = config.gemini.api_key
+        self.gemini_client = genai.Client(**options)
+        self.topic_classifier = TopicClassifier(
+            self.gemini_client, config.gemini.gen_ai_model, config.research_topics
+        )
+        self.state_dir = Path(config.state_dir)
+        self.resolver = AbstractResolver(self.state_dir / "abstracts")
+        self.pending_path = self.state_dir / "pending-papers.json"
+        self.pending = (
+            json.loads(self.pending_path.read_text()) if self.pending_path.exists() else {}
+        )
+        self.diagnostics = []
 
-        self.gemini_embedding_model = GeminiEmbeddingSetup(config, self.gemini_client)
+    def _get_email_content(self, message):
+        parts = message.walk() if message.is_multipart() else [message]
+        for part in parts:
+            if part.get_content_type() == "text/html":
+                payload = part.get_payload(decode=True)
+                if isinstance(payload, bytes):
+                    charset = part.get_content_charset() or "utf-8"
+                    try:
+                        return payload.decode(charset, errors="replace")
+                    except LookupError:
+                        return payload.decode("utf-8", errors="replace")
+        return ""
 
-        self.gemini_gen_ai_model = config.gemini.gen_ai_model
-
-        self._processed_titles = set()
-        self._processed_urls = set()
-
-    def _get_email_content(self, email_message: Message) -> str:
-        """Extract the HTML content from an email message."""
-        content = ""
-        if email_message.is_multipart():
-            for part in email_message.walk():
-                if part.get_content_type() == "text/html":
-                    payload = part.get_payload(decode=True)
-                    if isinstance(payload, bytes):
-                        content = payload.decode("utf-8", errors="replace")
-                        break
-        else:
-            payload = email_message.get_payload(decode=True)
-            if isinstance(payload, bytes):
-                content = payload.decode("utf-8", errors="replace")
-        return content
-
-    def _extract_paper_metadata(self, content: str) -> List[Paper]:
-        """Extract paper metadata from the HTML content of an email."""
-        soup = BeautifulSoup(content, "html.parser")
+    def _extract_paper_metadata(self, content):
         papers = []
-
-        # Each paper is in an h3 tag
-        for h3 in soup.find_all("h3"):
-            if not isinstance(h3, Tag):
+        for heading in BeautifulSoup(content, "html.parser").find_all("h3"):
+            link = heading.find("a", href=True)
+            if not link or not link.get_text(" ", strip=True):
                 continue
-
-            # The link contains the title and URL
-            link = h3.find("a")
-            if not isinstance(link, Tag):
-                continue
-
-            title = link.get_text(strip=True)
-            url_attr = link.get("href")
-            url = str(url_attr) if url_attr else ""
-
-            # Clean up the URL to get the direct link
-            if url:
-                try:
-                    parsed = urllib.parse.urlparse(url)
-                    params = urllib.parse.parse_qs(parsed.query)
-                    if "url" in params:
-                        url = urllib.parse.unquote(params["url"][0])
-                except Exception as e:
-                    logger.error(f"Error extracting URL: {e}")
-                    url = ""
-
-            # The authors and abstract are in the next two divs
-            authors, abstract = "", ""
-            current: Tag = h3
-            for i in range(2):
-                current_div = current.find_next("div")
-                if isinstance(current_div, Tag):
-                    current = current_div
-                    text = current.get_text(strip=True)
-                    if text:
-                        if i == 0:
-                            authors = text
-                        else:
-                            abstract = text
-                else:
+            title = link.get_text(" ", strip=True)
+            url = link["href"]
+            for _ in range(3):
+                parsed = urlparse(url)
+                targets = parse_qs(parsed.query).get("url")
+                if (
+                    parsed.hostname
+                    not in ("scholar.google.com", "scholar.google.com.hk", "scholar.google.cn")
+                    or not targets
+                ):
                     break
-
-            if authors:
-                papers.append(Paper(title=title, authors=[authors], abstract=abstract, url=url))
+                url = targets[0]
+            if urlparse(url).scheme not in ("http", "https"):
+                url = ""
+            metadata, snippet = "", ""
+            for sibling in heading.next_siblings:
+                if not isinstance(sibling, Tag):
+                    continue
+                if sibling.name == "h3":
+                    break
+                if sibling.name == "div":
+                    text = sibling.get_text(" ", strip=True)
+                    if not metadata:
+                        metadata = text
+                    elif not snippet:
+                        snippet = text
+                if "gse_alrt_sni" in sibling.get("class", []):
+                    snippet = sibling.get_text(" ", strip=True)
+            author_line = re.split(r"\s[-–—]\s", metadata, maxsplit=1)[0]
+            authors = [a.strip(" .…") for a in author_line.split(",") if a.strip(" .…")]
+            papers.append(Paper(title=title, authors=authors, abstract=snippet, url=url))
         return papers
 
-    def _generate_classification_prompt(self, paper: Paper) -> str:
-        """Generate the prompt for classifying a paper."""
-        return f"""
-        Below is a paper from Google Scholar. Extract metadata and classify it:
+    @staticmethod
+    def _merge_candidate(candidate: dict, paper: Paper) -> None:
+        urls = dict.fromkeys([candidate.get("url", ""), *candidate.get("urls", []), paper.url])
+        candidate["urls"] = [url for url in urls if url]
+        if not candidate.get("url"):
+            candidate["url"] = paper.url
+        candidate["authors"] = list(dict.fromkeys([*candidate.get("authors", []), *paper.authors]))
+        if len(paper.abstract) > len(candidate.get("abstract", "")):
+            candidate["abstract"] = paper.abstract
+        if not candidate.get("venue"):
+            candidate["venue"] = paper.venue
 
-        Title: {paper.title}
-        Authors: {', '.join(paper.authors)}
-        Abstract: {paper.abstract}
-        url: {paper.url}
-
-        Return a SINGLE JSON object with ALL these required fields:
-        {{
-            "authors": ["list", "of", "authors"],
-            "venue": "use these rules:
-              - 'arXiv preprint' if author line has 'arXiv'
-              - 'Patent Application' if author line has 'Patent'
-              - text between dash and year for published papers
-              - 'NOT-FOUND' otherwise"
-        }}
-
-        CRITICAL RULES:
-        1. Return ONLY ONE JSON object, NOT an array of objects
-        2. ALL fields (authors, venue) are REQUIRED
-        3. Do not include any comments or signs in the JSON object
-
-        The response must be valid JSON with ALL required fields.
-        """
-
-    def classify_papers(
-        self, email_messages: List[Message]
-    ) -> List[Tuple[Paper, List[ResearchTopic]]]:
-        """
-        Classify papers from a list of email messages.
-
-        Args:
-            email_messages: A list of email messages to process.
-
-        Returns:
-            A list of tuples, each containing a paper and a list of matched
-            research topics.
-        """
-        all_results = []
-        for email_message in email_messages:
-            content = self._get_email_content(email_message)
-            papers = self._extract_paper_metadata(content)
-
-            filtered_papers = []
-            for paper in papers:
-                title = paper.title.lower().strip()
-                url = paper.url.lower().strip()
-
-                if title in self._processed_titles or (url and url in self._processed_urls):
-                    logger.info(f"Skipping duplicate paper: {paper.title}")
+    def classify_papers(self, email_messages):
+        candidates = {key: row["paper"] for key, row in self.pending.items()}
+        seen_urls = {
+            url
+            for candidate in candidates.values()
+            for url in [candidate.get("url", ""), *candidate.get("urls", [])]
+            if url
+        }
+        for message in email_messages:
+            for paper in self._extract_paper_metadata(self._get_email_content(message)):
+                key = hashlib.sha256(normalized(paper.title).encode()).hexdigest()[:20]
+                if key in candidates:
+                    self._merge_candidate(candidates[key], paper)
+                elif paper.url and paper.url in seen_urls:
                     continue
-                if any(word in title for word in ["patent", "apparatus", "method and system"]):
-                    logger.info(f"Skipping patent: {paper.title}")
-                    continue
-
-                self._processed_titles.add(title)
-                if url:
-                    self._processed_urls.add(url)
-                filtered_papers.append(paper)
-
-            logger.info(
-                f"Found {len(papers)} papers, "
-                f"{len(filtered_papers)} after filtering duplicates and patents"
-            )
-
-            for paper in filtered_papers:
-                prompt = self._generate_classification_prompt(paper)
-                try:
-                    response = self.gemini_client.models.generate_content(
-                        model=self.gemini_gen_ai_model, contents=prompt,
+                else:
+                    candidates[key] = dict(paper.model_dump(), id=key)
+                    self._merge_candidate(candidates[key], paper)
+                if paper.url:
+                    seen_urls.add(paper.url)
+        results = []
+        self.diagnostics = []
+        for key, candidate in candidates.items():
+            status, decisions, notes = "pending_abstract", {}, []
+            try:
+                record, notes = self.resolver.resolve(candidate)
+                if record:
+                    paper = Paper(
+                        **{
+                            name: record.get(name, candidate.get(name, ""))
+                            for name in Paper.model_fields
+                        }
                     )
-                    content = response.text
-
-                    if not content:
-                        logger.error("Received empty content from Gemini AI.")
-                        continue
-                    content = content.strip()
-
-                    if "```json" in content:
-                        content = content.split("```json")[1].split("```")[0].strip()
-                    elif "```" in content:
-                        content = content.split("```")[1].split("```")[0].strip()
-
-                    content = re.sub(r",(\s*[}\]])", r"\1", content)
-                    parsed_data = json.loads(content)
-                    paper_data = (
-                        parsed_data[0] if isinstance(parsed_data, list) else parsed_data
-                    )
-
-                    paper_obj = Paper(
-                        title=paper.title,
-                        authors=paper_data["authors"],
-                        abstract=paper.abstract,
-                        venue=paper_data.get("venue", ""),
-                        url=paper.url,
-                    )
-
-                    # paper_relevant_topics is an empty list, [] when not part of any category
-                    paper_relevant_topics = self.gemini_embedding_model.gemini_embedding_classify(paper.abstract)
-
-                    relevant_topics = [
-                        topic
-                        for topic in self.config.research_topics
-                        if any(
-                            isinstance(t, str) and t.strip().lower() == topic.name.lower()
-                            for t in paper_relevant_topics
-                        )
+                    status = "pending_model"
+                    decisions = self.topic_classifier.classify(paper)
+                    matches = [
+                        self.topic_classifier.topics[c]
+                        for c, d in decisions.items()
+                        if d["decision"] == "match"
                     ]
-                    all_results.append((paper_obj, relevant_topics))
-                    logger.info(f"Successfully processed paper: {paper_obj.title}")
-                except Exception as e:
-                    logger.error(f"Error processing paper: {e}")
-        return all_results
+                    status = "matched" if matches else "no_match"
+                    results.append((paper, matches))
+            except Exception as exc:
+                logger.warning("Paper %s remains pending (%s)", key, type(exc).__name__)
+                notes.append(type(exc).__name__)
+            if status.startswith("pending"):
+                self.pending[key] = {"paper": candidate, "status": status}
+            else:
+                self.pending.pop(key, None)
+            atomic_json(self.pending_path, self.pending)
+            self.diagnostics.append(
+                {"id": key, "status": status, "decisions": decisions, "notes": notes}
+            )
+        atomic_json(self.state_dir / "last-run.json", self.diagnostics)
+        return results

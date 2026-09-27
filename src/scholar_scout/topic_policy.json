@@ -1,0 +1,22 @@
+{
+  "L": {
+    "name": "LLM Inference",
+    "scope": "Systems or measured execution-efficiency contributions to large language model inference and serving: scheduling, batching, kernels, memory/KV caches, quantization, offloading, parallel execution, deployment, or systems measurement. Training alone and merely using an LLM for another problem are insufficient. A multimodal or agent paper may overlap ONLY if its actual contribution directly optimizes or characterizes LLM inference execution, not simply because it contains an LLM."
+  },
+  "S": {
+    "name": "Serverless Computing",
+    "scope": "Systems for serverless/FaaS execution and associated cloud-native function/workflow architectures: cold starts, elasticity, isolation, resource sharing, lifecycle management, scheduling, or programming/execution abstractions. Generic cloud, containers, distributed systems, and classic systems research are not automatically serverless."
+  },
+  "A": {
+    "name": "Agentic Execution Environment",
+    "scope": "Systems enabling execution of AI agents: tool/OS interfaces, sandboxes, runtime authorization/isolation, checkpointing, state management, orchestration, workflow scheduling and resource management of agent trajectories. Includes execution substrates used during agent learning. An agent application, model alignment, planning accuracy, or ordinary non-AI software agent alone is insufficient."
+  },
+  "V": {
+    "name": "Video & Embodied Intelligence",
+    "scope": "Systems and measured execution-efficiency contributions for vision-language models (including image-capable VLMs), video understanding/retrieval/generation, visual world models, VLA and embodied workloads: serving, decoding, deployment, scheduling, memory/caching, communication, hardware, real-time execution or control-loop efficiency. Capability/accuracy improvements alone, generic multimodal training, image-only diffusion, rendering alone, and video network transport alone are outside scope."
+  },
+  "C": {
+    "name": "Sustainable Computing",
+    "scope": "Systems research explicitly targeting computing energy/power efficiency or environmental/carbon reduction: energy-aware hardware/runtime configurations, carbon-aware scheduling, data-center power and embodied-carbon reduction. Actual energy or environmental evidence is needed; lower latency, FLOPs, memory, dollars or GPU count alone does not establish this topic. Explicit energy/performance tradeoffs are allowed."
+  }
+}

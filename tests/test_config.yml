@@ -7,36 +7,21 @@ email:
 slack:
   api_token: ${SLACK_API_TOKEN}
   default_channel: "#scholar-scout-test"
-  channel_topics:
-    scholar-scout-llm: ["LLM Inference"]
-    scholar-scout-serverless: ["Serverless Computing"]
 
 gemini:
   api_key: ${GEMINI_API_KEY}
-  gen_ai_model: "gemini-2.5-flash"
+  gen_ai_model: "gemini-3.8-flash"
   embedding_model: "gemini-embedding-001"
 
 research_topics:
   - name: "LLM Inference"
-    keywords: ["llm", "inference", "serving", "latency", "throughput"]
     slack_users:
       - "@test1"
       - "@test2"
     slack_channel: "#scholar-scout-llm"
-    description: "Test LLM inference research"
-    taxonomy:
-      - "Large language model inference speed and latency optimization"
-      - "LLM serving throughput and tokens per second"
-      - "Model quantization and accuracy trade-offs during inference"
 
   - name: "Serverless Computing"
-    keywords: ["serverless", "faas", "function-as-a-service", "cloud"]
     slack_users:
       - "@test3"
       - "@test4"
     slack_channel: "#scholar-scout-serverless"
-    description: "Test serverless computing research"
-    taxonomy:
-      - "Serverless computing architecture and FaaS execution"
-      - "Cold start latency and function warm-up strategies"
-      - "Auto-scaling and elasticity in serverless environments"
