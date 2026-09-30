@@ -12,8 +12,8 @@ furnished to do so, subject to the following conditions:
 """
 
 import email
-import logging
 import os
+import tempfile
 import unittest
 import sys
 from pathlib import Path
@@ -25,75 +25,36 @@ sys.path.append(str(Path(__file__).parent.parent / "src"))
 
 from scholar_scout.config import load_config
 from scholar_scout.classifier import ScholarClassifier
-from scholar_scout.email_client import EmailClient
 
 
 @unittest.skipUnless(os.getenv("RUN_LIVE_TESTS") == "1", "Live services require explicit opt-in")
 class TestIntegration(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        """Set up test environment for full pipeline integration testing."""
-        # Setup detailed logging
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format="%(asctime)s %(levelname)s [%(name)s]: %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S",
-        )
-
-        # Enable debug logging for specific components
-        logging.getLogger("scholar_scout.notifications").setLevel(logging.INFO)
-        logging.getLogger("scholar_scout.classifier").setLevel(logging.INFO)
-
-        # Load test environment variables
-        env_path = os.path.join(os.path.dirname(__file__), ".env.test")
-        if not load_dotenv(env_path, override=True):
-            # For CI environment, ensure required env vars are set
-            required_vars = ["GMAIL_USERNAME", "GMAIL_APP_PASSWORD", "GEMINI_API_KEY"]
-            missing_vars = [var for var in required_vars if not os.getenv(var)]
-            if missing_vars:
-                raise RuntimeError(f"Missing required environment variables: {missing_vars}")
-
-        # Load test configuration
-        config_path = os.path.join(os.path.dirname(__file__), "test_config.yml")
-        cls.config = load_config(config_path)
+        load_dotenv(Path(__file__).with_name(".env.test"))
+        if not os.getenv("GEMINI_API_KEY"):
+            raise RuntimeError("Missing GEMINI_API_KEY for live classification")
+        state = tempfile.TemporaryDirectory(prefix="scholar-scout-test-")
+        cls.addClassCleanup(state.cleanup)
+        cls.config = load_config(str(Path(__file__).with_name("test_config.yml")))
+        cls.config.state_dir = state.name
         cls.classifier = ScholarClassifier(cls.config)
 
-    def test_end_to_end_pipeline(self):
-        """Test the entire pipeline from Gmail connection to paper classification."""
-        try:
-            # Use EmailClient for Gmail connection
-            with EmailClient(self.config.email):
-                # For this test, we'll mock the email fetching since it requires real emails
-                # In a real integration test, you'd use: emails = email_client.fetch_scholar_alerts()
-                
-                # Create mock email for testing
-                mock_email = email.message_from_string("""
-From: scholaralerts-noreply@google.com
+    def test_reference_paper_abstract_and_classification(self):
+        message = email.message_from_string("""From: scholaralerts-noreply@google.com
 Subject: new articles
-Content-Type: text/html
+Content-Type: text/html; charset=utf-8
 
-<html>
-<body>
-<h3><a href="http://example.com/paper">Test Paper on LLM Inference</a></h3>
-<div>John Doe, Jane Smith</div>
-<div>This is a test abstract about LLM inference optimization.</div>
-</body>
-</html>
-                """)
-                
-                emails = [mock_email]
-
-            # Test classification
-            results = self.classifier.classify_papers(emails)
-            
-            # Verify we got results (may be empty due to mocking, but shouldn't crash)
-            self.assertIsInstance(results, list, "Should return a list of results")
-            
-            print(f"\nExtracted {len(results)} papers")
-            for paper, topics in results:
-                print(f"Title: {paper.title}")
-                print(f"Authors: {', '.join(paper.authors)}")
-                print(f"Matched Topics: {[topic.name for topic in topics]}")
-
-        except Exception as e:
-            self.fail(f"Integration test failed: {str(e)}")
+<h3><a href="https://arxiv.org/abs/2309.06180">Efficient Memory Management for Large Language Model Serving with PagedAttention</a></h3>
+<div>Woosuk Kwon - arXiv, 2023</div>
+<div class="gse_alrt_sni">Incomplete alert snippet...</div>
+""")
+        results = self.classifier.classify_papers([message])
+        self.assertEqual(len(results), 1, self.classifier.diagnostics)
+        self.assertEqual(self.classifier.pending, {})
+        paper, _ = results[0]
+        self.assertIn("PagedAttention", paper.title)
+        self.assertGreaterEqual(len(paper.abstract), 200)
+        decisions = self.classifier.diagnostics[0]["decisions"]
+        self.assertEqual(set(decisions), set(self.classifier.topic_classifier.topics))
+        self.assertTrue(all(d["decision"] in ("match", "no_match") for d in decisions.values()))

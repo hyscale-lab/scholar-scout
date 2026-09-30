@@ -3,11 +3,14 @@ name: Integration Tests
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   test:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     
     steps:
@@ -24,18 +27,9 @@ jobs:
         pip install -r requirements.txt
         pip install pytest pytest-mock
         
-    - name: Create .env file
-      run: |
-        echo "GMAIL_USERNAME=${{ secrets.GMAIL_USERNAME }}" >> .env
-        echo "GMAIL_APP_PASSWORD=${{ secrets.GMAIL_APP_PASSWORD }}" >> .env
-        echo "SLACK_API_TOKEN=${{ secrets.SLACK_API_TOKEN }}" >> .env
-        echo "GEMINI_API_KEY: ${{ secrets.GOOGLE_CREDENTIALS }}" >> .env
-        
     - name: Run tests
       env:
         GMAIL_USERNAME: ${{ secrets.GMAIL_USERNAME }}
         GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
-        SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}
         GEMINI_API_KEY: ${{ secrets.GOOGLE_CREDENTIALS }}
-      run: |
-        python -m unittest tests/test_integration.py -v 
+      run: make test-live

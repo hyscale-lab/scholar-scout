@@ -2,61 +2,65 @@ name: Weekly Scholar Classifier
 
 on:
   schedule:
-    - cron: '0 0 * * MON'  # Runs at 00:00 every Monday
-  workflow_dispatch:  # Allows manual triggering
+    - cron: '0 0 * * MON'
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 concurrency:
-  group: scholar-classifier-${{ github.ref }}
+  group: scholar-production-state
   cancel-in-progress: false
 
 jobs:
   run-classifier:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env:
-      STATE_CACHE_KEY: scholar-state-v1-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
-    
+      ABSTRACT_CACHE_KEY: scholar-abstracts-v2-${{ github.run_id }}-${{ github.run_attempt }}
+
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
+      with:
+        persist-credentials: false
+
+    - uses: actions/setup-python@v4
       with:
         python-version: '3.12'
-        
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
     - name: Create config files from template
-      run: |
-        cp config/config.example.yml config/config.yml
-        
-    - name: Restore abstract and pending state
+      run: cp config/config.example.yml config/config.yml
+
+    - name: Restore pending state
       id: restore_state
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: python scripts/scholar_state.py restore
+
+    - name: Restore abstract cache
+      id: restore_cache
+      continue-on-error: true
       uses: actions/cache/restore@v4
       with:
-        path: .scholar-scout
-        key: ${{ env.STATE_CACHE_KEY }}
-        restore-keys: |
-          scholar-state-v1-${{ github.ref_name }}-
+        path: ${{ steps.restore_state.outputs.state_dir }}/abstracts/*.json
+        key: ${{ env.ABSTRACT_CACHE_KEY }}
+        restore-keys: scholar-abstracts-v2-
 
-    - name: Report state restoration
-      if: always() && steps.restore_state.outcome != 'skipped'
+    - name: Report abstract cache restoration
       env:
-        RESTORE_OUTCOME: ${{ steps.restore_state.outcome }}
-        RESTORED_KEY: ${{ steps.restore_state.outputs.cache-matched-key }}
+        CACHE_OUTCOME: ${{ steps.restore_cache.outcome }}
+        CACHE_KEY: ${{ steps.restore_cache.outputs.cache-matched-key }}
       run: |
-        if [ "$RESTORE_OUTCOME" != "success" ]; then
-          echo "::error::State cache restoration failed. Prior pending papers could not be recovered."
-          echo 'State restore: **failed**. See the restore step logs.' >> "$GITHUB_STEP_SUMMARY"
-          exit 1
-        elif [ -n "$RESTORED_KEY" ]; then
-          printf 'State restored from: %s\n' "$RESTORED_KEY"
-          printf 'State restore: `%s`\n' "$RESTORED_KEY" >> "$GITHUB_STEP_SUMMARY"
+        if [ "$CACHE_OUTCOME" = "success" ] && [ -n "$CACHE_KEY" ]; then
+          printf 'Abstract cache restored: `%s`.\n' "$CACHE_KEY" >> "$GITHUB_STEP_SUMMARY"
         else
-          echo "::warning::No prior state cache was restored (first run, expiration, eviction, or unavailable cache). Starting without previous pending papers."
-          echo 'State restore: **cache miss**; previous pending papers are unavailable.' >> "$GITHUB_STEP_SUMMARY"
+          echo '::warning::Abstract cache unavailable or missed; abstracts will be fetched again. Pending state was restored independently.'
+          echo 'Abstract cache: **unavailable or missed**; pending state is unaffected.' >> "$GITHUB_STEP_SUMMARY"
         fi
 
     - name: Run Scholar Classifier
@@ -70,37 +74,51 @@ jobs:
         SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
       run: python scripts/run_classifier.py
 
-    - name: Save abstract and pending state
+    - name: Save pending state
       id: save_state
-      if: always() && steps.classify.outcome != 'skipped'
+      if: always() && steps.restore_state.outcome == 'success' && steps.classify.outcome != 'skipped'
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: python scripts/scholar_state.py save
+
+    - name: Save abstract cache
+      id: save_cache
+      if: always() && steps.classify.outcome == 'success'
+      continue-on-error: true
       uses: actions/cache/save@v4
       with:
-        path: .scholar-scout
-        key: ${{ env.STATE_CACHE_KEY }}
+        path: ${{ steps.restore_state.outputs.state_dir }}/abstracts/*.json
+        key: ${{ env.ABSTRACT_CACHE_KEY }}
 
-    - name: Verify saved state cache
-      id: verify_state
-      if: always() && steps.save_state.outcome != 'skipped'
+    - name: Verify abstract cache
+      id: verify_cache
+      if: always() && steps.save_cache.outcome == 'success'
+      continue-on-error: true
       uses: actions/cache/restore@v4
       with:
-        path: .scholar-scout
-        key: ${{ env.STATE_CACHE_KEY }}
+        path: ${{ steps.restore_state.outputs.state_dir }}/abstracts/*.json
+        key: ${{ env.ABSTRACT_CACHE_KEY }}
         lookup-only: true
 
-    - name: Report state persistence
-      if: always()
+    - name: Report abstract cache persistence
+      if: always() && steps.save_cache.outcome != 'skipped'
       env:
-        SAVE_OUTCOME: ${{ steps.save_state.outcome }}
-        VERIFY_OUTCOME: ${{ steps.verify_state.outcome }}
-        SAVED_KEY: ${{ steps.verify_state.outputs.cache-matched-key }}
+        CACHE_OUTCOME: ${{ steps.verify_cache.outcome }}
+        CACHE_KEY: ${{ steps.verify_cache.outputs.cache-matched-key }}
       run: |
-        if [ "$SAVE_OUTCOME" = "skipped" ]; then
-          echo 'State save: **skipped**; classification did not run.' >> "$GITHUB_STEP_SUMMARY"
-        elif [ "$SAVE_OUTCOME" = "success" ] && [ "$VERIFY_OUTCOME" = "success" ] && [ "$SAVED_KEY" = "$STATE_CACHE_KEY" ]; then
-          printf 'State cache confirmed: %s\n' "$SAVED_KEY"
-          printf 'State save: **confirmed**, `%s`.\n' "$SAVED_KEY" >> "$GITHUB_STEP_SUMMARY"
+        if [ "$CACHE_OUTCOME" = "success" ] && [ "$CACHE_KEY" = "$ABSTRACT_CACHE_KEY" ]; then
+          echo 'Abstract cache save: **confirmed**.' >> "$GITHUB_STEP_SUMMARY"
         else
-          echo "::error::State cache save could not be confirmed. This run's pending updates may be lost."
-          printf 'State save: **unconfirmed**, expected `%s`. Check save and verification logs.\n' "$STATE_CACHE_KEY" >> "$GITHUB_STEP_SUMMARY"
-          exit 1
+          echo '::warning::Abstract cache save was not confirmed; this does not replace or invalidate the pending-state save.'
+          echo 'Abstract cache save: **unconfirmed**; see the independent pending-state save result.' >> "$GITHUB_STEP_SUMMARY"
         fi
+
+    - name: Upload classification diagnostics
+      if: always() && steps.classify.outcome != 'skipped'
+      uses: actions/upload-artifact@v4
+      with:
+        name: scholar-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}
+        path: ${{ steps.restore_state.outputs.state_dir }}/last-run.json
+        if-no-files-found: ignore
+        retention-days: 30
+        include-hidden-files: true

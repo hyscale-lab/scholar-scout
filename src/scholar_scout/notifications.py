@@ -6,7 +6,7 @@ about newly classified research papers. It is designed to be used by the
 Scholar Scout application to report results.
 """
 
-from datetime import datetime, timedelta, timezone
+from datetime import date
 import logging
 from typing import List, Tuple
 
@@ -65,27 +65,36 @@ class SlackNotifier:
                 )
 
                 try:
-                    self.client.chat_postMessage(channel=channel, text=message, unfurl_links=True, link_names=True)
+                    self.client.chat_postMessage(
+                        channel=channel, text=message, unfurl_links=True, link_names=True
+                    )
                     logger.info(f"Notification sent to channel {channel} for topic {topic.name}")
                 except SlackApiError as e:
                     logger.error(f"Failed to send notification to {channel}: {e.response['error']}")
 
-    def send_weekly_update(self, papers_by_topic: dict[str, list[Paper]]):
+    def send_weekly_update(
+        self, papers_by_topic: dict[str, list[Paper]], *, period: tuple[date | None, date]
+    ):
         """
         Send one summary per topic to its paper notification channel.
 
         Args:
             papers_by_topic: A dictionary mapping topic names to a list of papers.
+            period: The date range captured when searching the mailbox.
         """
-        end_date = datetime.now(timezone.utc).date()
-        start_date = end_date - timedelta(days=7)
+        start_date, end_date = period
+        date_range = (
+            f"{start_date.isoformat()} – {end_date.isoformat()}"
+            if start_date
+            else f"through {end_date.isoformat()}"
+        )
         for topic in self.research_topics:
             channel = self._channel_for(topic)
             papers = papers_by_topic.get(topic.name, [])
             message = (
                 "📚 *Weekly Scholar Scout Update*\n"
                 f"Here are the relevant papers for {topic.name} this week "
-                f"({start_date.isoformat()} – {end_date.isoformat()}):\n\n"
+                f"({date_range}):\n\n"
             )
             if papers:
                 message += "\n".join(f"• {paper.title}" for paper in papers)
@@ -96,10 +105,13 @@ class SlackNotifier:
                 self.client.chat_postMessage(channel=channel, text=message)
                 logger.info(f"Sent weekly update for {topic.name} to {channel}")
             except SlackApiError as e:
-                logger.error(f"Failed to send weekly update for {topic.name} to {channel}: {e.response['error']}")
+                logger.error(
+                    f"Failed to send weekly update for {topic.name} to {channel}: {e.response['error']}"
+                )
 
-    def send_pending_update(self, pending: dict) -> None:
-        if not pending:
+    def send_pending_update(self, pending: dict, newly_expired: dict | None = None) -> None:
+        newly_expired = newly_expired or {}
+        if not pending and not newly_expired:
             return
         recipient = self.config.pending_user_id
         if not recipient:
@@ -110,15 +122,20 @@ class SlackNotifier:
             "pending_model": "Awaiting a valid model response",
         }
         header = (
-            f"Scholar Scout: {len(pending)} pending papers across all topics.\n"
-            "Automatic retries remain enabled; no manual review is required.\n"
+            f"Scholar Scout: {len(pending)} pending, {len(newly_expired)} stopped retrying "
+            "across all topics.\n"
+            "Pending papers retry within the configured limits. Stopped papers are retained "
+            "without a topic decision; no manual review is required.\n"
         )
         messages, message = [], header
-        for key, row in pending.items():
+        for key, row in {**pending, **newly_expired}.items():
             paper = row["paper"]
             title = " ".join(paper.get("title", "").split())[:240]
             url = " ".join(paper.get("url", "").split())[:500]
             status = labels.get(row["status"], "Awaiting processing")
+            if key in newly_expired:
+                reason = "age limit" if row["expiration_reason"] == "max_age" else "attempt limit"
+                status = f"Stopped retrying: {reason} ({status.lower()})"
             entry = f"\n{title}\n{status} | {key}\n{url}\n"
             if len(message) + len(entry) > 3500:
                 messages.append(message)

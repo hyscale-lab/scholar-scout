@@ -14,7 +14,7 @@ A tool to monitor Google Scholar alerts and classify research papers using Gemin
 3. Activate the virtual environment: `source .venv/bin/activate` (Unix) or `.venv\Scripts\activate` (Windows)
 4. Install dependencies: `pip install -r requirements.txt`
 5. Create `.env` using the example below and fill in your credentials
-6. Copy `config/config.example.yml` to `config/config.yml` and customize settings
+6. Copy `config/config.example.yml` to `config/config.yml` and customize settings, including [topics](#configuring-topics)
 
 ## Configuration
 Create a `.env` file with:
@@ -45,12 +45,9 @@ email:
   folder: "Google Scholar Alerts"
 ```
 
-Use a dedicated label: normal runs clean up emails older than four weeks in this folder.
-If App Passwords are unavailable, check your account's security settings or ask your
-Workspace administrator; this client requires IMAP access with an app password.
+Use a dedicated label: normal runs clean up emails older than four weeks in this folder. If App Passwords are unavailable, check your account's security settings or ask your Workspace administrator; this client requires IMAP access with an app password.
 
-For GitHub Actions, add `GMAIL_USERNAME` and `GMAIL_APP_PASSWORD` as repository secrets.
-Set the folder in `config/config.example.yml`, which the workflow copies on each run.
+For GitHub Actions, add `GMAIL_USERNAME` and `GMAIL_APP_PASSWORD` as repository secrets. Set the folder in `config/config.example.yml`, which the workflow copies on each run.
 
 ### Adding Users to Track
 1. Go to [Google Scholar](https://scholar.google.com/)
@@ -69,8 +66,9 @@ research_topics:
     slack_channel: "#llm-papers"  # optional
 ```
 
-Topic scopes are defined in `src/scholar_scout/topic_policy.json`; YAML entries
-configure subscriptions and Slack routing. Use the same topic name in both files.
+### Configuring Topics
+
+Edit `config/topic_policy.json` to change classification scopes or add topics. In `config/config.yml`, configure each topic's subscribers and Slack channel using the same topic name. For GitHub Actions, edit `config/config.example.yml` instead.
 
 ### HyScale Scholar Account
 To add researchers to the HyScale Scholar tracking:
@@ -89,22 +87,25 @@ Run the main script:
 python scripts/run_classifier.py
 ```
 
+`--dry-run` to read mail without changing it, skip Slack, and work on a temporary copy of the saved state. It still calls external services.
+
+`--debug` only enables detailed application logs; on its own, it runs the normal production workflow.
+
+Before the first GitHub Actions run, prepare the branch and pending-queue file specified under `state_storage` in the configuration.
+
 ## Testing
 
 Unit tests run in GitHub Actions using simulated services; no API keys are needed.
 
 ### Integration Tests
 
-For a live service check, use the same Gmail credentials in `tests/.env.test` and
-set the matching folder in `tests/test_config.yml`, then run:
+For live checks, set Gmail and Gemini credentials in `tests/.env.test` and the matching folder in `tests/test_config.yml`, then run:
 
 ```bash
-RUN_LIVE_TESTS=1 python -m unittest discover -s tests -p test_integration.py -v
+make test-live
 ```
 
-Live tests are skipped by default. They connect to Gmail and may call model and
-abstract services, but do not send Slack messages. The Weekly Scholar Classifier
-workflow is a production run, not a test; it can delete old emails and send notifications.
+Live tests are skipped by default. They check read-only Gmail retrieval and classify a real reference paper using abstract and model services, with temporary state and no Slack messages. CI runs them on main updates or manual dispatch. The Weekly Scholar Classifier workflow is a production run, not a test; it can delete old emails and send notifications.
 
 ## License
 MIT

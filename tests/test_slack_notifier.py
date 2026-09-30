@@ -11,6 +11,7 @@ copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 """
 
+from datetime import date
 from pathlib import Path
 import sys
 import unittest
@@ -42,6 +43,7 @@ class TestSlackNotifier(unittest.TestCase):
         self.client = client.start().return_value
         self.addCleanup(client.stop)
         self.notifier = SlackNotifier(self.config, self.topics)
+        self.period = (date(2026, 9, 13), date(2026, 9, 27))
         self.paper = Paper(
             title="Example Paper",
             authors=["A Author"],
@@ -72,13 +74,15 @@ class TestSlackNotifier(unittest.TestCase):
                 self.assertIn(text, call.kwargs["text"])
         self.client.reset_mock()
         self.notifier.send_weekly_update(
-            {topic.name: [paper] for topic, paper in zip(self.topics, papers)}
+            {topic.name: [paper] for topic, paper in zip(self.topics, papers)}, period=self.period
         )
         calls = self.client.chat_postMessage.call_args_list
         self.assertEqual(len(calls), len(self.topics))
         for call, topic in zip(calls, self.topics):
             self.assertEqual(call.kwargs["channel"], topic.slack_channel)
             text = call.kwargs["text"]
+            for day in self.period:
+                self.assertIn(day.isoformat(), text)
             for other_topic, paper in zip(self.topics, papers):
                 if other_topic.name == topic.name:
                     self.assertIn(other_topic.name, text)
@@ -91,7 +95,7 @@ class TestSlackNotifier(unittest.TestCase):
         for results in ([], [(self.paper, [])]):
             self.notifier.notify_matches(results)
         self.client.chat_postMessage.assert_not_called()
-        self.notifier.send_weekly_update({"Others": [self.paper]})
+        self.notifier.send_weekly_update({"Others": [self.paper]}, period=self.period)
         self.assertEqual(self.client.chat_postMessage.call_count, len(self.topics))
         for call, topic in zip(self.client.chat_postMessage.call_args_list, self.topics):
             self.assertEqual(call.kwargs["channel"], topic.slack_channel)
@@ -117,9 +121,20 @@ class TestSlackNotifier(unittest.TestCase):
                 for i in range(count):
                     self.assertEqual(combined.count(f"Pending {i:03d}"), 1)
                 self.client.reset_mock()
-                self.notifier.send_weekly_update({})
+                self.notifier.send_weekly_update({}, period=self.period)
                 for call in self.client.chat_postMessage.call_args_list:
                     self.assertNotIn("Pending", call.kwargs["text"])
+        self.client.reset_mock()
+        expired = self.pending()
+        for row in expired.values():
+            row["expiration_reason"] = "max_attempts"
+        self.notifier.send_pending_update({}, expired)
+        call = self.client.chat_postMessage.call_args
+        self.assertEqual(call.kwargs["channel"], self.config.pending_user_id)
+        self.assertIn("Stopped retrying: attempt limit", call.kwargs["text"])
+        self.client.reset_mock()
+        self.notifier.send_pending_update({}, {})
+        self.client.chat_postMessage.assert_not_called()
 
     def test_missing_or_invalid_dm_recipient_never_falls_back_to_channels(self):
         self.notifier.send_pending_update({})

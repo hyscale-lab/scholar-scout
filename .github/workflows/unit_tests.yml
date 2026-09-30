@@ -28,10 +28,4 @@ jobs:
         pip install pytest pytest-mock
         
     - name: Run offline tests
-      run: |
-        python -m unittest discover -s tests -p test_email_client.py -v
-        python -m unittest discover -s tests -p test_email_deletion.py -v
-        python -m unittest discover -s tests -p test_gemini_pipeline.py -v
-        python -m unittest discover -s tests -p test_abstract_sources.py -v
-        python -m unittest discover -s tests -p test_cache_workflow.py -v
-        python -m unittest discover -s tests -p test_slack_notifier.py -v
+      run: make test

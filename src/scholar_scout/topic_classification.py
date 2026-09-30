@@ -12,20 +12,20 @@ def normalize_quote(text):
     return re.sub(r"\s+", " ", unicodedata.normalize("NFKC", text)).strip()
 
 
-def validate_decisions(text, abstract, codes):
+def validate_decisions(text, abstract, topic_names):
     data = json.loads(text)
     if not isinstance(data, dict) or set(data) != {"decisions"}:
         raise ValueError("Invalid decision object")
     rows = data["decisions"]
-    if not isinstance(rows, list) or len(rows) != len(codes):
+    if not isinstance(rows, list) or len(rows) != len(topic_names):
         raise ValueError("Missing topic decisions")
     decisions = {}
     for row in rows:
         if not isinstance(row, dict) or set(row) != {"topic", "decision", "evidence", "reason"}:
             raise ValueError("Invalid decision fields")
-        code = row["topic"]
-        if not isinstance(code, str) or code not in codes or code in decisions:
-            raise ValueError("Invalid topic code")
+        name = row["topic"]
+        if not isinstance(name, str) or name not in topic_names or name in decisions:
+            raise ValueError("Invalid topic name")
         if row["decision"] not in ("match", "no_match"):
             raise ValueError("Invalid decision")
         evidence = row["evidence"]
@@ -40,38 +40,33 @@ def validate_decisions(text, abstract, codes):
                 or normalize_quote(quote) not in normalize_quote(abstract)
             ):
                 raise ValueError("Unverified quotation")
-        decisions[code] = row
+        decisions[name] = row
     return decisions
 
 
 class TopicClassifier:
     def __init__(self, client, model, topics):
         self.client, self.model = client, model
-        directory = Path(__file__).parent
-        policies = json.loads((directory / "topic_policy.json").read_text())
-        by_name = {p["name"]: code for code, p in policies.items()}
-        if len(by_name) != len(policies) or any(
-            not isinstance(p.get("scope"), str) or not p["scope"].strip() for p in policies.values()
+        directory = Path(__file__).resolve().parent
+        policy_path = directory.parent.parent / "config/topic_policy.json"
+        policies = json.loads(policy_path.read_text())
+        if not isinstance(policies, dict) or any(
+            not name.strip() or not isinstance(scope, str) or not scope.strip()
+            for name, scope in policies.items()
         ):
-            raise ValueError("Policies require unique names and nonempty scopes")
+            raise ValueError("Policies require nonempty names and scopes")
         if (
             not topics
             or any(not t.name.strip() for t in topics)
             or len({t.name for t in topics}) != len(topics)
         ):
             raise ValueError("Topic names must be nonempty and unique")
-        missing = [t.name for t in topics if t.name not in by_name]
+        missing = [t.name for t in topics if t.name not in policies]
         if missing:
             raise ValueError("Topics missing from topic_policy.json: " + ", ".join(missing))
-        self.topics = {by_name[t.name]: t for t in topics}
-        scopes = {code: policies[code] for code in self.topics}
+        self.topics = {t.name: t for t in topics}
+        scopes = {name: policies[name] for name in self.topics}
         prompt = (directory / "classification_prompt.txt").read_text()
-        if set(self.topics) != set("LSAVC"):
-            prompt = prompt.split("Return ONLY JSON")[0].replace(
-                "five systems-research subscriptions",
-                f"{len(topics)} systems-research subscriptions",
-            )
-            prompt += "\nReturn ONLY JSON: a decisions array with each supplied topic code exactly once. Each row has topic, decision, evidence (list of exact abstract quotes), and reason. Allowed decisions: match, no_match."
         self.prompt = prompt + "\nTOPICS:\n" + json.dumps(scopes, ensure_ascii=False)
         self.generation_config = types.GenerateContentConfig(
             system_instruction=self.prompt,

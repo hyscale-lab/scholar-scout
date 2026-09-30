@@ -12,8 +12,16 @@ slack:
 gemini:
   api_key: ${GEMINI_API_KEY}
   gen_ai_model: "gemini-3.8-flash"
-  embedding_model: "gemini-embedding-001"
 
+state_storage:
+  branch: "scholar-state"
+  file: "state.json"
+
+state_dir: ".scholar-scout"
+
+pending_policy:
+  max_attempts: 5 # Includes the first processing attempt; deferred retries do not count.
+  max_age_days: 30 # Measured from first entering the queue, not publication date.
 
 research_topics:
   - name: "LLM Inference"

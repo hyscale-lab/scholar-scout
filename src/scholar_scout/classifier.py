@@ -5,6 +5,7 @@ import json
 import logging
 from pathlib import Path
 import re
+import time
 from urllib.parse import parse_qs, urlparse
 
 from bs4 import BeautifulSoup, Tag
@@ -51,6 +52,12 @@ class ScholarClassifier:
         self.pending = (
             json.loads(self.pending_path.read_text()) if self.pending_path.exists() else {}
         )
+        self.expired_path = self.state_dir / "expired-papers.json"
+        self.expired = (
+            json.loads(self.expired_path.read_text()) if self.expired_path.exists() else {}
+        )
+        self.pending = {key: row for key, row in self.pending.items() if key not in self.expired}
+        self.newly_expired = {}
         self.diagnostics = []
 
     def _get_email_content(self, message):
@@ -117,7 +124,24 @@ class ScholarClassifier:
         if not candidate.get("venue"):
             candidate["venue"] = paper.venue
 
+    def _expiration_reason(self, row):
+        policy = self.config.pending_policy
+        if time.time() - row["first_pending_at"] >= policy.max_age_days * 86400:
+            return "max_age"
+        if row["attempts"] >= policy.max_attempts:
+            return "max_attempts"
+        return None
+
+    def _expire(self, key, row, reason):
+        self.expired[key] = dict(row, expired_at=time.time(), expiration_reason=reason)
+        self.newly_expired[key] = self.expired[key]
+        atomic_json(self.expired_path, self.expired)
+        self.pending.pop(key, None)
+        atomic_json(self.pending_path, self.pending)
+        logger.info("Stopped retrying paper %s (%s)", key, reason)
+
     def classify_papers(self, email_messages):
+        atomic_json(self.expired_path, self.expired)
         candidates = {key: row["paper"] for key, row in self.pending.items()}
         seen_urls = {
             url
@@ -128,6 +152,8 @@ class ScholarClassifier:
         for message in email_messages:
             for paper in self._extract_paper_metadata(self._get_email_content(message)):
                 key = hashlib.sha256(normalized(paper.title).encode()).hexdigest()[:20]
+                if key in self.expired:
+                    continue
                 if key in candidates:
                     self._merge_candidate(candidates[key], paper)
                 elif paper.url and paper.url in seen_urls:
@@ -139,7 +165,14 @@ class ScholarClassifier:
                     seen_urls.add(paper.url)
         results = []
         self.diagnostics = []
+        self.newly_expired = {}
         for key, candidate in candidates.items():
+            previous = self.pending.get(key)
+            row = dict(previous) if previous else {"first_pending_at": time.time(), "attempts": 0}
+            if previous and (reason := self._expiration_reason(row)):
+                self._expire(key, row, reason)
+                self.diagnostics.append({"id": key, "status": "expired", "reason": reason})
+                continue
             status, decisions, notes = "pending_abstract", {}, []
             try:
                 record, notes = self.resolver.resolve(candidate)
@@ -153,9 +186,9 @@ class ScholarClassifier:
                     status = "pending_model"
                     decisions = self.topic_classifier.classify(paper)
                     matches = [
-                        self.topic_classifier.topics[c]
-                        for c, d in decisions.items()
-                        if d["decision"] == "match"
+                        self.topic_classifier.topics[name]
+                        for name, decision in decisions.items()
+                        if decision["decision"] == "match"
                     ]
                     status = "matched" if matches else "no_match"
                     results.append((paper, matches))
@@ -163,12 +196,27 @@ class ScholarClassifier:
                 logger.warning("Paper %s remains pending (%s)", key, type(exc).__name__)
                 notes.append(type(exc).__name__)
             if status.startswith("pending"):
-                self.pending[key] = {"paper": candidate, "status": status}
+                row.update(paper=candidate, status=status)
+                if not self.resolver.retry_deferred:
+                    row["attempts"] += 1
+                if reason := self._expiration_reason(row):
+                    self._expire(key, row, reason)
+                    status = "expired"
+                    notes.append(reason)
+                else:
+                    self.pending[key] = row
             else:
                 self.pending.pop(key, None)
             atomic_json(self.pending_path, self.pending)
             self.diagnostics.append(
                 {"id": key, "status": status, "decisions": decisions, "notes": notes}
             )
+        atomic_json(self.pending_path, self.pending)
         atomic_json(self.state_dir / "last-run.json", self.diagnostics)
+        logger.info(
+            "Processed %d papers; %d pending, %d newly expired",
+            len(results),
+            len(self.pending),
+            len(self.newly_expired),
+        )
         return results
