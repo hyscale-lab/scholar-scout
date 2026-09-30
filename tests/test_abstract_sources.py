@@ -268,10 +268,12 @@ class AbstractSourceTests(unittest.TestCase):
             record, _ = self.resolver.resolve(self.paper)
         self.assertIsNone(record)
         self.assertEqual(self.resolver.last_pending["attempts"], 1)
+        self.assertFalse(self.resolver.retry_deferred)
         with patch.object(sources.requests, "get") as get:
             record, notes = self.resolver.resolve(self.paper)
         get.assert_not_called()
         self.assertIn("deferred", notes[-1])
+        self.assertTrue(self.resolver.retry_deferred)
         pending = self.root / "cache/pending-abstracts/sample.json"
         data = json.loads(pending.read_text())
         data["next_retry_at"] = 0
@@ -280,6 +282,7 @@ class AbstractSourceTests(unittest.TestCase):
             record, _ = self.resolver.resolve(self.paper)
         self.assertEqual(record["title"], "Paper One")
         self.assertEqual(json.loads(pending.read_text())["status"], "resolved")
+        self.assertFalse(self.resolver.retry_deferred)
 
     def test_cached_abstract_identity_is_rechecked(self):
         sources.atomic_json(

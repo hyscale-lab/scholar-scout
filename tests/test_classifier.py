@@ -17,24 +17,35 @@ from scholar_scout.topic_classification import TopicClassifier
 
 ROOT = Path(__file__).resolve().parents[1]
 ABSTRACT = "We reduce KV cache memory during LLM serving. " * 8
+TOPIC_NAMES = (
+    "LLM Inference",
+    "Serverless Computing",
+    "Agentic Execution Environment",
+    "Video & Embodied Intelligence",
+    "Sustainable Computing",
+)
 
 
-def response(matches=("L",), quote="We reduce KV cache memory during LLM serving."):
+def response(
+    matches=("LLM Inference",),
+    quote="We reduce KV cache memory during LLM serving.",
+    topics=TOPIC_NAMES,
+):
     rows = [
         {
-            "topic": code,
-            "decision": "match" if code in matches else "no_match",
-            "evidence": [quote] if code in matches else [],
+            "topic": name,
+            "decision": "match" if name in matches else "no_match",
+            "evidence": [quote] if name in matches else [],
             "reason": "Systems contribution.",
         }
-        for code in "LSAVC"
+        for name in topics
     ]
     return SimpleNamespace(
         text=json.dumps({"decisions": rows}), candidates=[SimpleNamespace(finish_reason="STOP")]
     )
 
 
-class PipelineTests(unittest.TestCase):
+class ClassifierTests(unittest.TestCase):
     def setUp(self):
         temp = tempfile.TemporaryDirectory()
         self.addCleanup(temp.cleanup)
@@ -66,7 +77,9 @@ class PipelineTests(unittest.TestCase):
         )
 
     def test_full_abstract_classification_preserves_independent_matches(self):
-        self.client.models.generate_content.return_value = response(matches=("L", "V"))
+        self.client.models.generate_content.return_value = response(
+            matches=("LLM Inference", "Video & Embodied Intelligence")
+        )
         results = self.app.classify_papers([self.mail])
         self.assertEqual(len(results), 1)
         self.assertEqual(
@@ -85,17 +98,38 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(self.app.pending, {})
 
     def test_policy_is_authoritative_and_unknown_topics_fail(self):
-        policies = json.loads((ROOT / "src/scholar_scout/topic_policy.json").read_text())
+        policies = json.loads((ROOT / "config/topic_policy.json").read_text())
         topic = ResearchTopic(
             name="LLM Inference", slack_users=[], description="Ignored legacy scope"
         )
         classifier = TopicClassifier(self.client, "test-model", [topic])
-        self.assertIn(policies["L"]["scope"], classifier.prompt)
+        self.assertEqual(
+            json.loads(classifier.prompt.split("\nTOPICS:\n")[1]),
+            {topic.name: policies[topic.name]},
+        )
         self.assertNotIn("Ignored legacy scope", classifier.prompt)
         topic.name = "Unknown Topic"
         with self.assertRaises(ValueError):
             TopicClassifier(self.client, "test-model", [topic])
         self.client.models.generate_content.assert_not_called()
+        topic.name = "Custom Systems Topic"
+        custom_policy = {topic.name: policies["LLM Inference"]}
+        read_text = Path.read_text
+
+        def read_policy(path, *args, **kwargs):
+            if path.name == "topic_policy.json":
+                return json.dumps(custom_policy)
+            return read_text(path, *args, **kwargs)
+
+        with patch.object(Path, "read_text", read_policy):
+            classifier = TopicClassifier(self.client, "test-model", [topic])
+        self.assertEqual(json.loads(classifier.prompt.split("\nTOPICS:\n")[1]), custom_policy)
+        self.client.models.generate_content.return_value = response(
+            matches=(topic.name,), topics=(topic.name,)
+        )
+        decisions = classifier.classify(SimpleNamespace(**self.record))
+        self.assertEqual(set(decisions), {topic.name})
+        self.assertEqual(decisions[topic.name]["decision"], "match")
 
     def test_invalid_output_retries_then_stays_pending(self):
         invalid_decision = response()
@@ -106,20 +140,26 @@ class PipelineTests(unittest.TestCase):
         truncated.candidates[0].finish_reason = "MAX_TOKENS"
         duplicate = response()
         rows = json.loads(duplicate.text)
-        rows["decisions"][-1]["topic"] = "L"
+        rows["decisions"][-1]["topic"] = "LLM Inference"
         duplicate.text = json.dumps(rows)
         missing = response()
         rows = json.loads(missing.text)
         rows["decisions"].pop()
         missing.text = json.dumps(rows)
+        unknown = response()
+        rows = json.loads(unknown.text)
+        rows["decisions"][0]["topic"] = "Unknown Topic"
+        unknown.text = json.dumps(rows)
         for label, invalid in (
             ("decision", invalid_decision),
             ("quote", response(quote="invented")),
             ("truncated", truncated),
             ("duplicate", duplicate),
             ("missing", missing),
+            ("unknown", unknown),
         ):
             with self.subTest(label=label):
+                self.app.pending.clear()
                 self.client.models.generate_content.reset_mock()
                 self.client.models.generate_content.return_value = invalid
                 self.assertEqual(self.app.classify_papers([self.mail]), [])
@@ -140,6 +180,54 @@ class PipelineTests(unittest.TestCase):
         restarted.resolver.resolve = Mock(return_value=(self.record, []))
         self.assertEqual(len(restarted.classify_papers([])), 1)
         self.assertEqual(ScholarClassifier(self.config).pending, {})
+
+    def test_retry_limits_survive_restart_and_do_not_requeue_expired_papers(self):
+        self.config.pending_policy.max_attempts = 2
+        for failure in ("abstract", "model"):
+            with self.subTest(failure=failure), tempfile.TemporaryDirectory() as temp:
+                self.config.state_dir = temp
+                app = ScholarClassifier(self.config)
+                app.resolver.resolve = Mock(
+                    return_value=(None if failure == "abstract" else self.record, [])
+                )
+                self.client.models.generate_content.side_effect = TimeoutError()
+                app.classify_papers([self.mail])
+                row = next(iter(app.pending.values()))
+                self.assertEqual(row["attempts"], 1)
+                first_pending_at = row["first_pending_at"]
+                restarted = ScholarClassifier(self.config)
+                restarted.resolver.resolve = app.resolver.resolve
+                restarted.classify_papers([])
+                self.assertEqual(restarted.pending, {})
+                expired = next(iter(restarted.newly_expired.values()))
+                self.assertEqual(expired["attempts"], 2)
+                self.assertEqual(expired["first_pending_at"], first_pending_at)
+                self.assertEqual(expired["expiration_reason"], "max_attempts")
+                restarted = ScholarClassifier(self.config)
+                restarted.resolver.resolve = Mock()
+                self.assertEqual(restarted.classify_papers([self.mail]), [])
+                restarted.resolver.resolve.assert_not_called()
+                self.assertEqual(restarted.newly_expired, {})
+                self.assertEqual(len(restarted.expired), 1)
+
+    def test_age_limit_stops_before_network_and_cooldown_does_not_count(self):
+        self.app.resolver.resolve.return_value = (None, [])
+        with patch("scholar_scout.classifier.time.time", return_value=100):
+            self.app.classify_papers([self.mail])
+        row = next(iter(self.app.pending.values()))
+        self.app.resolver.retry_deferred = True
+        with patch("scholar_scout.classifier.time.time", return_value=200):
+            self.app.classify_papers([])
+        self.assertEqual(next(iter(self.app.pending.values()))["attempts"], 1)
+        self.app.resolver.resolve.reset_mock()
+        deadline = row["first_pending_at"] + self.config.pending_policy.max_age_days * 86400
+        with patch("scholar_scout.classifier.time.time", return_value=deadline):
+            self.app.classify_papers([])
+        self.app.resolver.resolve.assert_not_called()
+        self.assertEqual(self.app.pending, {})
+        self.assertEqual(
+            next(iter(self.app.newly_expired.values()))["expiration_reason"], "max_age"
+        )
 
     def test_api_failure_defers_without_retry_or_secret_logging(self):
         self.client.models.generate_content.side_effect = RuntimeError("secret-token")

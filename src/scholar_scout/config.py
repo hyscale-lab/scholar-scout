@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field
 
 class EmailConfig(BaseModel):
     """Email server configuration."""
+
     username: str
     password: str
     folder: str = "INBOX"
@@ -23,30 +24,46 @@ class EmailConfig(BaseModel):
 
 class SlackConfig(BaseModel):
     """Slack notifier configuration."""
+
     api_token: str
     default_channel: str
     pending_user_id: Optional[str] = Field(default=None, pattern=r"^U[A-Z0-9]+$")
 
+
 class GeminiConfig(BaseModel):
     """Gemini AI client configuration."""
+
     api_key: Union[str, dict]
     gen_ai_model: str = "gemini-3.8-flash"
-    embedding_model: str = "gemini-embedding-001"
 
 
 class ResearchTopic(BaseModel):
     """Research topic configuration."""
+
     name: str
     slack_users: List[str]
     slack_channel: Optional[str] = None
 
 
+class StateStorageConfig(BaseModel):
+    branch: str = Field(default="scholar-state", pattern=r"^[A-Za-z0-9][A-Za-z0-9._/-]*$")
+    file: str = Field(default="state.json", pattern=r"^[A-Za-z0-9][A-Za-z0-9_.-]*\.json$")
+
+
+class PendingPolicy(BaseModel):
+    max_attempts: int = Field(default=5, ge=1)
+    max_age_days: int = Field(default=30, ge=1)
+
+
 class AppConfig(BaseModel):
     """Main application configuration."""
+
     email: EmailConfig
     slack: SlackConfig
     gemini: GeminiConfig
     research_topics: List[ResearchTopic]
+    state_storage: StateStorageConfig = Field(default_factory=StateStorageConfig)
+    pending_policy: PendingPolicy = Field(default_factory=PendingPolicy)
     state_dir: str = ".scholar-scout"
 
 

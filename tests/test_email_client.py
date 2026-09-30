@@ -1,6 +1,6 @@
 """Offline mailbox search and failure handling."""
 
-from datetime import datetime
+from datetime import date, datetime
 from email.message import EmailMessage
 from pathlib import Path
 import sys
@@ -44,8 +44,12 @@ class TestEmailClient(unittest.TestCase):
 
     def test_search_window_and_empty_result(self):
         self.mail.search.return_value = ("OK", [b""])
-        self.assertEqual(self.client.fetch_scholar_alerts(), [])
-        self.mail.search.assert_called_once_with(None, self.query)
+        with patch("builtins.open", mock_open(read_data=CRITERIA.replace('"7D"', '"14D"'))):
+            self.assertEqual(self.client.fetch_scholar_alerts(), [])
+        self.assertEqual(self.client.search_period, (date(2026, 9, 13), date(2026, 9, 27)))
+        self.mail.search.assert_called_once_with(
+            None, 'FROM "scholaralerts-noreply@google.com" SINCE "13-Sep-2026"'
+        )
         self.mail.fetch.assert_not_called()
 
     def test_subjects_are_decoded_and_filtered_locally(self):

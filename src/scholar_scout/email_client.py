@@ -9,7 +9,7 @@ be used by the Scholar Scout application to retrieve emails for classification.
 import email
 import imaplib
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from email.header import decode_header
 from email.message import Message
 from typing import List
@@ -33,6 +33,7 @@ class EmailClient:
         """
         self.config = config
         self.mail = None
+        self.search_period = None
 
     def __enter__(self):
         """Connect to the Gmail server and log in."""
@@ -105,6 +106,8 @@ class EmailClient:
 
         from_query = f'FROM "{criteria["from"]}"'
         since_query = ""
+        end_date = datetime.now(timezone.utc).date()
+        start_date = None
         if criteria["time_window"]:
             amount = int(criteria["time_window"][:-1])
             unit = criteria["time_window"][-1]
@@ -116,10 +119,11 @@ class EmailClient:
                 delta = timedelta(days=amount * 30)
             else:
                 delta = timedelta(days=amount)
-            since_date = datetime.now() - delta
-            date_str = since_date.strftime("%d-%b-%Y")
+            start_date = end_date - delta
+            date_str = start_date.strftime("%d-%b-%Y")
             since_query = f'SINCE "{date_str}"'
 
+        self.search_period = (start_date, end_date)
         subjects = criteria.get("subject", [])
         return from_query, since_query, subjects
 

@@ -189,6 +189,7 @@ class AbstractResolver:
         self.disabled = set()
         self.programs = {}
         self.last_pending = None
+        self.retry_deferred = False
 
     def get(self, url, params=None):
         if self.offline:
@@ -401,6 +402,7 @@ class AbstractResolver:
         if not re.fullmatch(r"[A-Za-z0-9_-]+", paper["id"]):
             raise ValueError("Invalid cache identifier")
         self.last_pending = None
+        self.retry_deferred = False
         path = self.cache / (paper["id"] + ".json")
         pending_path = self.cache / "pending-abstracts" / (paper["id"] + ".json")
         context = dict(paper)
@@ -424,6 +426,7 @@ class AbstractResolver:
         previous = json.loads(pending_path.read_text()) if pending_path.exists() else {}
         if previous.get("next_retry_at", 0) > time.time() and previous.get("paper") == paper:
             self.last_pending = previous
+            self.retry_deferred = True
             return None, notes + ["abstract retry deferred until scheduled time"]
         urls = list(dict.fromkeys([paper.get("url", ""), *paper.get("urls", [])]))
         if not doi_of(context):

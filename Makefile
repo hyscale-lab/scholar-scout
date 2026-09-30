@@ -1,4 +1,6 @@
-.PHONY: lint test clean  # Declare phony targets (not actual files)
+.PHONY: lint test test-live clean  # Declare phony targets (not actual files)
+
+PYTHON ?= python
 
 # Format code using autoflake and black
 format:
@@ -15,11 +17,11 @@ lint:
 
 # Run all unit tests with verbose output
 test:
-	python -m unittest tests/test_integration.py -v
-	python -m unittest tests/test_gmail_connection.py -v
-	python -m unittest tests/test_scholar_classifier.py -v
-	python -m unittest tests/test_slack_notifier.py -v
-	python -m unittest tests/test_email_deletion.py -v
+	RUN_LIVE_TESTS=0 $(PYTHON) -m unittest discover -s tests -p 'test_*.py' -v
+
+test-live:
+	RUN_LIVE_TESTS=1 $(PYTHON) -m unittest discover -s tests -p test_gmail_connection.py -v
+	RUN_LIVE_TESTS=1 $(PYTHON) -m unittest discover -s tests -p test_integration.py -v
 
 # Clean up Python cache and build files
 clean:
