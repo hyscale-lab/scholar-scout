@@ -67,7 +67,8 @@ def main():
 
     if not args.dry_run:
         notifier = SlackNotifier(config.slack, config.research_topics)
-        notifier.notify_matches(results)
+        if not classifier.run_failed:
+            notifier.notify_matches(results)
 
         papers_by_topic = {}
         for paper, topics in results:
@@ -75,8 +76,16 @@ def main():
                 if topic.name not in papers_by_topic:
                     papers_by_topic[topic.name] = []
                 papers_by_topic[topic.name].append(paper)
-        notifier.send_weekly_update(papers_by_topic, period=search_period)
-        notifier.send_pending_update(classifier.pending, classifier.newly_expired)
+        if not classifier.run_failed and (
+            results or not (classifier.pending or classifier.newly_expired)
+        ):
+            notifier.send_weekly_update(papers_by_topic, period=search_period)
+        notifier.send_pending_update(
+            classifier.pending, classifier.newly_expired, run_failed=classifier.run_failed
+        )
+
+    if classifier.run_failed:
+        raise RuntimeError("No papers classified: source or model failures; pending state retained")
 
 
 if __name__ == "__main__":

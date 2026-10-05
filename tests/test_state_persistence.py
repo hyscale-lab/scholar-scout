@@ -62,6 +62,12 @@ class StatePersistenceTests(unittest.TestCase):
             state.atomic_json(directory / "pending-papers.json", {})
             self.assertEqual(state.collect(directory)["retries"], {})
             self.assertEqual(state.collect(directory)["expired"], {expired_key: expired})
+        self.snapshot["pending"][KEY]["attempts"] = 0
+        self.snapshot["retries"][KEY].update(attempts=0, last_attempt_at=0)
+        self.snapshot["source_limits"]["arxiv_web"] = {"cooldown_until": 800, "failures": 1}
+        with tempfile.TemporaryDirectory() as temp:
+            state.restore(Path(temp), self.snapshot)
+            self.assertEqual(state.collect(Path(temp)), self.snapshot)
 
     def test_invalid_state_and_missing_remote_fail_without_empty_fallback(self):
         invalid = copy.deepcopy(self.snapshot)

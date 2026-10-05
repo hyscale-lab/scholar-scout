@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 import fcntl
 import json
+import logging
 import math
 import os
 from pathlib import Path
@@ -18,6 +19,10 @@ from urllib.parse import parse_qs, quote, unquote, urljoin, urlparse
 import requests
 from bs4 import BeautifulSoup
 from dotenv import dotenv_values
+
+from .config import SourceRecoveryConfig
+
+logger = logging.getLogger(__name__)
 
 
 def normalized(text):
@@ -126,12 +131,14 @@ class SharedLimiter:
             now = self.clock()
             if entry.get("cooldown_until", 0) > now:
                 raise SourceFailure("cooldown_active", entry["cooldown_until"])
-            wait = max(0, entry.get("next_start", 0) - now)
+            quota = "arxiv" if service == "arxiv_web" else service
+            pacing = state.setdefault(quota, {})
+            wait = max(0, pacing.get("next_start", 0) - now)
             if wait > 5:
-                raise SourceFailure("request_deferred", entry["next_start"])
+                raise SourceFailure("request_deferred", pacing["next_start"])
             if wait:
                 self.sleep(wait)
-            entry["next_start"] = self.clock() + self.INTERVALS[service]
+            pacing["next_start"] = self.clock() + self.INTERVALS[quota]
 
     def defer(self, service, retry_after=None):
         with self.locked() as state:
@@ -167,7 +174,7 @@ class AbstractResolver:
         "ieeexploreapi.ieee.org",
     }
     SERVICES = {
-        "arxiv.org": "arxiv",
+        "arxiv.org": "arxiv_web",
         "export.arxiv.org": "arxiv",
         "api.crossref.org": "crossref",
         "www.usenix.org": "usenix",
@@ -176,7 +183,7 @@ class AbstractResolver:
         "ieeexploreapi.ieee.org": "ieee",
     }
 
-    def __init__(self, cache, offline=False, env_file=None, state_dir=None):
+    def __init__(self, cache, offline=False, env_file=None, state_dir=None, recovery=None):
         self.cache = Path(cache)
         self.cache.mkdir(parents=True, exist_ok=True, mode=0o700)
         self.offline = offline
@@ -190,6 +197,29 @@ class AbstractResolver:
         self.programs = {}
         self.last_pending = None
         self.retry_deferred = False
+        self.had_source_failure = False
+        self.requests_started = 0
+        self.recovery = recovery or SourceRecoveryConfig()
+        self.recovery_rounds = 0
+        self.recovery_waited = 0.0
+
+    def _wait_for_recovery(self, retry_at):
+        delay = max(0, retry_at - time.time())
+        if (
+            self.recovery_rounds >= self.recovery.max_rounds
+            or self.recovery_waited + delay > self.recovery.max_wait_seconds
+        ):
+            return False
+        self.recovery_rounds += 1
+        self.recovery_waited += delay
+        logger.info(
+            "Retrying deferred abstract sources after %.1fs (round %d)", delay, self.recovery_rounds
+        )
+        while delay > 0:
+            step = min(delay, 30)
+            time.sleep(step)
+            delay -= step
+        return True
 
     def get(self, url, params=None):
         if self.offline:
@@ -215,6 +245,7 @@ class AbstractResolver:
         if service == "semantic_scholar" and self.keys["SEMANTIC_SCHOLAR_API_KEY"]:
             headers["x-api-key"] = self.keys["SEMANTIC_SCHOLAR_API_KEY"]
         self.limiter.before(service)
+        self.requests_started += 1
         try:
             response = requests.get(
                 url,
@@ -403,6 +434,8 @@ class AbstractResolver:
             raise ValueError("Invalid cache identifier")
         self.last_pending = None
         self.retry_deferred = False
+        self.had_source_failure = False
+        requests_before = self.requests_started
         path = self.cache / (paper["id"] + ".json")
         pending_path = self.cache / "pending-abstracts" / (paper["id"] + ".json")
         context = dict(paper)
@@ -439,43 +472,56 @@ class AbstractResolver:
             for url in urls
         ]
         sources.extend((name, context) for name in ("crossref", "semantic_scholar", "arxiv"))
-        for name, source_paper in sources:
-            try:
-                records = getattr(self, name)(source_paper)
-                matched = [r for r in records if identity_matches(context, r)]
-                if len(matched) == 1 and is_usable_abstract(matched[0]):
-                    record = dict(matched[0])
-                    record["retrieved_at"] = datetime.now(timezone.utc).isoformat()
-                    record["identity_check"] = (
-                        "exact normalized title; DOI agreement when available; author surname overlap when supplied"
-                    )
-                    atomic_json(path, record)
-                    if pending_path.exists():
-                        # Preserve retry history, but mark the queue item complete.
-                        atomic_json(
-                            pending_path, dict(previous, status="resolved", next_retry_at=0)
+        deferred = []
+        while sources:
+            for name, source_paper in sources:
+                try:
+                    records = getattr(self, name)(source_paper)
+                    matched = [r for r in records if identity_matches(context, r)]
+                    if len(matched) == 1 and is_usable_abstract(matched[0]):
+                        record = dict(matched[0])
+                        record["retrieved_at"] = datetime.now(timezone.utc).isoformat()
+                        record["identity_check"] = (
+                            "exact normalized title; DOI agreement when available; author surname overlap when supplied"
                         )
-                    return record, notes
-                if len(matched) == 1 and name == "crossref" and not doi_of(context):
-                    context["doi"] = matched[0].get("doi", "")
-                if records:
-                    notes.append(
-                        name + ": identity mismatch, ambiguous result, or unusable abstract"
-                    )
-            except SourceFailure as exc:
-                notes.append(name + ": " + str(exc))
-                retry_at = max(retry_at, exc.retry_at)
-            except Exception as exc:
-                notes.append(name + ": " + type(exc).__name__)
-        attempts = previous.get("attempts", 0) + 1
-        # Retry on a subsequent invocation, never spin or invent a negative label.
+                        atomic_json(path, record)
+                        if pending_path.exists():
+                            atomic_json(
+                                pending_path, dict(previous, status="resolved", next_retry_at=0)
+                            )
+                        return record, notes
+                    if len(matched) == 1 and name == "crossref" and not doi_of(context):
+                        context["doi"] = matched[0].get("doi", "")
+                    if records:
+                        notes.append(
+                            name + ": identity mismatch, ambiguous result, or unusable abstract"
+                        )
+                except SourceFailure as exc:
+                    notes.append(name + ": " + str(exc))
+                    self.had_source_failure |= str(exc) != "missing_ieee_key"
+                    if exc.retry_at:
+                        deferred.append((exc.retry_at, name, source_paper))
+                except Exception as exc:
+                    self.had_source_failure = True
+                    notes.append(name + ": " + type(exc).__name__)
+            if not deferred:
+                break
+            retry_at = min(item[0] for item in deferred)
+            if not self._wait_for_recovery(retry_at):
+                break
+            sources = [(name, paper) for at, name, paper in deferred if at <= retry_at]
+            deferred = [item for item in deferred if item[0] > retry_at]
+        self.retry_deferred = self.requests_started == requests_before
+        attempts = previous.get("attempts", 0) + int(not self.retry_deferred)
         pending = {
             "paper": paper,
             "status": "pending_abstract",
             "attempts": attempts,
-            "last_attempt_at": time.time(),
+            "last_attempt_at": (
+                previous.get("last_attempt_at", 0) if self.retry_deferred else time.time()
+            ),
             "next_retry_at": max(
-                retry_at, time.time() + min(86400, 3600 * 2 ** min(attempts - 1, 5))
+                retry_at, time.time() + min(86400, 3600 * 2 ** min(max(attempts - 1, 0), 5))
             ),
             "reasons": notes,
         }

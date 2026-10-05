@@ -35,6 +35,7 @@ class AbstractSourceTests(unittest.TestCase):
         self.addCleanup(temp.cleanup)
         self.root = Path(temp.name)
         self.resolver = sources.AbstractResolver(self.root / "cache", state_dir=self.root / "state")
+        self.resolver.recovery.max_rounds = 0
         self.resolver.keys = {
             "IEEE_API_KEY": "secret-ieee",
             "SEMANTIC_SCHOLAR_API_KEY": "secret-s2",
@@ -253,11 +254,26 @@ class AbstractSourceTests(unittest.TestCase):
         self.assertIsNone(record)
         self.assertIn("ieee: cooldown_active", notes)
         get.assert_not_called()
+        self.assertTrue(self.resolver.retry_deferred)
+        self.assertEqual(self.resolver.last_pending["attempts"], 0)
         self.assertNotIn("secret", (self.root / "state/limits.json").read_text())
+        self.resolver.limiter.before("arxiv")
+        self.resolver.limiter.defer("arxiv", "60")
+        with patch.object(sources.requests, "get", return_value=Response()) as get:
+            self.resolver.get("https://arxiv.org/abs/2309.06180")
+            with self.assertRaisesRegex(sources.SourceFailure, "cooldown_active"):
+                self.resolver.get("https://export.arxiv.org/api/query")
+            get.assert_called_once()
+        self.assertAlmostEqual(sleeps[-1], 3.1)
 
     def test_ambiguous_abstract_is_deferred_and_retried_when_due(self):
+        def ambiguous_lookup(paper):
+            self.resolver.get("https://ieeexploreapi.ieee.org/api/v1/search/articles")
+            return [self.record, self.record]
+
         with (
-            patch.object(self.resolver, "ieee", return_value=[self.record, self.record]),
+            patch.object(sources.requests, "get", return_value=Response()),
+            patch.object(self.resolver, "ieee", side_effect=ambiguous_lookup),
             patch.object(self.resolver, "usenix", return_value=[]),
             patch.object(self.resolver, "arxiv_html", return_value=[]),
             patch.object(self.resolver, "institutional", return_value=[]),
@@ -283,6 +299,66 @@ class AbstractSourceTests(unittest.TestCase):
         self.assertEqual(record["title"], "Paper One")
         self.assertEqual(json.loads(pending.read_text())["status"], "resolved")
         self.assertFalse(self.resolver.retry_deferred)
+
+    def test_recovery_tries_alternatives_first_and_shares_a_bounded_wait_budget(self):
+        for alternative, budget, retry_after, expected_calls in (
+            (True, 120, 60, 1),
+            (False, 120, 60, 2),
+            (False, 60, 60, 2),
+            (False, 120, 300, 1),
+        ):
+            with (
+                self.subTest(alternative=alternative, budget=budget, retry_after=retry_after),
+                tempfile.TemporaryDirectory() as temp,
+            ):
+                now, sleeps = [100.0], []
+
+                def sleep(delay):
+                    sleeps.append(delay)
+                    now[0] += delay
+
+                resolver = sources.AbstractResolver(temp)
+                resolver.recovery.max_rounds = 2 if budget == 60 else 1
+                resolver.recovery.max_wait_seconds = budget
+                resolver.limiter = sources.SharedLimiter(
+                    Path(temp) / "state", lambda: now[0], sleep
+                )
+
+                def crossref(paper):
+                    resolver.get("https://api.crossref.org/works")
+                    return [self.record]
+
+                with (
+                    patch.object(sources.time, "time", side_effect=lambda: now[0]),
+                    patch.object(sources.time, "sleep", side_effect=sleep),
+                    patch.object(resolver, "ieee", return_value=[]),
+                    patch.object(resolver, "crossref", side_effect=crossref),
+                    patch.object(
+                        resolver,
+                        "semantic_scholar",
+                        return_value=[self.record] if alternative else [],
+                    ),
+                    patch.object(resolver, "arxiv", return_value=[]),
+                    patch.object(
+                        sources.requests,
+                        "get",
+                        side_effect=[
+                            Response(status=429, headers={"Retry-After": str(retry_after)}),
+                            Response(),
+                        ],
+                    ) as get,
+                ):
+                    record, notes = resolver.resolve(self.paper)
+                    self.assertEqual(get.call_count, expected_calls)
+                    self.assertEqual(bool(record), alternative or expected_calls == 2)
+                    self.assertLessEqual(sum(sleeps), budget)
+                    if expected_calls == 2:
+                        self.assertEqual(sum(sleeps), retry_after)
+                        get.reset_mock(side_effect=True)
+                        get.return_value = Response(status=429)
+                        resolver.resolve(dict(self.paper, id="second", title="Second paper"))
+                        get.assert_called_once()
+                        self.assertEqual(resolver.recovery_rounds, 1)
 
     def test_cached_abstract_identity_is_rechecked(self):
         sources.atomic_json(

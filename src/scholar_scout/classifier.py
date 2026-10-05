@@ -47,7 +47,9 @@ class ScholarClassifier:
             self.gemini_client, config.gemini.gen_ai_model, config.research_topics
         )
         self.state_dir = Path(config.state_dir)
-        self.resolver = AbstractResolver(self.state_dir / "abstracts")
+        self.resolver = AbstractResolver(
+            self.state_dir / "abstracts", recovery=config.source_recovery
+        )
         self.pending_path = self.state_dir / "pending-papers.json"
         self.pending = (
             json.loads(self.pending_path.read_text()) if self.pending_path.exists() else {}
@@ -59,6 +61,7 @@ class ScholarClassifier:
         self.pending = {key: row for key, row in self.pending.items() if key not in self.expired}
         self.newly_expired = {}
         self.diagnostics = []
+        self.run_failed = False
 
     def _get_email_content(self, message):
         parts = message.walk() if message.is_multipart() else [message]
@@ -166,6 +169,8 @@ class ScholarClassifier:
         results = []
         self.diagnostics = []
         self.newly_expired = {}
+        self.run_failed = False
+        processing_errors = False
         for key, candidate in candidates.items():
             previous = self.pending.get(key)
             row = dict(previous) if previous else {"first_pending_at": time.time(), "attempts": 0}
@@ -174,8 +179,10 @@ class ScholarClassifier:
                 self.diagnostics.append({"id": key, "status": "expired", "reason": reason})
                 continue
             status, decisions, notes = "pending_abstract", {}, []
+            source_failed = False
             try:
                 record, notes = self.resolver.resolve(candidate)
+                source_failed = self.resolver.had_source_failure
                 if record:
                     paper = Paper(
                         **{
@@ -193,11 +200,13 @@ class ScholarClassifier:
                     status = "matched" if matches else "no_match"
                     results.append((paper, matches))
             except Exception as exc:
+                processing_errors = True
                 logger.warning("Paper %s remains pending (%s)", key, type(exc).__name__)
                 notes.append(type(exc).__name__)
             if status.startswith("pending"):
+                processing_errors |= source_failed
                 row.update(paper=candidate, status=status)
-                if not self.resolver.retry_deferred:
+                if status == "pending_model" or not self.resolver.retry_deferred:
                     row["attempts"] += 1
                 if reason := self._expiration_reason(row):
                     self._expire(key, row, reason)
@@ -213,6 +222,7 @@ class ScholarClassifier:
             )
         atomic_json(self.pending_path, self.pending)
         atomic_json(self.state_dir / "last-run.json", self.diagnostics)
+        self.run_failed = not results and processing_errors
         logger.info(
             "Processed %d papers; %d pending, %d newly expired",
             len(results),

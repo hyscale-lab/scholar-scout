@@ -23,6 +23,10 @@ pending_policy:
   max_attempts: 5 # Includes the first processing attempt; deferred retries do not count.
   max_age_days: 30 # Measured from first entering the queue, not publication date.
 
+source_recovery:
+  max_rounds: 2 # Shared across all papers in a run, after trying alternative sources.
+  max_wait_seconds: 180 # Total recovery waiting budget for the run.
+
 research_topics:
   - name: "LLM Inference"
     slack_users:
