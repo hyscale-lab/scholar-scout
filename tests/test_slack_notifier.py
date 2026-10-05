@@ -128,10 +128,11 @@ class TestSlackNotifier(unittest.TestCase):
         expired = self.pending()
         for row in expired.values():
             row["expiration_reason"] = "max_attempts"
-        self.notifier.send_pending_update({}, expired)
+        self.notifier.send_pending_update({}, expired, run_failed=True)
         call = self.client.chat_postMessage.call_args
         self.assertEqual(call.kwargs["channel"], self.config.pending_user_id)
         self.assertIn("Stopped retrying: attempt limit", call.kwargs["text"])
+        self.assertIn("No papers could be classified", call.kwargs["text"])
         self.client.reset_mock()
         self.notifier.send_pending_update({}, {})
         self.client.chat_postMessage.assert_not_called()

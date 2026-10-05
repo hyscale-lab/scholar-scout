@@ -109,7 +109,9 @@ class SlackNotifier:
                     f"Failed to send weekly update for {topic.name} to {channel}: {e.response['error']}"
                 )
 
-    def send_pending_update(self, pending: dict, newly_expired: dict | None = None) -> None:
+    def send_pending_update(
+        self, pending: dict, newly_expired: dict | None = None, *, run_failed: bool = False
+    ) -> None:
         newly_expired = newly_expired or {}
         if not pending and not newly_expired:
             return
@@ -127,6 +129,11 @@ class SlackNotifier:
             "Pending papers retry within the configured limits. Stopped papers are retained "
             "without a topic decision; no manual review is required.\n"
         )
+        if run_failed:
+            header += (
+                "No papers could be classified because source or model requests failed. "
+                "Weekly summaries were not sent.\n"
+            )
         messages, message = [], header
         for key, row in {**pending, **newly_expired}.items():
             paper = row["paper"]

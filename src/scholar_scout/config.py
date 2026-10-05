@@ -55,6 +55,11 @@ class PendingPolicy(BaseModel):
     max_age_days: int = Field(default=30, ge=1)
 
 
+class SourceRecoveryConfig(BaseModel):
+    max_rounds: int = Field(default=2, ge=0)
+    max_wait_seconds: float = Field(default=180, ge=0, allow_inf_nan=False)
+
+
 class AppConfig(BaseModel):
     """Main application configuration."""
 
@@ -64,6 +69,7 @@ class AppConfig(BaseModel):
     research_topics: List[ResearchTopic]
     state_storage: StateStorageConfig = Field(default_factory=StateStorageConfig)
     pending_policy: PendingPolicy = Field(default_factory=PendingPolicy)
+    source_recovery: SourceRecoveryConfig = Field(default_factory=SourceRecoveryConfig)
     state_dir: str = ".scholar-scout"
 
 

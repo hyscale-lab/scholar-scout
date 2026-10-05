@@ -84,7 +84,7 @@ def validate(snapshot):
             raise ValueError("Retry without pending paper")
         if set(retry) != {"attempts", "last_attempt_at", "next_retry_at"}:
             raise ValueError("Invalid retry fields")
-        if not isinstance(retry["attempts"], int) or retry["attempts"] < 1:
+        if not isinstance(retry["attempts"], int) or retry["attempts"] < 0:
             raise ValueError("Invalid retry count")
         if not all(
             isinstance(retry[f], (int, float)) and retry[f] >= 0
@@ -96,6 +96,7 @@ def validate(snapshot):
             "semantic_scholar",
             "ieee",
             "arxiv",
+            "arxiv_web",
             "crossref",
             "usenix",
             "ntu",
