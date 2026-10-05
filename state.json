@@ -1,7 +1,1037 @@
 {
   "version": 1,
-  "pending": {},
+  "pending": {
+    "ed35bdcb92501fd108b6": {
+      "first_pending_at": 1791160093.3925445,
+      "attempts": 1,
+      "paper": {
+        "title": "Halder, Linus 167 Han, Tao 77 Hannig, Frank 93, 101 Hawich, Malte 163 Hemani, Ahmed 17",
+        "authors": [
+          "S Agwa",
+          "E Aliagha",
+          "D Anand",
+          "K Ando",
+          "SM Anik",
+          "J Arndt"
+        ],
+        "abstract": "Author Index Page 1 Author Index Agwa, Shady 153 Aliagha, Ensieh 117 Anand, Digvijay 109 Ando, Kota 173 Anik, Shafayat Mowla 65 Arndt, Jakob 175 Asai, Tetsuya 173 Aysu, Aydin 109 Barrera, Javier 17 Benini, Luca 165 Blume, Holger 163, 175 …",
+        "url": "https://ieeexplore.ieee.org/abstract/document/11695636/",
+        "venue": "",
+        "id": "ed35bdcb92501fd108b6",
+        "urls": [
+          "https://ieeexplore.ieee.org/abstract/document/11695636/"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "56b8b17f39ade77791c7": {
+      "first_pending_at": 1791160114.5427659,
+      "attempts": 1,
+      "paper": {
+        "title": "Customizing an LLM for Enterprise Software Engineering",
+        "authors": [
+          "V Nguyen",
+          "S Thakur",
+          "A Pandey",
+          "M Hashemi"
+        ],
+        "abstract": "Software is built over time through small additions, revisions, deployments, maintenance, bug fixing, etc. These activities generate valuable data that modern LLMs could be finetuned on, to unlock additional tool possibilities for enterprise …",
+        "url": "https://research.google/pubs/customizing-an-llm-for-enterprise-software-engineering/",
+        "venue": "",
+        "id": "56b8b17f39ade77791c7",
+        "urls": [
+          "https://research.google/pubs/customizing-an-llm-for-enterprise-software-engineering/"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "e19c8455fca78f54cc84": {
+      "first_pending_at": 1791160114.9958742,
+      "attempts": 1,
+      "paper": {
+        "title": "EMA: Elastic and Performance Transparent Memory Across GPUs",
+        "authors": [
+          "Y Xu",
+          "T Xia",
+          "I Stoica"
+        ],
+        "abstract": "Multi-GPU servers have become the standard building block of modern data centers, providing aggregated capacity through high-bandwidth interconnects. At the same time, workloads such as LLM inference exhibit highly dynamic memory demands …",
+        "url": "https://arxiv.org/pdf/2609.27040",
+        "venue": "",
+        "id": "e19c8455fca78f54cc84",
+        "urls": [
+          "https://arxiv.org/pdf/2609.27040"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "d060f8926cc24ef4b925": {
+      "first_pending_at": 1791160115.943283,
+      "attempts": 1,
+      "paper": {
+        "title": "c© Copyright 2016 Will Scott Censorship Resistant Web Applications Will Scott A dissertation",
+        "authors": [
+          "T Anderson",
+          "A Krishnamurthy",
+          "T Kohno"
+        ],
+        "abstract": "c©Copyright 2016 Will Scott Censorship Resistant Web Applications Will Scott A dissertation submitted in partial fulfillment of the requirements for the degree of Doctor of Philosophy University of Washington 2016 Reading Committee: Thomas Anderson, Chair …",
+        "url": "https://digital.lib.washington.edu/server/api/core/bitstreams/20eab2b7-f875-4924-89fb-5d9e502c5d4e/content",
+        "venue": "",
+        "id": "d060f8926cc24ef4b925",
+        "urls": [
+          "https://digital.lib.washington.edu/server/api/core/bitstreams/20eab2b7-f875-4924-89fb-5d9e502c5d4e/content"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "62cf324fb43a609dad6c": {
+      "first_pending_at": 1791160116.902394,
+      "attempts": 1,
+      "paper": {
+        "title": "Lizard: Bandwidth-Adaptive Real-Time Video Analytics through Content-Aware Packet Discarding at Last-Mile Edge Routers",
+        "authors": [
+          "S Yu",
+          "Y Chen",
+          "Y Qiao",
+          "S Zhang",
+          "R Netravali",
+          "H Xu"
+        ],
+        "abstract": "The timeliness and accuracy of edge-based video analytics can be hindered by drastic reductions in available bandwidth (ABW) at last-mile edge routers, causing prolonged queuing delays. This work proposes Lizard, a system that leverages video …",
+        "url": "https://arxiv.org/pdf/2609.25817",
+        "venue": "",
+        "id": "62cf324fb43a609dad6c",
+        "urls": [
+          "https://arxiv.org/pdf/2609.25817"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "222be7bfbd865830e10b": {
+      "first_pending_at": 1791160118.048988,
+      "attempts": 1,
+      "paper": {
+        "title": "CART: Closed-Loop Adaptive Red Teaming for Large Language Models",
+        "authors": [
+          "D Zhang",
+          "T Lv",
+          "Y Jia",
+          "Y Zhao",
+          "Y Huang",
+          "W Wu",
+          "X Zhou"
+        ],
+        "abstract": "Automated red teaming often replays a fixed set of prompts, which measures known risks but cannot learn from failures found during testing. We present CART (Closed- Loop Adaptive Red Teaming), a framework that uses each result to guide what it …",
+        "url": "https://scholar.google.co.uk/scholar_url?url=https://arxiv.org/pdf/2609.27336&hl=en&sa=X&d=14764462138056501029&ei=wAO-aqmKL8yp6rQPqbvnoQI&scisig=ACTRDVFV_7TDNUJaAFY0qloP9LHs&oi=scholaralrt&hist=rqYEyb0AAAAJ:18008702017472386572:ACTRDVFvZ_NGwAsJc9DIuPPppgW_&html=&pos=0&folt=art",
+        "venue": "",
+        "id": "222be7bfbd865830e10b",
+        "urls": [
+          "https://scholar.google.co.uk/scholar_url?url=https://arxiv.org/pdf/2609.27336&hl=en&sa=X&d=14764462138056501029&ei=wAO-aqmKL8yp6rQPqbvnoQI&scisig=ACTRDVFV_7TDNUJaAFY0qloP9LHs&oi=scholaralrt&hist=rqYEyb0AAAAJ:18008702017472386572:ACTRDVFvZ_NGwAsJc9DIuPPppgW_&html=&pos=0&folt=art"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "17819c9602601265908b": {
+      "first_pending_at": 1791160118.9478285,
+      "attempts": 1,
+      "paper": {
+        "title": "The Canonical Parallel Form as a Substrate for Parallelizing Compilers and Agentic Optimizers",
+        "authors": [
+          "YK Budanaz",
+          "P Mazumder",
+          "A Calotoiu",
+          "T Hoefler"
+        ],
+        "abstract": "Imperative code fixes an execution order the computation does not require, and a parallelizing compiler must prove which parts of that order it can remove. We introduce the Canonical Parallel Form (CPF), a device-neutral program state from …",
+        "url": "https://arxiv.org/pdf/2609.28724",
+        "venue": "",
+        "id": "17819c9602601265908b",
+        "urls": [
+          "https://arxiv.org/pdf/2609.28724"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "3f0f470f3a7861e41a31": {
+      "first_pending_at": 1791160119.9382067,
+      "attempts": 1,
+      "paper": {
+        "title": "ElaCache: Fine-Grain Dynamic Partitioning of LLCs and Coherence Directories in Multiprocessors",
+        "authors": [
+          "D Cao",
+          "ZN Zhao",
+          "A Morrison",
+          "J Torrellas"
+        ],
+        "abstract": "Partitioned last-level caches (LLCs) offer comprehensive security guarantees against LLC side-channel attacks. However, current designs have performance and scalability limitations. On the one hand, static partitioning schemes cannot adapt …",
+        "url": "https://iacoma.cs.uiuc.edu/iacoma-papers/pact26.pdf",
+        "venue": "",
+        "id": "3f0f470f3a7861e41a31",
+        "urls": [
+          "https://iacoma.cs.uiuc.edu/iacoma-papers/pact26.pdf"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "8096f9a58876a145c1e3": {
+      "first_pending_at": 1791160120.772952,
+      "attempts": 1,
+      "paper": {
+        "title": "DIKTAMO: Extending CXL for Resilience to CPU Failures",
+        "authors": [
+          "A Psistakis",
+          "B Ocalan",
+          "C Alverti",
+          "F Chaix",
+          "R Alagappan"
+        ],
+        "abstract": "Compute Express Link (CXL) 3.0 and beyond allows the compute nodes of a cluster to share data with hardware cache coherence and at the granularity of a cache line. This enables shared-memory semantics for distributed computing, but introduces a …",
+        "url": "https://iacoma.cs.uiuc.edu/iacoma-papers/micro26.pdf",
+        "venue": "",
+        "id": "8096f9a58876a145c1e3",
+        "urls": [
+          "https://iacoma.cs.uiuc.edu/iacoma-papers/micro26.pdf"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "05c9ab76eae62b3db3c1": {
+      "first_pending_at": 1791160120.7741475,
+      "attempts": 1,
+      "paper": {
+        "title": "Empowering Hybrid Attention Models on NPUs",
+        "authors": [
+          "Y Zhang",
+          "D Xu",
+          "X Huang",
+          "W Yin",
+          "Y Ma",
+          "M Xu",
+          "G Huang"
+        ],
+        "abstract": "Hybrid attention models have emerged as a crucial architecture for Large Language Models (LLMs)(eg, the Qwen3. 5 and Kimi series). Their memory and computational efficiency make them highly attractive for on-device inference, forming a promising …",
+        "url": "https://arxiv.org/pdf/2609.32114",
+        "venue": "",
+        "id": "05c9ab76eae62b3db3c1",
+        "urls": [
+          "https://arxiv.org/pdf/2609.32114"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "af75026f62f15fe82559": {
+      "first_pending_at": 1791160120.7755723,
+      "attempts": 1,
+      "paper": {
+        "title": "OmniTide: Co-Designing Algorithms and Systems for Efficient On-Device Omni-LLM Streaming",
+        "authors": [
+          "Z Shen",
+          "W Yin",
+          "D Xu",
+          "M Xu",
+          "X Liu"
+        ],
+        "abstract": "On-device streaming omni-modal inference safeguards user privacy and eliminates prohibitive per-token API costs, but faces a critical bottleneck: the continuous influx of multimodal data rapidly exhausts constrained memory and compute budgets via …",
+        "url": "https://arxiv.org/pdf/2609.34653",
+        "venue": "",
+        "id": "af75026f62f15fe82559",
+        "urls": [
+          "https://arxiv.org/pdf/2609.34653"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "6c5358a9747f88101264": {
+      "first_pending_at": 1791160120.7769916,
+      "attempts": 1,
+      "paper": {
+        "title": "LeapQuant: Efficient Linear Attention with Accurate Recurrent State Quantization",
+        "authors": [
+          "Y Pan",
+          "H Xi",
+          "K Zhu",
+          "X Li",
+          "Y Wu",
+          "M Mishra",
+          "H Zhang"
+        ],
+        "abstract": "Recent LLMs increasingly adopt hybrid designs that replace standard attention with linear attention, such as Gated DeltaNet (GDN) and Kimi Delta Attention (KDA). Although they compress the context into a fixed-size recurrent state and substantially …",
+        "url": "https://scholar.google.co.uk/scholar_url?url=https://arxiv.org/pdf/2609.38166&hl=en&sa=X&d=5876947474220377695&ei=6nzAapSyCpHuieoP48LCwAg&scisig=ACTRDVGe-c6yIGG6Blys-FczE48w&oi=scholaralrt&hist=rqYEyb0AAAAJ:12256154803998201071:ACTRDVFEnR_VC9YfRVxgANskGh1i&html=&pos=0&folt=art",
+        "venue": "",
+        "id": "6c5358a9747f88101264",
+        "urls": [
+          "https://scholar.google.co.uk/scholar_url?url=https://arxiv.org/pdf/2609.38166&hl=en&sa=X&d=5876947474220377695&ei=6nzAapSyCpHuieoP48LCwAg&scisig=ACTRDVGe-c6yIGG6Blys-FczE48w&oi=scholaralrt&hist=rqYEyb0AAAAJ:12256154803998201071:ACTRDVFEnR_VC9YfRVxgANskGh1i&html=&pos=0&folt=art",
+          "https://arxiv.org/pdf/2609.38166"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "384e57769fdcd6afdb3f": {
+      "first_pending_at": 1791160120.778374,
+      "attempts": 1,
+      "paper": {
+        "title": "Planarian: Managing Agent State with Statepoints",
+        "authors": [
+          "J Guo",
+          "HM Chen",
+          "K Vaswani",
+          "A Paverd",
+          "P Pietzuch"
+        ],
+        "abstract": "LLM agents solve complex tasks by iteratively changing files, invoking local tools, and interacting with remote services, which modifies state across their local environment and remote services. Today, agents and users must manage these …",
+        "url": "https://arxiv.org/pdf/2609.35366",
+        "venue": "",
+        "id": "384e57769fdcd6afdb3f",
+        "urls": [
+          "https://arxiv.org/pdf/2609.35366"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "e7ae3b8df5e89bd6f94a": {
+      "first_pending_at": 1791160120.7798364,
+      "attempts": 1,
+      "paper": {
+        "title": "QBX: A Compiler for 2-local Qubit Hamiltonian Simulation on Quantum Chiplets",
+        "authors": [
+          "Z Li",
+          "Z Chen",
+          "Z Jia"
+        ],
+        "abstract": "2-local qubit Hamiltonian simulation, a fundamental task in quantum computing, is widely applied in various applications. This paper presents QBX, the first quantum compiler designed for 2-local qubit Hamiltonian simulation on quantum chiplet …",
+        "url": "https://arxiv.org/pdf/2609.33997",
+        "venue": "",
+        "id": "e7ae3b8df5e89bd6f94a",
+        "urls": [
+          "https://arxiv.org/pdf/2609.33997"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "0b53af9d8d74f7ca79d3": {
+      "first_pending_at": 1791160120.7812736,
+      "attempts": 1,
+      "paper": {
+        "title": "WUSH-KV: KV Cache Quantization with Data-Adaptive Transforms",
+        "authors": [
+          "J Chen",
+          "V Egiazarian",
+          "E Kurtić",
+          "T Hoefler",
+          "D Alistarh"
+        ],
+        "abstract": "KV cache memory and bandwidth costs grow with context length and batch size, which limits efficient long-context inference. To address this bottleneck, we introduce WUSH-KV for low-bit KV-cache quantization. It adapts WUSH, which constructs a …",
+        "url": "https://arxiv.org/pdf/2609.38121",
+        "venue": "",
+        "id": "0b53af9d8d74f7ca79d3",
+        "urls": [
+          "https://arxiv.org/pdf/2609.38121"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "985aafaadfab35912219": {
+      "first_pending_at": 1791160120.7827725,
+      "attempts": 1,
+      "paper": {
+        "title": "FP64 Is All You Want, INT8 Is All You Need, FP4/6/8 Is All You Have",
+        "authors": [
+          "P Mazumder",
+          "A Calotoiu",
+          "T Hoefler"
+        ],
+        "abstract": "Ozaki scheme II emulates FP64 matrix products with INT8 ones through residues modulo pairwise coprime moduli, and variants for FP8 and FP4 have followed. We treat these schemes as one family and pose the choice of a scheme as a …",
+        "url": "https://arxiv.org/pdf/2609.37693",
+        "venue": "",
+        "id": "985aafaadfab35912219",
+        "urls": [
+          "https://arxiv.org/pdf/2609.37693"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "f3cacf3c18fd6135b0ed": {
+      "first_pending_at": 1791160120.7843404,
+      "attempts": 1,
+      "paper": {
+        "title": "Gauss What You Need: Compact Gaussian Splatting Across Scene Scales",
+        "authors": [
+          "A Boudaoud",
+          "J Liu",
+          "A Calotoiu",
+          "T Hoefler"
+        ],
+        "abstract": "3D Gaussian Splatting reconstructs a scene as a collection of Gaussian primitives from a set of posed photographs called the capture. The number of primitives used to represent the scene affects reconstruction quality, storage, and rendering cost. How …",
+        "url": "https://arxiv.org/pdf/2609.31248",
+        "venue": "",
+        "id": "f3cacf3c18fd6135b0ed",
+        "urls": [
+          "https://arxiv.org/pdf/2609.31248"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "d37083f8e4834131d284": {
+      "first_pending_at": 1791160120.7858913,
+      "attempts": 1,
+      "paper": {
+        "title": "Hardware-Aware Features for CUTLASS Kernel Selection",
+        "authors": [
+          "S Chandran",
+          "D Rinderer",
+          "Y Budanaz",
+          "A Calotoiu"
+        ],
+        "abstract": "GPU libraries such as CUTLASS expose tens of thousands of semantically equivalent kernels for a single operation, making exhaustive autotuning expensive and execution-free selection difficult. Existing analytical selectors require hand …",
+        "url": "https://arxiv.org/pdf/2609.35587",
+        "venue": "",
+        "id": "d37083f8e4834131d284",
+        "urls": [
+          "https://arxiv.org/pdf/2609.35587",
+          "https://scholar.google.co.uk/scholar_url?url=https://arxiv.org/pdf/2609.35587&hl=en&sa=X&d=14885211982684745497&ei=Av_Bap70KtK2ieoPxY2NiQY&scisig=ACTRDVEZ9eVRYgArJ2f-UD6g34ks&oi=scholaralrt&hist=rqYEyb0AAAAJ:3771094761795463480:ACTRDVEcYK1-AMqLNhNQVxG-HIuz&html=&pos=0&folt=art"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "7eda12fbe773a1170027": {
+      "first_pending_at": 1791160120.78745,
+      "attempts": 1,
+      "paper": {
+        "title": "Unifying In-Memory Data Analytics through Sparse Compilation",
+        "authors": [
+          "A Jayarajan",
+          "G Pekhimenko"
+        ],
+        "abstract": "As modern data analytics workloads become increasingly heterogeneous and hardware-intensive, achieving efficient multi-core performance across diverse applications remains an open challenge. We present Reffine, a compiler-based in …",
+        "url": "https://scholar.google.co.uk/scholar_url?url=https://arxiv.org/pdf/2609.30497&hl=en&sa=X&d=13684492284101507278&ei=63zAaqiMKdSQieoPocfR0Qs&scisig=ACTRDVEnoDGCaKBfhqiK0u1-8O6F&oi=scholaralrt&hist=rqYEyb0AAAAJ:15547103336815047757:ACTRDVFHlQblYVZ8xsrcmL2C3Pfs&html=&pos=0&folt=art",
+        "venue": "",
+        "id": "7eda12fbe773a1170027",
+        "urls": [
+          "https://scholar.google.co.uk/scholar_url?url=https://arxiv.org/pdf/2609.30497&hl=en&sa=X&d=13684492284101507278&ei=63zAaqiMKdSQieoPocfR0Qs&scisig=ACTRDVEnoDGCaKBfhqiK0u1-8O6F&oi=scholaralrt&hist=rqYEyb0AAAAJ:15547103336815047757:ACTRDVFHlQblYVZ8xsrcmL2C3Pfs&html=&pos=0&folt=art"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "24ba71da430dec10107f": {
+      "first_pending_at": 1791160120.788912,
+      "attempts": 1,
+      "paper": {
+        "title": "Purlin: Separating Orchestration from the Datapath of Collectives",
+        "authors": [
+          "OJ Aimuyo",
+          "S Gandhi",
+          "C Kozyrakis"
+        ],
+        "abstract": "Distributed inference depends on GPU collective communication that must keep pace with evolving hardware and specialized workloads. However, existing collective implementations often couple semantics, orchestration (where and when …",
+        "url": "https://arxiv.org/pdf/2609.36954",
+        "venue": "",
+        "id": "24ba71da430dec10107f",
+        "urls": [
+          "https://arxiv.org/pdf/2609.36954"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "57cde4c8a42a92fa5c98": {
+      "first_pending_at": 1791160120.790486,
+      "attempts": 1,
+      "paper": {
+        "title": "Ave: Guiding Agentic GPU Optimization Using Data-Flow Invariants",
+        "authors": [
+          "H Mai",
+          "X Guo",
+          "X Ding",
+          "D Li",
+          "Q Yu",
+          "C Guo",
+          "C Wang"
+        ],
+        "abstract": "LLM coding agents can generate correct GPU kernels, yet their performance still lags behind expert libraries. Achieving peak GPU throughput requires coordinating low- level transformations such as shared-memory staging, software pipelining, and …",
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3830418.3843902",
+        "venue": "",
+        "id": "57cde4c8a42a92fa5c98",
+        "urls": [
+          "https://dl.acm.org/doi/pdf/10.1145/3830418.3843902"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "cb8923eab2738c58055f": {
+      "first_pending_at": 1791160120.7919898,
+      "attempts": 1,
+      "paper": {
+        "title": "AirLog: Store-Level Indoor Life Logging Made Easy",
+        "authors": [
+          "Z Yun",
+          "J Du",
+          "Y Yu",
+          "Z Liu",
+          "Z Xiang",
+          "L Shangguan",
+          "Z An"
+        ],
+        "abstract": "This paper presents AirLog, a smartphone-based life journaling system that automatically reconstructs users' store visits in shopping malls and summarizes them into human-readable journals. Unlike conventional indoor localization systems …",
+        "url": "https://arxiv.org/pdf/2609.31864",
+        "venue": "",
+        "id": "cb8923eab2738c58055f",
+        "urls": [
+          "https://arxiv.org/pdf/2609.31864"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "76236f5f0cf042e3f78e": {
+      "first_pending_at": 1791160120.7937639,
+      "attempts": 1,
+      "paper": {
+        "title": "Reshaping Rollout Workloads for Asynchronous RL Post-Training on Heterogeneous Accelerators",
+        "authors": [
+          "J Li",
+          "H Nie",
+          "Y Zhu",
+          "P Xie",
+          "Y Zhou",
+          "X Zheng",
+          "L Liu",
+          "H Ma"
+        ],
+        "abstract": "Reinforcement learning (RL) post-training increasingly relies on long-horizon, multi- turn rollouts. As post-training jobs outgrow a single cluster, rollout pools assembled across clusters introduce hardware heterogeneity. Rollout scheduling must serve two …",
+        "url": "https://arxiv.org/pdf/2609.36899",
+        "venue": "",
+        "id": "76236f5f0cf042e3f78e",
+        "urls": [
+          "https://arxiv.org/pdf/2609.36899"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "eb25097563cf62fd7c50": {
+      "first_pending_at": 1791160120.795388,
+      "attempts": 1,
+      "paper": {
+        "title": "SKILLLITE: Evidence-Guided Malicious Skill Auditing with Compact LLMs",
+        "authors": [
+          "H Ou",
+          "G Deng",
+          "X Zhang",
+          "W Guo",
+          "T Zhang",
+          "KY Lam"
+        ],
+        "abstract": "As LLM-based agents perform increasingly complex tasks, Agent Skills have emerged as a flexible mechanism for extending their capabilities. An Agent Skill packages task-specific instructions with executable components and auxiliary …",
+        "url": "https://arxiv.org/pdf/2609.36879",
+        "venue": "",
+        "id": "eb25097563cf62fd7c50",
+        "urls": [
+          "https://arxiv.org/pdf/2609.36879"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "5acb11fb047f5c680f09": {
+      "first_pending_at": 1791160120.7971518,
+      "attempts": 1,
+      "paper": {
+        "title": "Practical Secrets Extraction against Black-box LLMs",
+        "authors": [
+          "S Zhao",
+          "S Jiang",
+          "X Li",
+          "R Hu",
+          "Y Zheng",
+          "C Guo",
+          "T Zhang"
+        ],
+        "abstract": "Large language models (LLMs) increasingly power autonomous coding agents such as Codex and Claude Code, yet their training corpora may contain confidential credentials exposed in public repositories or collected from private development …",
+        "url": "https://arxiv.org/pdf/2609.36941",
+        "venue": "",
+        "id": "5acb11fb047f5c680f09",
+        "urls": [
+          "https://arxiv.org/pdf/2609.36941"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "6b67b04c9d11d9b5f3a8": {
+      "first_pending_at": 1791160120.798872,
+      "attempts": 1,
+      "paper": {
+        "title": "Relative Generalization Invariance of LLM Pretraining",
+        "authors": [
+          "F Zhang",
+          "S Wang",
+          "S Li",
+          "T Ruan",
+          "J He",
+          "I Tsang",
+          "T Pang"
+        ],
+        "abstract": "Large Language Model (LLM) pretraining performance is jointly shaped by three components of the training triplet: the optimizer, model architecture, and training data stream. However, how these components influence performance in distinct ways …",
+        "url": "https://arxiv.org/pdf/2609.33016",
+        "venue": "",
+        "id": "6b67b04c9d11d9b5f3a8",
+        "urls": [
+          "https://arxiv.org/pdf/2609.33016"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "60273c157cff0cd7cad2": {
+      "first_pending_at": 1791160120.8006656,
+      "attempts": 1,
+      "paper": {
+        "title": "DynBranch: Speculative Subgraph Reuse for Dynamic Agentic LLM Serving",
+        "authors": [
+          "J Shen",
+          "N Wadlom",
+          "Z Su",
+          "Y Lu"
+        ],
+        "abstract": "Agentic LLM workflows decide their execution paths at runtime. Downstream computation may be predictable, or may have run before, yet it cannot begin until the model or the user resolves the branch. We call this serialization the branch …",
+        "url": "https://arxiv.org/pdf/2609.31047",
+        "venue": "",
+        "id": "60273c157cff0cd7cad2",
+        "urls": [
+          "https://arxiv.org/pdf/2609.31047"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "462776df22a80c19b7b3": {
+      "first_pending_at": 1791160120.8024166,
+      "attempts": 1,
+      "paper": {
+        "title": "Structure-Guided Masked Autoencoders for Ultra-High Resolution Scientific Image Understanding",
+        "authors": [
+          "E Zhang",
+          "D Wu",
+          "R Zhong",
+          "C Ma",
+          "I Lyngaas",
+          "AK Ziabari"
+        ],
+        "abstract": "Self-supervised pre-training with Vision Transformers, including Masked Autoencoders (MAE), is difficult to apply to gigapixel scientific images. Random masking is poorly matched to the structured, multi-scale morphology of scientific …",
+        "url": "https://arxiv.org/abs/2609.30682",
+        "venue": "",
+        "id": "462776df22a80c19b7b3",
+        "urls": [
+          "https://arxiv.org/abs/2609.30682"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "dd3b8189b68fbf0490a0": {
+      "first_pending_at": 1791160120.8041432,
+      "attempts": 1,
+      "paper": {
+        "title": "Sol-H3: Recursive Self-Improvement for MiniMax-H3 Inference Acceleration on Sol-Engine across Cloud and Edge",
+        "authors": [
+          "Y Li",
+          "J Yu",
+          "J Chen",
+          "H Li",
+          "S Xue",
+          "H Liu",
+          "P Luo",
+          "S Han"
+        ],
+        "abstract": "Video diffusion models are rapidly scaling and exhibiting enhanced generation capabilities. Among these recent advancements, MiniMax-H3 stands out as a highly capable, production-level open-source model. However, its 33-billion parameters …",
+        "url": "https://arxiv.org/pdf/2609.35110",
+        "venue": "",
+        "id": "dd3b8189b68fbf0490a0",
+        "urls": [
+          "https://arxiv.org/pdf/2609.35110"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "74757f9dd86c4d186eb0": {
+      "first_pending_at": 1791160120.805964,
+      "attempts": 1,
+      "paper": {
+        "title": "QProf: Fleetwide Transitive Cost Profiling of Warehouse-Scale Services",
+        "authors": [
+          "S Xi",
+          "A Alexandrov",
+          "A Sheikh",
+          "N Wang",
+          "V Lankhaar"
+        ],
+        "abstract": "Warehouse-scale services form the backbone of major cloud services relied on by billions of users every day. As these systems grow increasingly complex, understanding them and finding opportunities for optimization becomes more and …",
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3830418.3843854",
+        "venue": "",
+        "id": "74757f9dd86c4d186eb0",
+        "urls": [
+          "https://dl.acm.org/doi/pdf/10.1145/3830418.3843854"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "aecaeceef3716c6b4c5e": {
+      "first_pending_at": 1791160120.8077047,
+      "attempts": 1,
+      "paper": {
+        "title": "A Multi-agent AI System for Deep Learning Model Migration from TensorFlow to Jax",
+        "authors": [
+          "Y Liang",
+          "S Nikolov",
+          "A Yan",
+          "V Singh",
+          "P Ranganathan"
+        ],
+        "abstract": "The rapid development of AI-based products and their underlying models has led to constant innovation in deep learning frameworks. Google has been pioneering machine learning usage across dozens of products. Maintaining the multitude of …",
+        "url": "https://research.google/pubs/a-multi-agent-ai-system-for-deep-learning-model-migration-from-tensorflow-to-jax/",
+        "venue": "",
+        "id": "aecaeceef3716c6b4c5e",
+        "urls": [
+          "https://research.google/pubs/a-multi-agent-ai-system-for-deep-learning-model-migration-from-tensorflow-to-jax/"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "59c80ad730794a69120b": {
+      "first_pending_at": 1791160120.8093414,
+      "attempts": 1,
+      "paper": {
+        "title": "Skill VM: Write Once, Run Everywhere Efficiently",
+        "authors": [
+          "L Chen",
+          "E Feng",
+          "Y Xia",
+          "H Chen"
+        ],
+        "abstract": "LLM agents increasingly adopt skills as a reusable unit of composition. While skills are shared across diverse agent platforms, current systems treat them as raw context, causing the same skill to behave inconsistently for different agents. This fragility …",
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3830418.3843874",
+        "venue": "",
+        "id": "59c80ad730794a69120b",
+        "urls": [
+          "https://dl.acm.org/doi/pdf/10.1145/3830418.3843874"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "f62dcec148a0c04f59ef": {
+      "first_pending_at": 1791160120.8111367,
+      "attempts": 1,
+      "paper": {
+        "title": "StarfishOS: Revisiting Single System Image on CXL with State-Partitioned Microkernel",
+        "authors": [
+          "F Wu",
+          "J Yan",
+          "M Dong",
+          "W Cai",
+          "J Xu",
+          "T Xin",
+          "H Chen"
+        ],
+        "abstract": "Single System Image (SSI) offers an attractive OS abstraction that enables single- machine applications to transparently execute on multiple machines with improved resource utilization. The emergence of Compute Express Link (CXL) shifts cross …",
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3830418.3843894",
+        "venue": "",
+        "id": "f62dcec148a0c04f59ef",
+        "urls": [
+          "https://dl.acm.org/doi/pdf/10.1145/3830418.3843894"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "9f42ee4fa9f56a6b9315": {
+      "first_pending_at": 1791160120.8128817,
+      "attempts": 1,
+      "paper": {
+        "title": "EasyPPO: Stabilizing the Critic Is Key",
+        "authors": [
+          "X Zhou",
+          "Q Mang",
+          "H Mao",
+          "D Li",
+          "W Chai",
+          "M Mishra"
+        ],
+        "abstract": "A key strength of Proximal Policy Optimization (PPO) is its learned critic, which uses historical trajectories collected during reinforcement learning to estimate expected returns and reduce policy-gradient variance. However, we find that the critic is also a …",
+        "url": "https://arxiv.org/pdf/2609.36802",
+        "venue": "",
+        "id": "9f42ee4fa9f56a6b9315",
+        "urls": [
+          "https://arxiv.org/pdf/2609.36802"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "55a3238d1dfc1dbbda94": {
+      "first_pending_at": 1791160120.8147576,
+      "attempts": 1,
+      "paper": {
+        "title": "Shared Phase Arithmetic for Parallel Quantum Rotations",
+        "authors": [
+          "A Wu",
+          "L Lu",
+          "P Pang",
+          "J Yin",
+          "J Leng",
+          "M Guo"
+        ],
+        "abstract": "A layer of diagonal quantum gates can be specified by an integer-valued function on computational basis states. This description suggests implementing the layer by evaluating that function reversibly and translating its value into a phase using a …",
+        "url": "https://arxiv.org/pdf/2609.36574",
+        "venue": "",
+        "id": "55a3238d1dfc1dbbda94",
+        "urls": [
+          "https://arxiv.org/pdf/2609.36574"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "1cd2702ad5cd4c4b272a": {
+      "first_pending_at": 1791160120.8166313,
+      "attempts": 1,
+      "paper": {
+        "title": "Time-Anchored Diffusion Language Models: Latent-Space Caching for Fast Generation",
+        "authors": [
+          "JA Paul",
+          "L Rout",
+          "A Akella",
+          "S Shakkottai"
+        ],
+        "abstract": "Recent work on anchored diffusion language models improves denoising by shaping an intermediate latent space with supervised important-token targets. In this work, we introduce time-based (self-supervised) anchoring, which learns and reuses latent …",
+        "url": "https://arxiv.org/pdf/2609.37924",
+        "venue": "",
+        "id": "1cd2702ad5cd4c4b272a",
+        "urls": [
+          "https://arxiv.org/pdf/2609.37924"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "80676aea6045514afcf7": {
+      "first_pending_at": 1791160120.8186026,
+      "attempts": 1,
+      "paper": {
+        "title": "Power Roofline",
+        "authors": [
+          "MJ Kim",
+          "DH Yoon",
+          "J Stojkovic",
+          "G Zuo",
+          "JB Lim"
+        ],
+        "abstract": "Modern AI accelerators increasingly operate at their power limits, creating a widening gap between peak and attainable performance. On the other hand, the Roofline model, while widely adopted for reasoning about compute and memory …",
+        "url": "https://jovans2.github.io/files/Power_Roofline_MICRO.pdf",
+        "venue": "",
+        "id": "80676aea6045514afcf7",
+        "urls": [
+          "https://jovans2.github.io/files/Power_Roofline_MICRO.pdf"
+        ]
+      },
+      "status": "pending_abstract"
+    }
+  },
   "expired": {},
-  "retries": {},
-  "source_limits": {}
+  "retries": {
+    "ed35bdcb92501fd108b6": {
+      "attempts": 1,
+      "last_attempt_at": 1791160114.5421054,
+      "next_retry_at": 1791163714.5421057
+    },
+    "56b8b17f39ade77791c7": {
+      "attempts": 1,
+      "last_attempt_at": 1791160114.9952428,
+      "next_retry_at": 1791163714.9952428
+    },
+    "e19c8455fca78f54cc84": {
+      "attempts": 1,
+      "last_attempt_at": 1791160115.9426885,
+      "next_retry_at": 1791163715.9426887
+    },
+    "d060f8926cc24ef4b925": {
+      "attempts": 1,
+      "last_attempt_at": 1791160116.90176,
+      "next_retry_at": 1791163716.9017603
+    },
+    "62cf324fb43a609dad6c": {
+      "attempts": 1,
+      "last_attempt_at": 1791160118.0483305,
+      "next_retry_at": 1791163718.0483308
+    },
+    "222be7bfbd865830e10b": {
+      "attempts": 1,
+      "last_attempt_at": 1791160118.947129,
+      "next_retry_at": 1791163718.947129
+    },
+    "17819c9602601265908b": {
+      "attempts": 1,
+      "last_attempt_at": 1791160119.9374847,
+      "next_retry_at": 1791163719.9374847
+    },
+    "3f0f470f3a7861e41a31": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.7722187,
+      "next_retry_at": 1791163720.772219
+    },
+    "8096f9a58876a145c1e3": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.7734613,
+      "next_retry_at": 1791163720.7734616
+    },
+    "05c9ab76eae62b3db3c1": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.7748687,
+      "next_retry_at": 1791163720.7748687
+    },
+    "af75026f62f15fe82559": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.7762535,
+      "next_retry_at": 1791163720.7762537
+    },
+    "6c5358a9747f88101264": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.7776196,
+      "next_retry_at": 1791163720.7776196
+    },
+    "384e57769fdcd6afdb3f": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.7790546,
+      "next_retry_at": 1791163720.7790546
+    },
+    "e7ae3b8df5e89bd6f94a": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.7804706,
+      "next_retry_at": 1791163720.7804708
+    },
+    "0b53af9d8d74f7ca79d3": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.7819567,
+      "next_retry_at": 1791163720.781957
+    },
+    "985aafaadfab35912219": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.7834015,
+      "next_retry_at": 1791163720.7834015
+    },
+    "f3cacf3c18fd6135b0ed": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.7850473,
+      "next_retry_at": 1791163720.7850475
+    },
+    "d37083f8e4834131d284": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.7865689,
+      "next_retry_at": 1791163720.786569
+    },
+    "7eda12fbe773a1170027": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.787991,
+      "next_retry_at": 1791163720.7879913
+    },
+    "24ba71da430dec10107f": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.789556,
+      "next_retry_at": 1791163720.7895563
+    },
+    "57cde4c8a42a92fa5c98": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.7910507,
+      "next_retry_at": 1791163720.7910507
+    },
+    "cb8923eab2738c58055f": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.7926292,
+      "next_retry_at": 1791163720.7926295
+    },
+    "76236f5f0cf042e3f78e": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.794414,
+      "next_retry_at": 1791163720.7944143
+    },
+    "eb25097563cf62fd7c50": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.7960637,
+      "next_retry_at": 1791163720.796064
+    },
+    "5acb11fb047f5c680f09": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.797826,
+      "next_retry_at": 1791163720.797826
+    },
+    "6b67b04c9d11d9b5f3a8": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.799516,
+      "next_retry_at": 1791163720.799516
+    },
+    "60273c157cff0cd7cad2": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.8013391,
+      "next_retry_at": 1791163720.8013394
+    },
+    "462776df22a80c19b7b3": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.8030853,
+      "next_retry_at": 1791163720.8030856
+    },
+    "dd3b8189b68fbf0490a0": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.804859,
+      "next_retry_at": 1791163720.8048592
+    },
+    "74757f9dd86c4d186eb0": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.8065326,
+      "next_retry_at": 1791163720.8065329
+    },
+    "aecaeceef3716c6b4c5e": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.8081913,
+      "next_retry_at": 1791163720.8081915
+    },
+    "59c80ad730794a69120b": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.809907,
+      "next_retry_at": 1791163720.8099072
+    },
+    "f62dcec148a0c04f59ef": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.8117056,
+      "next_retry_at": 1791163720.8117058
+    },
+    "9f42ee4fa9f56a6b9315": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.8135347,
+      "next_retry_at": 1791163720.8135347
+    },
+    "55a3238d1dfc1dbbda94": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.815416,
+      "next_retry_at": 1791163720.8154163
+    },
+    "1cd2702ad5cd4c4b272a": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.817304,
+      "next_retry_at": 1791163720.8173041
+    },
+    "80676aea6045514afcf7": {
+      "attempts": 1,
+      "last_attempt_at": 1791160120.8191195,
+      "next_retry_at": 1791163720.8191197
+    }
+  },
+  "source_limits": {
+    "ieee": {
+      "next_start": 1791160095.3932462,
+      "failures": 0
+    },
+    "crossref": {
+      "next_start": 1791160121.5437703,
+      "failures": 1,
+      "cooldown_until": 1791160180.7705195
+    },
+    "semantic_scholar": {
+      "next_start": 1791160096.256834,
+      "failures": 1,
+      "cooldown_until": 1791160154.397309
+    },
+    "arxiv": {
+      "next_start": 1791160097.4988835,
+      "failures": 1,
+      "cooldown_until": 1791160174.5414577
+    }
+  }
 }
