@@ -82,6 +82,14 @@ class AbstractSourceTests(unittest.TestCase):
         for text in (None, "", "too short", ABSTRACT + "…", ABSTRACT + "View full abstract"):
             self.assertFalse(sources.is_usable_abstract(dict(self.record, abstract=text)))
         self.assertTrue(sources.is_usable_abstract(self.record))
+        description = dict(
+            self.record,
+            source="Google Scholar Description",
+            abstract=ABSTRACT + "…",
+            truncated=True,
+        )
+        self.assertTrue(sources.is_usable_abstract(description))
+        self.assertFalse(sources.is_usable_abstract(dict(description, abstract="too short…")))
 
     def test_ieee_links_resolve_article_metadata(self):
         payload = {
@@ -112,7 +120,7 @@ class AbstractSourceTests(unittest.TestCase):
             self.assertEqual(rows[0]["abstract"], ABSTRACT)
             self.assertNotIn("apikey", rows[0]["url"])
 
-    def test_usenix_page_and_pdf_fallback_extract_target_abstract(self):
+    def test_publication_pages_extract_identity_matched_abstracts(self):
         page = (
             '<h1>Paper One</h1><meta name="citation_author" content="Alice Author">'
             '<div class="field-name-field-paper-description-long">' + ABSTRACT + "</div>"
@@ -122,15 +130,104 @@ class AbstractSourceTests(unittest.TestCase):
             '<a href="/conference/osdi26/presentation/author">Paper One</a></h2>'
             '<div class="field-name-field-paper-description">' + ABSTRACT + "</div></article>"
         )
-        for url, responses in (
-            ("https://www.usenix.org/conference/osdi26/presentation/author", [page]),
-            ("https://www.usenix.org/system/files/osdi26-author.pdf", [program, page]),
+        arxiv = (
+            '<h1 class="title">Title: Paper One</h1>'
+            '<div class="authors"><a>Alice Author</a></div>'
+            '<blockquote class="abstract">Abstract: ' + ABSTRACT + "</blockquote>"
+        )
+        google = (
+            '<meta name="citation_title" content="Paper One">'
+            '<meta name="citation_author" content="Alice Author">'
+            "<div><div><h2>Abstract</h2></div><div>" + ABSTRACT + "</div></div>"
+        )
+        google_url = "https://research.google/pubs/paper-one/"
+        cases = [
+            ("https://www.usenix.org/conference/osdi26/presentation/author", [page], True),
+            ("https://www.usenix.org/system/files/osdi26-author.pdf", [program, page], True),
+            (google_url, [google], True),
+            (google_url, [google.replace("Paper One", "Wrong Paper")], False),
+            (google_url, [google.replace("Alice Author", "Wrong Person")], False),
+            (google_url, [google.replace("Abstract</h2>", "Overview</h2>")], False),
+            (google_url, [google.replace(ABSTRACT, "Truncated snippet…")], False),
+        ]
+        for host in (
+            "scholar.google.com",
+            "scholar.google.co.uk",
+            "scholar.google.co.jp",
+            "redirect.example.org",
         ):
-            with self.subTest(url=url), patch.object(self.resolver, "get", side_effect=responses):
-                rows = self.resolver.usenix(dict(self.paper, url=url))
-            self.assertEqual(rows[0]["title"], "Paper One")
-            self.assertEqual(rows[0]["authors"], ["Alice Author"])
-            self.assertEqual(rows[0]["abstract"], ABSTRACT.strip())
+            cases.append(
+                (
+                    f"https://{host}/scholar_url?url=https%3A%2F%2Farxiv.org%2Fpdf%2F2601.00001",
+                    [arxiv],
+                    True,
+                )
+            )
+        for index, (url, responses, accepted) in enumerate(cases):
+            with (
+                self.subTest(url=url, index=index),
+                patch.object(self.resolver, "get", side_effect=responses) as get,
+                patch.object(self.resolver, "crossref", return_value=[]),
+                patch.object(self.resolver, "semantic_scholar", return_value=[]),
+                patch.object(self.resolver, "arxiv", return_value=[]),
+            ):
+                record, _ = self.resolver.resolve(dict(self.paper, id=str(index), url=url))
+            self.assertEqual(record is not None, accepted)
+            if accepted:
+                self.assertEqual(record["title"], "Paper One")
+                self.assertEqual(record["authors"], ["Alice Author"])
+                self.assertEqual(record["abstract"], ABSTRACT.strip())
+            self.assertNotIn("scholar.google", get.call_args.args[0])
+        profile = (
+            '<a class="gsc_a_at" href="/citations?citation_for_view=profile1:paper1">Paper One</a>'
+        )
+        detail = (
+            '<a id="gsc_oci_title">Paper One</a>'
+            '<div class="gs_scl"><div class="gsc_oci_field">Authors</div>'
+            '<div class="gsc_oci_value">Alice Author</div></div>'
+            '<div class="gs_scl"><div class="gsc_oci_field">Description</div>'
+            '<div class="gsc_oci_value">' + ABSTRACT + "…</div></div>"
+        )
+        paper = dict(self.paper, id="scholar", scholar_profiles=["profile1"])
+        with (
+            patch.object(self.resolver, "get", side_effect=[profile, detail]) as get,
+            patch.object(self.resolver, "arxiv_html", return_value=[self.record]) as original,
+            patch.object(self.resolver, "crossref", return_value=[self.record]) as crossref,
+            patch.object(self.resolver, "semantic_scholar", return_value=[self.record]) as s2,
+            patch.object(self.resolver, "arxiv", return_value=[self.record]) as arxiv_api,
+        ):
+            record, _ = self.resolver.resolve(paper)
+        self.assertEqual(get.call_count, 2)
+        for provider in (original, crossref, s2, arxiv_api):
+            provider.assert_not_called()
+        self.assertEqual(record["source"], "Google Scholar Description")
+        self.assertTrue(record["truncated"])
+        with patch.object(self.resolver, "get") as get:
+            cached, _ = self.resolver.resolve(paper)
+        get.assert_not_called()
+        self.assertEqual(cached, record)
+        with patch.object(
+            self.resolver, "get", return_value=detail.replace("Alice Author", "Wrong Person")
+        ) as get:
+            self.assertEqual(self.resolver.scholar_description(paper), [])
+        get.assert_called_once()  # The profile index is reused within the run.
+        for index, result in enumerate(
+            (
+                [],
+                [dict(self.record, title="Wrong Paper")],
+                [dict(self.record, abstract="too short")],
+                sources.SourceFailure("scholar_access_blocked"),
+            )
+        ):
+            with (
+                self.subTest(scholar_fallback=index),
+                patch.object(self.resolver, "scholar_description", side_effect=[result]) as scholar,
+                patch.object(self.resolver, "arxiv_html", return_value=[self.record]) as original,
+            ):
+                resolved, _ = self.resolver.resolve(dict(paper, id=f"scholar-fallback-{index}"))
+            scholar.assert_called_once()
+            original.assert_called_once()
+            self.assertEqual(resolved["source"], self.record["source"])
 
     def test_crossref_doi_without_abstract_is_passed_to_s2(self):
         paper = dict(self.paper, url="https://example.org/paper")
@@ -178,6 +275,21 @@ class AbstractSourceTests(unittest.TestCase):
                     self.assertTrue(get.call_args.args[0].endswith("/search"))
 
     def test_requests_keep_credentials_on_allowed_hosts_and_out_of_errors(self):
+        target = "https://arxiv.org/abs/2601.00001"
+        wrapper = "https://scholar.google.de/scholar_url?url="
+        nested = wrapper + sources.quote(wrapper + sources.quote(target, safe=""), safe="")
+        self.assertEqual(sources.unwrap_scholar_url(nested), target)
+        for url in (
+            "https://example.org/paper?url=" + target,
+            wrapper + "javascript:alert(1)",
+            wrapper + "/relative/path",
+            wrapper + "https://user:password@arxiv.org/abs/2601.00001",
+            wrapper + "https://[invalid",
+            wrapper + target + "&url=https://example.org/other",
+            wrapper,
+        ):
+            with self.subTest(url=url):
+                self.assertEqual(sources.unwrap_scholar_url(url), url)
         with (
             patch.object(self.resolver.limiter, "before"),
             patch.object(sources.requests, "get", return_value=Response()) as get,
@@ -189,6 +301,9 @@ class AbstractSourceTests(unittest.TestCase):
             self.assertEqual(get.call_args.kwargs["params"]["apikey"], "secret-ieee")
             self.assertNotIn("x-api-key", get.call_args.kwargs["headers"])
             self.resolver.get("https://api.crossref.org/works")
+            self.assertNotIn("apikey", get.call_args.kwargs["params"])
+            self.assertNotIn("x-api-key", get.call_args.kwargs["headers"])
+            self.resolver.get("https://research.google/pubs/paper-one/")
             self.assertNotIn("apikey", get.call_args.kwargs["params"])
             self.assertNotIn("x-api-key", get.call_args.kwargs["headers"])
             get.reset_mock()
@@ -209,6 +324,18 @@ class AbstractSourceTests(unittest.TestCase):
             with self.assertRaises(sources.SourceFailure) as error:
                 self.resolver.get("https://ieeexploreapi.ieee.org/api/v1/search/articles")
             self.assertEqual(str(error.exception), "transport_error")
+            get.reset_mock(side_effect=True)
+            get.return_value = Response(status=429)
+            with self.assertRaisesRegex(sources.SourceFailure, "scholar_access_blocked"):
+                self.resolver.get("https://scholar.google.com/citations")
+            with self.assertRaisesRegex(sources.SourceFailure, "source_disabled_for_run"):
+                self.resolver.get("https://scholar.google.com/citations")
+            get.assert_called_once()
+            self.assertNotIn("apikey", get.call_args.kwargs["params"])
+            self.assertNotIn("x-api-key", get.call_args.kwargs["headers"])
+        with patch.object(self.resolver, "get", return_value="<html>unusual traffic</html>"):
+            with self.assertRaisesRegex(sources.SourceFailure, "scholar_access_blocked"):
+                self.resolver.scholar_description(dict(self.paper, scholar_profiles=["profile2"]))
 
     def test_rate_limits_and_cooldown_survive_new_instances_and_metadata(self):
         now, sleeps = [100.0], []

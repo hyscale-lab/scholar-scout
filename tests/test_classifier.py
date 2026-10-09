@@ -78,10 +78,20 @@ class ClassifierTests(unittest.TestCase):
         )
 
     def test_full_abstract_classification_preserves_independent_matches(self):
+        self.mail.set_payload(
+            self.mail.get_payload().replace(
+                "https://arxiv.org/abs/2601.00001",
+                "https://scholar.google.co.uk/scholar_url?url=https%3A%2F%2Farxiv.org%2Fabs%2F2601.00001",
+            )
+        )
         self.client.models.generate_content.return_value = response(
             matches=("LLM Inference", "Video & Embodied Intelligence")
         )
         results = self.app.classify_papers([self.mail])
+        self.assertEqual(
+            self.app.resolver.resolve.call_args.args[0]["url"],
+            "https://arxiv.org/abs/2601.00001",
+        )
         self.assertEqual(len(results), 1)
         self.assertEqual(
             [topic.name for topic in results[0][1]],
@@ -174,10 +184,17 @@ class ClassifierTests(unittest.TestCase):
         self.assertEqual(self.app.pending, {})
 
     def test_missing_abstract_survives_restart_without_original_email(self):
+        self.mail.set_payload(
+            self.mail.get_payload()
+            + '<a href="https://scholar.google.co.uk/citations?user=profile1">Author</a>'
+        )
         self.app.resolver.resolve.return_value = (None, [])
         self.assertEqual(self.app.classify_papers([self.mail]), [])
         self.client.models.generate_content.assert_not_called()
         restarted = ScholarClassifier(self.config)
+        self.assertEqual(
+            next(iter(restarted.pending.values()))["paper"]["scholar_profiles"], ["profile1"]
+        )
         restarted.resolver.resolve = Mock(return_value=(self.record, []))
         self.assertEqual(len(restarted.classify_papers([])), 1)
         self.assertEqual(ScholarClassifier(self.config).pending, {})

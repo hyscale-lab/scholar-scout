@@ -58,5 +58,6 @@ research_topics:
 
   - name: "Sustainable Computing"
     slack_users:
-      - "@jim"
+      - "<@U04HALEGCD7>" # "@Leonid Kondrashov"
+      - "<@U04HVNW03QQ>" # "@Park JooYoung"
     slack_channel: "C086LJ25U8L" # serverless-systems

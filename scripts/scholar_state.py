@@ -63,6 +63,7 @@ def validate(snapshot):
             "url",
             "urls",
             "venue",
+            "scholar_profiles",
         }:
             raise ValueError("Invalid paper metadata")
         if (
@@ -74,11 +75,15 @@ def validate(snapshot):
         for field in ("abstract", "url", "venue"):
             if not isinstance(paper.get(field, ""), str):
                 raise ValueError("Invalid paper text")
-        for field in ("authors", "urls"):
+        for field in ("authors", "urls", "scholar_profiles"):
             if not isinstance(paper.get(field, []), list) or not all(
                 isinstance(v, str) for v in paper.get(field, [])
             ):
                 raise ValueError("Invalid paper list")
+        if any(
+            not re.fullmatch(r"[A-Za-z0-9_-]{6,32}", p) for p in paper.get("scholar_profiles", [])
+        ):
+            raise ValueError("Invalid Scholar profile")
     for key, retry in snapshot["retries"].items():
         if key not in snapshot["pending"] or not isinstance(retry, dict):
             raise ValueError("Retry without pending paper")
@@ -100,6 +105,8 @@ def validate(snapshot):
             "crossref",
             "usenix",
             "ntu",
+            "google_research",
+            "google_scholar",
         } or not isinstance(limits, dict):
             raise ValueError("Invalid source limits")
         if set(limits) - {"next_start", "cooldown_until", "failures"} or not all(
