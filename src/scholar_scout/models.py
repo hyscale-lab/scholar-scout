@@ -6,7 +6,7 @@ structures used in the application, such as research papers.
 """
 
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Paper(BaseModel):
@@ -26,3 +26,4 @@ class Paper(BaseModel):
     abstract: str
     url: str = ""
     venue: str = ""
+    scholar_profiles: List[str] = Field(default_factory=list)

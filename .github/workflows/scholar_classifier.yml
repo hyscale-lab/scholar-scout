@@ -15,7 +15,7 @@ concurrency:
 jobs:
   run-classifier:
     if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     env:
       ABSTRACT_CACHE_KEY: scholar-abstracts-v2-${{ github.run_id }}-${{ github.run_attempt }}
 
@@ -30,8 +30,11 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        scholar_venv="$RUNNER_TEMP/scholar-scout-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+        python -m venv "$scholar_venv"
+        echo "$scholar_venv/bin" >> "$GITHUB_PATH"
+        "$scholar_venv/bin/python" -m pip install --upgrade pip
+        "$scholar_venv/bin/python" -m pip install -r requirements.txt
 
     - name: Create config files from template
       run: cp config/config.example.yml config/config.yml

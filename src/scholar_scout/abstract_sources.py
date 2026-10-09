@@ -29,6 +29,32 @@ def normalized(text):
     return "".join(c for c in unicodedata.normalize("NFKD", text).casefold() if c.isalnum())
 
 
+def unwrap_scholar_url(url):
+    for _ in range(3):
+        parsed = urlparse(url)
+        targets = parse_qs(parsed.query, keep_blank_values=True).get("url", [])
+        if (
+            parsed.scheme not in ("http", "https")
+            or not parsed.hostname
+            or parsed.path != "/scholar_url"
+            or len(targets) != 1
+        ):
+            break
+        try:
+            target = urlparse(targets[0])
+        except ValueError:
+            break
+        if (
+            target.scheme not in ("http", "https")
+            or not target.hostname
+            or target.username
+            or target.password
+        ):
+            break
+        url = targets[0]
+    return url
+
+
 def atomic_json(path, data):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -86,7 +112,10 @@ def is_usable_abstract(record):
     return (
         isinstance(text, str)
         and 200 <= len(text.strip()) <= 30000
-        and not re.search(r"(?:\.{3,}|…|read more|view full abstract)\s*$", text, re.I)
+        and (
+            record.get("source") == "Google Scholar Description"
+            or not re.search(r"(?:\.{3,}|…|read more|view full abstract)\s*$", text, re.I)
+        )
         and bool(record.get("source"))
     )
 
@@ -109,6 +138,8 @@ class SharedLimiter:
         "crossref": 1.0,
         "usenix": 1.0,
         "ntu": 1.0,
+        "google_research": 1.0,
+        "google_scholar": 3.0,
     }
 
     def __init__(self, directory, clock=time.time, sleep=time.sleep):
@@ -172,6 +203,8 @@ class AbstractResolver:
         "dr.ntu.edu.sg",
         "api.semanticscholar.org",
         "ieeexploreapi.ieee.org",
+        "research.google",
+        "scholar.google.com",
     }
     SERVICES = {
         "arxiv.org": "arxiv_web",
@@ -181,6 +214,8 @@ class AbstractResolver:
         "dr.ntu.edu.sg": "ntu",
         "api.semanticscholar.org": "semantic_scholar",
         "ieeexploreapi.ieee.org": "ieee",
+        "research.google": "google_research",
+        "scholar.google.com": "google_scholar",
     }
 
     def __init__(self, cache, offline=False, env_file=None, state_dir=None, recovery=None):
@@ -195,6 +230,7 @@ class AbstractResolver:
         self.limiter = SharedLimiter(state_dir or self.cache.parent / "source-state")
         self.disabled = set()
         self.programs = {}
+        self.scholar_profiles = {}
         self.last_pending = None
         self.retry_deferred = False
         self.had_source_failure = False
@@ -235,7 +271,7 @@ class AbstractResolver:
             raise ValueError("Unsupported source host")
         service = self.SERVICES[parsed.hostname]
         if service in self.disabled:
-            raise SourceFailure("authentication_disabled_for_run")
+            raise SourceFailure("source_disabled_for_run")
         params = dict(params or {})
         headers = {"User-Agent": "ScholarScoutAbstractResolver/2.0"}
         if service == "ieee":
@@ -257,6 +293,10 @@ class AbstractResolver:
             )
             with response:
                 status = response.status_code
+                if service == "google_scholar" and status in (403, 429):
+                    self.disabled.add(service)
+                    self.limiter.defer(service, response.headers.get("Retry-After"))
+                    raise SourceFailure("scholar_access_blocked")
                 if status in (429, 408) or status >= 500:
                     until = self.limiter.defer(service, response.headers.get("Retry-After"))
                     raise SourceFailure("http_" + str(status), until)
@@ -438,7 +478,7 @@ class AbstractResolver:
         requests_before = self.requests_started
         path = self.cache / (paper["id"] + ".json")
         pending_path = self.cache / "pending-abstracts" / (paper["id"] + ".json")
-        context = dict(paper)
+        context = dict(paper, url=unwrap_scholar_url(paper.get("url", "")))
         notes, retry_at = [], 0
         if path.exists():
             try:
@@ -461,17 +501,22 @@ class AbstractResolver:
             self.last_pending = previous
             self.retry_deferred = True
             return None, notes + ["abstract retry deferred until scheduled time"]
-        urls = list(dict.fromkeys([paper.get("url", ""), *paper.get("urls", [])]))
+        urls = list(
+            dict.fromkeys(
+                unwrap_scholar_url(url) for url in [paper.get("url", ""), *paper.get("urls", [])]
+            )
+        )
         if not doi_of(context):
             dois = {doi_of({"url": url}) for url in urls} - {""}
             if len(dois) == 1:
                 context["doi"] = next(iter(dois))
         sources = [
             (name, dict(context, url=url))
-            for name in ("ieee", "usenix", "arxiv_html", "institutional")
+            for name in ("ieee", "usenix", "arxiv_html", "institutional", "google_research")
             for url in urls
         ]
         sources.extend((name, context) for name in ("crossref", "semantic_scholar", "arxiv"))
+        sources.insert(0, ("scholar_description", context))
         deferred = []
         while sources:
             for name, source_paper in sources:
@@ -583,6 +628,99 @@ class AbstractResolver:
                 "venue": "arXiv preprint",
             }
         ]
+
+    def google_research(self, paper):
+        parsed = urlparse(paper["url"])
+        if parsed.hostname != "research.google" or not parsed.path.startswith("/pubs/"):
+            return []
+        soup = BeautifulSoup(self.get(paper["url"]), "html.parser")
+        title = soup.select_one('meta[name="citation_title"][content]')
+        heading = next(
+            (tag for tag in soup.find_all("h2") if tag.get_text(strip=True) == "Abstract"), None
+        )
+        abstract = heading.parent.find_next_sibling("div") if heading else None
+        if not title or not abstract:
+            return []
+        return [
+            {
+                "title": title["content"],
+                "abstract": abstract.get_text(" ", strip=True),
+                "authors": [
+                    tag["content"] for tag in soup.select('meta[name="citation_author"][content]')
+                ],
+                "url": paper["url"],
+                "venue": "",
+                "source": "Google Research abstract page",
+            }
+        ]
+
+    def scholar_description(self, paper):
+        def page(params):
+            soup = BeautifulSoup(
+                self.get("https://scholar.google.com/citations", params), "html.parser"
+            )
+            text = soup.get_text(" ", strip=True).lower()
+            if soup.select_one('#gs_captcha_ccl, form[action*="/sorry/"]') or any(
+                phrase in text for phrase in ("unusual traffic", "automated queries", "not a robot")
+            ):
+                self.disabled.add("google_scholar")
+                raise SourceFailure("scholar_access_blocked")
+            return soup
+
+        for profile in paper.get("scholar_profiles", [])[:3]:
+            if not re.fullmatch(r"[A-Za-z0-9_-]{6,32}", profile):
+                continue
+            if profile not in self.scholar_profiles:
+                soup = page({"user": profile, "hl": "en", "sortby": "pubdate", "pagesize": 100})
+                entries = []
+                for link in soup.select("a.gsc_a_at[href]"):
+                    citation = parse_qs(urlparse(link["href"]).query).get(
+                        "citation_for_view", [""]
+                    )[0]
+                    if re.fullmatch(re.escape(profile) + r":[A-Za-z0-9_-]+", citation):
+                        entries.append((normalized(link.get_text(" ", strip=True)), citation))
+                self.scholar_profiles[profile] = entries
+            for title, citation in self.scholar_profiles[profile]:
+                if title != normalized(paper["title"]):
+                    continue
+                params = {
+                    "view_op": "view_citation",
+                    "hl": "en",
+                    "user": profile,
+                    "citation_for_view": citation,
+                }
+                soup = page(params)
+                heading = soup.select_one("#gsc_oci_title")
+                if not heading:
+                    continue
+                fields = {}
+                for row in soup.select(".gs_scl"):
+                    label, value = row.select_one(".gsc_oci_field"), row.select_one(
+                        ".gsc_oci_value"
+                    )
+                    if label and value:
+                        fields[label.get_text(" ", strip=True)] = value.get_text(" ", strip=True)
+                description = soup.select_one("#gsc_vcd_descr")
+                abstract = (
+                    description.get_text(" ", strip=True)
+                    if description
+                    else fields.get("Description", "")
+                )
+                record = {
+                    "title": heading.get_text(" ", strip=True),
+                    "authors": [
+                        a.strip() for a in fields.get("Authors", "").split(",") if a.strip()
+                    ],
+                    "abstract": abstract,
+                    "url": "https://scholar.google.com/citations?"
+                    + requests.compat.urlencode(params),
+                    "venue": fields.get("Journal", fields.get("Book", "")),
+                    "source": "Google Scholar Description",
+                    "truncated": bool(re.search(r"(?:\.{3,}|…)\s*$", abstract)),
+                }
+                if identity_matches(paper, record) and is_usable_abstract(record):
+                    return [record]
+        return []
 
     def institutional(self, paper):
         if urlparse(paper["url"]).hostname != "dr.ntu.edu.sg":
