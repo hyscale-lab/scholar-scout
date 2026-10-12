@@ -112,6 +112,7 @@ def is_usable_abstract(record):
     return (
         isinstance(text, str)
         and 200 <= len(text.strip()) <= 30000
+        and "\ufffd" not in text
         and (
             record.get("source") == "Google Scholar Description"
             or not re.search(r"(?:\.{3,}|…|read more|view full abstract)\s*$", text, re.I)
@@ -311,7 +312,14 @@ class AbstractResolver:
                         raise SourceFailure("response_too_large")
                     chunks.append(chunk)
                 self.limiter.success(service)
-                return b"".join(chunks).decode("utf-8", errors="replace")
+                content = b"".join(chunks)
+                content_type = response.headers.get("Content-Type", "")
+                charset = re.search(r'charset\s*=\s*["\']?([^\s;"\']+)', content_type, re.I)
+                encoding = charset[1] if charset else "utf-8"
+                try:
+                    return content.decode(encoding, errors="replace")
+                except LookupError:
+                    return content.decode("utf-8", errors="replace")
         except requests.RequestException:
             raise SourceFailure("transport_error", self.limiter.defer(service)) from None
 

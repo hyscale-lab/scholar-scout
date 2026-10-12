@@ -71,6 +71,10 @@ class SlackNotifier:
                     logger.info(f"Notification sent to channel {channel} for topic {topic.name}")
                 except SlackApiError as e:
                     logger.error(f"Failed to send notification to {channel}: {e.response['error']}")
+                    raise RuntimeError("Paper notification failed") from None
+                except Exception as exc:
+                    logger.error("Paper notification failed (%s)", type(exc).__name__)
+                    raise RuntimeError("Paper notification failed") from None
 
     def send_weekly_update(
         self, papers_by_topic: dict[str, list[Paper]], *, period: tuple[date | None, date]
@@ -122,6 +126,7 @@ class SlackNotifier:
         labels = {
             "pending_abstract": "Awaiting source abstract",
             "pending_model": "Awaiting a valid model response",
+            "pending_notification": "Awaiting Slack delivery",
         }
         header = (
             f"Scholar Scout: {len(pending)} pending, {len(newly_expired)} stopped retrying "

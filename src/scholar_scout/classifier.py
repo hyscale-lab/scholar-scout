@@ -62,6 +62,7 @@ class ScholarClassifier:
         self.newly_expired = {}
         self.diagnostics = []
         self.run_failed = False
+        self.notification_failed = False
 
     def _get_email_content(self, message):
         parts = message.walk() if message.is_multipart() else [message]
@@ -154,7 +155,7 @@ class ScholarClassifier:
         atomic_json(self.pending_path, self.pending)
         logger.info("Stopped retrying paper %s (%s)", key, reason)
 
-    def classify_papers(self, email_messages):
+    def classify_papers(self, email_messages, *, notify_match=None):
         atomic_json(self.expired_path, self.expired)
         candidates = {key: row["paper"] for key, row in self.pending.items()}
         seen_urls = {
@@ -181,6 +182,7 @@ class ScholarClassifier:
         self.diagnostics = []
         self.newly_expired = {}
         self.run_failed = False
+        self.notification_failed = False
         processing_errors = False
         for key, candidate in candidates.items():
             previous = self.pending.get(key)
@@ -192,8 +194,12 @@ class ScholarClassifier:
             status, decisions, notes = "pending_abstract", {}, []
             source_failed = False
             try:
-                record, notes = self.resolver.resolve(candidate)
-                source_failed = self.resolver.had_source_failure
+                if previous and previous["status"] == "pending_notification":
+                    status = "pending_notification"
+                    record = candidate
+                else:
+                    record, notes = self.resolver.resolve(candidate)
+                    source_failed = self.resolver.had_source_failure
                 if record:
                     paper = Paper(
                         **{
@@ -207,23 +213,47 @@ class ScholarClassifier:
                             "Using Google Scholar Description"
                             + (" (truncated)" if record.get("truncated") else "")
                         )
-                    status = "pending_model"
-                    decisions = self.topic_classifier.classify(paper)
-                    matches = [
-                        self.topic_classifier.topics[name]
-                        for name, decision in decisions.items()
-                        if decision["decision"] == "match"
-                    ]
+                    if status == "pending_notification":
+                        matches = [self.topic_classifier.topics[name] for name in row["topics"]]
+                    else:
+                        status = "pending_model"
+                        decisions = self.topic_classifier.classify(paper)
+                        matches = [
+                            self.topic_classifier.topics[name]
+                            for name, decision in decisions.items()
+                            if decision["decision"] == "match"
+                        ]
+                    if matches and notify_match is not None:
+                        status = "pending_notification"
+                        candidate = dict(candidate, **paper.model_dump())
+                        row.update(
+                            paper=candidate,
+                            status=status,
+                            topics=[topic.name for topic in matches],
+                        )
+                        self.pending[key] = row
+                        atomic_json(self.pending_path, self.pending)
+                        for topic in matches:
+                            notify_match(paper, [topic])
+                            if len(row["topics"]) > 1:
+                                row["topics"].remove(topic.name)
+                                atomic_json(self.pending_path, self.pending)
                     status = "matched" if matches else "no_match"
                     results.append((paper, matches))
             except Exception as exc:
-                processing_errors = True
+                if status == "pending_notification":
+                    self.notification_failed = True
+                else:
+                    processing_errors = True
                 logger.warning("Paper %s remains pending (%s)", key, type(exc).__name__)
                 notes.append(type(exc).__name__)
             if status.startswith("pending"):
                 processing_errors |= source_failed
                 row.update(paper=candidate, status=status)
-                if status == "pending_model" or not self.resolver.retry_deferred:
+                if (
+                    status in ("pending_model", "pending_notification")
+                    or not self.resolver.retry_deferred
+                ):
                     row["attempts"] += 1
                 if reason := self._expiration_reason(row):
                     self._expire(key, row, reason)

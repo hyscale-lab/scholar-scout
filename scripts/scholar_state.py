@@ -40,6 +40,16 @@ def validate(snapshot):
         if not re.fullmatch(r"[a-f0-9]{20}", key) or not isinstance(row, dict):
             raise ValueError("Invalid pending paper")
         fields = {"paper", "status", "attempts", "first_pending_at"}
+        if row.get("status") == "pending_notification":
+            fields.add("topics")
+            topics = row.get("topics")
+            if (
+                not isinstance(topics, list)
+                or not topics
+                or not all(isinstance(topic, str) and topic.strip() for topic in topics)
+                or len(set(topics)) != len(topics)
+            ):
+                raise ValueError("Invalid notification topics")
         if key in snapshot["expired"]:
             fields |= {"expired_at", "expiration_reason"}
             if row.get("expiration_reason") not in ("max_age", "max_attempts"):
@@ -47,6 +57,7 @@ def validate(snapshot):
         if set(row) != fields or row["status"] not in (
             "pending_abstract",
             "pending_model",
+            "pending_notification",
         ):
             raise ValueError("Invalid pending status")
         if type(row["attempts"]) is not int or row["attempts"] < 0:

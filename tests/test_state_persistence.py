@@ -71,6 +71,18 @@ class StatePersistenceTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             state.restore(Path(temp), self.snapshot)
             self.assertEqual(state.collect(Path(temp)), self.snapshot)
+        self.snapshot["pending"][KEY].update(
+            status="pending_notification", topics=["LLM Inference"]
+        )
+        self.snapshot["retries"] = {}
+        with tempfile.TemporaryDirectory() as temp:
+            state.restore(Path(temp), self.snapshot)
+            self.assertEqual(state.collect(Path(temp)), self.snapshot)
+        for topics in ([], [""], ["LLM Inference", "LLM Inference"], "LLM Inference"):
+            with self.subTest(topics=topics), self.assertRaises(ValueError):
+                invalid = copy.deepcopy(self.snapshot)
+                invalid["pending"][KEY]["topics"] = topics
+                state.validate(invalid)
 
     def test_invalid_state_and_missing_remote_fail_without_empty_fallback(self):
         invalid = copy.deepcopy(self.snapshot)

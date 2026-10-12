@@ -79,7 +79,14 @@ class AbstractSourceTests(unittest.TestCase):
                 self.assertTrue(sources.identity_matches(paper, record))
 
     def test_missing_or_truncated_abstract_is_not_usable(self):
-        for text in (None, "", "too short", ABSTRACT + "…", ABSTRACT + "View full abstract"):
+        for text in (
+            None,
+            "",
+            "too short",
+            ABSTRACT + "…",
+            ABSTRACT + "View full abstract",
+            ABSTRACT + "\ufffd",
+        ):
             self.assertFalse(sources.is_usable_abstract(dict(self.record, abstract=text)))
         self.assertTrue(sources.is_usable_abstract(self.record))
         description = dict(
@@ -228,6 +235,33 @@ class AbstractSourceTests(unittest.TestCase):
             scholar.assert_called_once()
             original.assert_called_once()
             self.assertEqual(resolved["source"], self.record["source"])
+        for encoding in ("iso-8859-1", "utf-8", "unspecified", "invalid-charset"):
+            with self.subTest(encoding=encoding):
+                self.resolver.scholar_profiles.clear()
+                pages = []
+                for html in (profile, detail.replace("…", "...")):
+                    response = Response(
+                        headers={
+                            "Content-Type": "text/html"
+                            + ("" if encoding == "unspecified" else f'; charset="{encoding}"')
+                        }
+                    )
+                    response.data = (
+                        html.replace("Paper One", "Café Systems")
+                        .replace("Alice Author", "Alexander Frömmgen")
+                        .encode(encoding if encoding in ("iso-8859-1", "utf-8") else "utf-8")
+                    )
+                    pages.append(response)
+                with (
+                    patch.object(sources.requests, "get", side_effect=pages),
+                    patch.object(self.resolver.limiter, "before"),
+                ):
+                    rows = self.resolver.scholar_description(
+                        dict(paper, title="Café Systems", authors=["Alexander Frömmgen"])
+                    )
+                self.assertEqual(len(rows), 1)
+                self.assertEqual(rows[0]["title"], "Café Systems")
+                self.assertEqual(rows[0]["authors"], ["Alexander Frömmgen"])
 
     def test_crossref_doi_without_abstract_is_passed_to_s2(self):
         paper = dict(self.paper, url="https://example.org/paper")
