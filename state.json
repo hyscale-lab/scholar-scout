@@ -3,7 +3,7 @@
   "pending": {
     "ed35bdcb92501fd108b6": {
       "first_pending_at": 1791160093.3925445,
-      "attempts": 2,
+      "attempts": 3,
       "paper": {
         "title": "Halder, Linus 167 Han, Tao 77 Hannig, Frank 93, 101 Hawich, Malte 163 Hemani, Ahmed 17",
         "authors": [
@@ -26,7 +26,7 @@
     },
     "d060f8926cc24ef4b925": {
       "first_pending_at": 1791160115.943283,
-      "attempts": 2,
+      "attempts": 3,
       "paper": {
         "title": "c© Copyright 2016 Will Scott Censorship Resistant Web Applications Will Scott A dissertation",
         "authors": [
@@ -44,31 +44,9 @@
       },
       "status": "pending_abstract"
     },
-    "8096f9a58876a145c1e3": {
-      "first_pending_at": 1791160120.772952,
-      "attempts": 2,
-      "paper": {
-        "title": "DIKTAMO: Extending CXL for Resilience to CPU Failures",
-        "authors": [
-          "A Psistakis",
-          "B Ocalan",
-          "C Alverti",
-          "F Chaix",
-          "R Alagappan"
-        ],
-        "abstract": "Compute Express Link (CXL) 3.0 and beyond allows the compute nodes of a cluster to share data with hardware cache coherence and at the granularity of a cache line. This enables shared-memory semantics for distributed computing, but introduces a …",
-        "url": "https://iacoma.cs.uiuc.edu/iacoma-papers/micro26.pdf",
-        "venue": "",
-        "id": "8096f9a58876a145c1e3",
-        "urls": [
-          "https://iacoma.cs.uiuc.edu/iacoma-papers/micro26.pdf"
-        ]
-      },
-      "status": "pending_abstract"
-    },
     "60273c157cff0cd7cad2": {
       "first_pending_at": 1791160120.8006656,
-      "attempts": 2,
+      "attempts": 3,
       "paper": {
         "title": "DynBranch: Speculative Subgraph Reuse for Dynamic Agentic LLM Serving",
         "authors": [
@@ -86,43 +64,195 @@
         ]
       },
       "status": "pending_model"
+    },
+    "afe5795730c1fda36825": {
+      "first_pending_at": 1791765087.0158312,
+      "attempts": 1,
+      "paper": {
+        "title": "CeeTrain: Fast Geo-Distributed Model Training Across Heterogeneous GPUs and Networks in Cloud-Edge-End Computing Environments",
+        "authors": [
+          "J Wang",
+          "X Liao",
+          "X Liu",
+          "Y Li",
+          "Z Huo",
+          "J Suo",
+          "R Shen"
+        ],
+        "abstract": "Most existing training systems focus on a single region. In contrast, we envision that cross-region training offers more flexible GPU resource allocation and yields significant potential. However, the hierarchical cluster topology and unstable …",
+        "url": "https://www.computer.org/csdl/journal/td/5555/01/11716558/2kelz3Ja12w",
+        "venue": "",
+        "id": "afe5795730c1fda36825",
+        "urls": [
+          "https://www.computer.org/csdl/journal/td/5555/01/11716558/2kelz3Ja12w"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "6c3390b50a4ede2ef1b4": {
+      "first_pending_at": 1791765097.3729684,
+      "attempts": 1,
+      "paper": {
+        "title": "Alexander Ford",
+        "authors": [
+          "A Ford",
+          "D Baker",
+          "J Hellerstein",
+          "F Dimaio"
+        ],
+        "abstract": "1 © Copyright 2018 Alexander Ford 2 Nonparametric Structure Models in Local Protein Conformation Sampling and Design Alexander Ford A dissertation submitted in partial fulfillment of the requirements for the degree of Doctor of Philosophy University of …",
+        "url": "https://digital.lib.washington.edu/server/api/core/bitstreams/31a785d9-5889-4e3a-9863-952583e43f31/content",
+        "venue": "",
+        "id": "6c3390b50a4ede2ef1b4",
+        "urls": [
+          "https://digital.lib.washington.edu/server/api/core/bitstreams/31a785d9-5889-4e3a-9863-952583e43f31/content"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "33694d99acf05168d861": {
+      "first_pending_at": 1791765116.6781723,
+      "attempts": 1,
+      "paper": {
+        "title": "Condition-Informed Failure Prioritisation for Rotating Equipment: Connecting Sensor Evidence with FMEA",
+        "authors": [
+          "DG Andersen"
+        ],
+        "abstract": "Rotating equipment maintenance decisions are often divided between two information structures: failure mode and effects analysis (FMEA), which expresses engineering consequence and detectability, and condition monitoring, which …",
+        "url": "https://www.researchgate.net/profile/Sahith-Basani/publication/415203247_Condition-Informed_Failure_Prioritisation_for_Rotating_Equipment_Connecting_Sensor_Evidence_with_FMEA/links/6ac15df5db7d3b1c53a09ed0/Condition-Informed-Failure-Prioritisation-for-Rotating-Equipment-Connecting-Sensor-Evidence-with-FMEA.pdf",
+        "venue": "",
+        "id": "33694d99acf05168d861",
+        "urls": [
+          "https://www.researchgate.net/profile/Sahith-Basani/publication/415203247_Condition-Informed_Failure_Prioritisation_for_Rotating_Equipment_Connecting_Sensor_Evidence_with_FMEA/links/6ac15df5db7d3b1c53a09ed0/Condition-Informed-Failure-Prioritisation-for-Rotating-Equipment-Connecting-Sensor-Evidence-with-FMEA.pdf"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "41fa5a52c35f79323e02": {
+      "first_pending_at": 1791765117.9074395,
+      "attempts": 1,
+      "paper": {
+        "title": "TensorMLD: A Tensorized and Compressed qLDPC Maximum-Likelihood Decoder for Accurate and Fast Detection of the Most Likely Logical Error",
+        "authors": [
+          "L Lu",
+          "D Xiang",
+          "K Zhou",
+          "B Jin",
+          "C Tao",
+          "W Tian",
+          "A Wu"
+        ],
+        "abstract": "Quantum error correction is vital for building reliable quantum computers, and quantum Low Density Parity Check (qLDPC) codes are highly promising due to their efficient encoding. However, current decoders often struggle with low decoding …",
+        "url": "https://kaiwenzhou2003.github.io/paper_files/MICRO2026_TensorMLD.pdf",
+        "venue": "",
+        "id": "41fa5a52c35f79323e02",
+        "urls": [
+          "https://kaiwenzhou2003.github.io/paper_files/MICRO2026_TensorMLD.pdf"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "9805e27bfbc26b6e4609": {
+      "first_pending_at": 1791765141.6728091,
+      "attempts": 1,
+      "paper": {
+        "title": "Parallel restore-optimized snapshot compression for cost-efficient inference serving",
+        "authors": [
+          "R Stoyanov",
+          "F Finn",
+          "D Feigin",
+          "A Vagin",
+          "R Bruno"
+        ],
+        "abstract": "Inference services incur cold-start costs from KVcacheprofiling and CUDA-graph construction. Container checkpointsavoid repeated initialization, but large memory imagesconsume storage and serial reconstruction delays restoration. We present …",
+        "url": "https://ora.ox.ac.uk/objects/uuid:45cb38ed-627f-4605-a3b0-2788c859e89a/files/sw9505333q",
+        "venue": "",
+        "id": "9805e27bfbc26b6e4609",
+        "urls": [
+          "https://ora.ox.ac.uk/objects/uuid:45cb38ed-627f-4605-a3b0-2788c859e89a/files/sw9505333q"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "405b29705847b7d438f9": {
+      "first_pending_at": 1791765142.7218702,
+      "attempts": 1,
+      "paper": {
+        "title": "Isolation in the Age of Agents",
+        "authors": [
+          "MM Swift"
+        ],
+        "abstract": "ABSTRACT AI agents are changing the isolation landscape of modern cloud infrastructure. Unlike traditional workloads, agents execute heterogeneous and dynamic sequences of tools that read and write files, spawn processes, install …",
+        "url": "https://anjali05.github.io/papers/agenticos26.pdf",
+        "venue": "",
+        "id": "405b29705847b7d438f9",
+        "urls": [
+          "https://anjali05.github.io/papers/agenticos26.pdf"
+        ]
+      },
+      "status": "pending_abstract"
     }
   },
   "expired": {},
   "retries": {
     "ed35bdcb92501fd108b6": {
-      "attempts": 2,
-      "last_attempt_at": 1791180859.2433755,
-      "next_retry_at": 1791188059.2433765
+      "attempts": 3,
+      "last_attempt_at": 1791765070.9901235,
+      "next_retry_at": 1791779470.9901242
     },
     "d060f8926cc24ef4b925": {
-      "attempts": 2,
-      "last_attempt_at": 1791180938.519714,
-      "next_retry_at": 1791188138.5197153
+      "attempts": 3,
+      "last_attempt_at": 1791765073.6825655,
+      "next_retry_at": 1791779473.6825662
     },
-    "8096f9a58876a145c1e3": {
-      "attempts": 2,
-      "last_attempt_at": 1791180970.313455,
-      "next_retry_at": 1791188170.3134558
+    "afe5795730c1fda36825": {
+      "attempts": 1,
+      "last_attempt_at": 1791765089.6336489,
+      "next_retry_at": 1791768689.633649
+    },
+    "6c3390b50a4ede2ef1b4": {
+      "attempts": 1,
+      "last_attempt_at": 1791765100.4435995,
+      "next_retry_at": 1791768700.4435997
+    },
+    "33694d99acf05168d861": {
+      "attempts": 1,
+      "last_attempt_at": 1791765117.906754,
+      "next_retry_at": 1791768717.9067543
+    },
+    "41fa5a52c35f79323e02": {
+      "attempts": 1,
+      "last_attempt_at": 1791765121.0553188,
+      "next_retry_at": 1791768721.055319
+    },
+    "9805e27bfbc26b6e4609": {
+      "attempts": 1,
+      "last_attempt_at": 1791765142.7210093,
+      "next_retry_at": 1791768742.7210095
+    },
+    "405b29705847b7d438f9": {
+      "attempts": 1,
+      "last_attempt_at": 1791765145.8218987,
+      "next_retry_at": 1791768745.821899
     }
   },
   "source_limits": {
     "ieee": {
-      "next_start": 1791180858.0468197,
+      "next_start": 1791765070.477649,
       "failures": 0
     },
     "crossref": {
-      "next_start": 1791180964.4448414,
+      "next_start": 1791765143.7221627,
       "failures": 0,
       "cooldown_until": 1791160180.7705195
     },
     "semantic_scholar": {
-      "next_start": 1791180966.5956206,
-      "failures": 0,
-      "cooldown_until": 1791180938.0993721
+      "next_start": 1791765134.3086386,
+      "failures": 1,
+      "cooldown_until": 1791765192.6492605
     },
     "arxiv": {
-      "next_start": 1791180973.0249403,
+      "next_start": 1791765148.7549095,
       "failures": 0,
       "cooldown_until": 1791160174.5414577
     }
