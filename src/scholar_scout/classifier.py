@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup, Tag
 from google import genai
 from google.genai import types
 
-from .abstract_sources import AbstractResolver, atomic_json, normalized
+from .abstract_sources import AbstractResolver, atomic_json, normalized, unwrap_scholar_url
 from .config import AppConfig
 from .models import Paper
 from .topic_classification import TopicClassifier
@@ -47,7 +47,9 @@ class ScholarClassifier:
             self.gemini_client, config.gemini.gen_ai_model, config.research_topics
         )
         self.state_dir = Path(config.state_dir)
-        self.resolver = AbstractResolver(self.state_dir / "abstracts")
+        self.resolver = AbstractResolver(
+            self.state_dir / "abstracts", recovery=config.source_recovery
+        )
         self.pending_path = self.state_dir / "pending-papers.json"
         self.pending = (
             json.loads(self.pending_path.read_text()) if self.pending_path.exists() else {}
@@ -59,6 +61,8 @@ class ScholarClassifier:
         self.pending = {key: row for key, row in self.pending.items() if key not in self.expired}
         self.newly_expired = {}
         self.diagnostics = []
+        self.run_failed = False
+        self.notification_failed = False
 
     def _get_email_content(self, message):
         parts = message.walk() if message.is_multipart() else [message]
@@ -75,22 +79,22 @@ class ScholarClassifier:
 
     def _extract_paper_metadata(self, content):
         papers = []
-        for heading in BeautifulSoup(content, "html.parser").find_all("h3"):
+        soup = BeautifulSoup(content, "html.parser")
+        profiles = []
+        for link in soup.find_all("a", href=True):
+            parsed = urlparse(link["href"])
+            if parsed.path == "/citations" and (parsed.hostname or "").startswith(
+                "scholar.google."
+            ):
+                profile = parse_qs(parsed.query).get("user", [""])[0]
+                if re.fullmatch(r"[A-Za-z0-9_-]{6,32}", profile) and profile not in profiles:
+                    profiles.append(profile)
+        for heading in soup.find_all("h3"):
             link = heading.find("a", href=True)
             if not link or not link.get_text(" ", strip=True):
                 continue
             title = link.get_text(" ", strip=True)
-            url = link["href"]
-            for _ in range(3):
-                parsed = urlparse(url)
-                targets = parse_qs(parsed.query).get("url")
-                if (
-                    parsed.hostname
-                    not in ("scholar.google.com", "scholar.google.com.hk", "scholar.google.cn")
-                    or not targets
-                ):
-                    break
-                url = targets[0]
+            url = unwrap_scholar_url(link["href"])
             if urlparse(url).scheme not in ("http", "https"):
                 url = ""
             metadata, snippet = "", ""
@@ -109,7 +113,15 @@ class ScholarClassifier:
                     snippet = sibling.get_text(" ", strip=True)
             author_line = re.split(r"\s[-–—]\s", metadata, maxsplit=1)[0]
             authors = [a.strip(" .…") for a in author_line.split(",") if a.strip(" .…")]
-            papers.append(Paper(title=title, authors=authors, abstract=snippet, url=url))
+            papers.append(
+                Paper(
+                    title=title,
+                    authors=authors,
+                    abstract=snippet,
+                    url=url,
+                    scholar_profiles=profiles,
+                )
+            )
         return papers
 
     @staticmethod
@@ -119,6 +131,9 @@ class ScholarClassifier:
         if not candidate.get("url"):
             candidate["url"] = paper.url
         candidate["authors"] = list(dict.fromkeys([*candidate.get("authors", []), *paper.authors]))
+        candidate["scholar_profiles"] = list(
+            dict.fromkeys([*candidate.get("scholar_profiles", []), *paper.scholar_profiles])
+        )
         if len(paper.abstract) > len(candidate.get("abstract", "")):
             candidate["abstract"] = paper.abstract
         if not candidate.get("venue"):
@@ -140,7 +155,7 @@ class ScholarClassifier:
         atomic_json(self.pending_path, self.pending)
         logger.info("Stopped retrying paper %s (%s)", key, reason)
 
-    def classify_papers(self, email_messages):
+    def classify_papers(self, email_messages, *, notify_match=None):
         atomic_json(self.expired_path, self.expired)
         candidates = {key: row["paper"] for key, row in self.pending.items()}
         seen_urls = {
@@ -166,6 +181,9 @@ class ScholarClassifier:
         results = []
         self.diagnostics = []
         self.newly_expired = {}
+        self.run_failed = False
+        self.notification_failed = False
+        processing_errors = False
         for key, candidate in candidates.items():
             previous = self.pending.get(key)
             row = dict(previous) if previous else {"first_pending_at": time.time(), "attempts": 0}
@@ -174,30 +192,68 @@ class ScholarClassifier:
                 self.diagnostics.append({"id": key, "status": "expired", "reason": reason})
                 continue
             status, decisions, notes = "pending_abstract", {}, []
+            source_failed = False
             try:
-                record, notes = self.resolver.resolve(candidate)
+                if previous and previous["status"] == "pending_notification":
+                    status = "pending_notification"
+                    record = candidate
+                else:
+                    record, notes = self.resolver.resolve(candidate)
+                    source_failed = self.resolver.had_source_failure
                 if record:
                     paper = Paper(
                         **{
                             name: record.get(name, candidate.get(name, ""))
                             for name in Paper.model_fields
+                            if name in record or name in candidate
                         }
                     )
-                    status = "pending_model"
-                    decisions = self.topic_classifier.classify(paper)
-                    matches = [
-                        self.topic_classifier.topics[name]
-                        for name, decision in decisions.items()
-                        if decision["decision"] == "match"
-                    ]
+                    if record.get("source") == "Google Scholar Description":
+                        notes.append(
+                            "Using Google Scholar Description"
+                            + (" (truncated)" if record.get("truncated") else "")
+                        )
+                    if status == "pending_notification":
+                        matches = [self.topic_classifier.topics[name] for name in row["topics"]]
+                    else:
+                        status = "pending_model"
+                        decisions = self.topic_classifier.classify(paper)
+                        matches = [
+                            self.topic_classifier.topics[name]
+                            for name, decision in decisions.items()
+                            if decision["decision"] == "match"
+                        ]
+                    if matches and notify_match is not None:
+                        status = "pending_notification"
+                        candidate = dict(candidate, **paper.model_dump())
+                        row.update(
+                            paper=candidate,
+                            status=status,
+                            topics=[topic.name for topic in matches],
+                        )
+                        self.pending[key] = row
+                        atomic_json(self.pending_path, self.pending)
+                        for topic in matches:
+                            notify_match(paper, [topic])
+                            if len(row["topics"]) > 1:
+                                row["topics"].remove(topic.name)
+                                atomic_json(self.pending_path, self.pending)
                     status = "matched" if matches else "no_match"
                     results.append((paper, matches))
             except Exception as exc:
+                if status == "pending_notification":
+                    self.notification_failed = True
+                else:
+                    processing_errors = True
                 logger.warning("Paper %s remains pending (%s)", key, type(exc).__name__)
                 notes.append(type(exc).__name__)
             if status.startswith("pending"):
+                processing_errors |= source_failed
                 row.update(paper=candidate, status=status)
-                if not self.resolver.retry_deferred:
+                if (
+                    status in ("pending_model", "pending_notification")
+                    or not self.resolver.retry_deferred
+                ):
                     row["attempts"] += 1
                 if reason := self._expiration_reason(row):
                     self._expire(key, row, reason)
@@ -213,6 +269,7 @@ class ScholarClassifier:
             )
         atomic_json(self.pending_path, self.pending)
         atomic_json(self.state_dir / "last-run.json", self.diagnostics)
+        self.run_failed = not results and processing_errors
         logger.info(
             "Processed %d papers; %d pending, %d newly expired",
             len(results),

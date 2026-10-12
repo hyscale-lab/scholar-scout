@@ -63,20 +63,37 @@ def main():
                 shutil.copytree(config.state_dir, state_dir, dirs_exist_ok=True)
             config = config.model_copy(update={"state_dir": state_dir})
         classifier = ScholarClassifier(config)
-        results = classifier.classify_papers(emails)
+        notifier = None if args.dry_run else SlackNotifier(config.slack, config.research_topics)
+        results = classifier.classify_papers(
+            emails,
+            notify_match=(
+                (lambda paper, topics: notifier.notify_matches([(paper, topics)]))
+                if notifier is not None
+                else None
+            ),
+        )
 
     if not args.dry_run:
-        notifier = SlackNotifier(config.slack, config.research_topics)
-        notifier.notify_matches(results)
-
         papers_by_topic = {}
         for paper, topics in results:
             for topic in topics:
                 if topic.name not in papers_by_topic:
                     papers_by_topic[topic.name] = []
                 papers_by_topic[topic.name].append(paper)
-        notifier.send_weekly_update(papers_by_topic, period=search_period)
-        notifier.send_pending_update(classifier.pending, classifier.newly_expired)
+        if (
+            not classifier.run_failed
+            and not classifier.notification_failed
+            and (results or not (classifier.pending or classifier.newly_expired))
+        ):
+            notifier.send_weekly_update(papers_by_topic, period=search_period)
+        notifier.send_pending_update(
+            classifier.pending, classifier.newly_expired, run_failed=classifier.run_failed
+        )
+
+    if classifier.notification_failed:
+        raise RuntimeError("Paper notifications failed; retry state saved")
+    if classifier.run_failed:
+        raise RuntimeError("No papers classified: source or model failures; pending state retained")
 
 
 if __name__ == "__main__":

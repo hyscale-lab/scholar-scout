@@ -40,6 +40,16 @@ def validate(snapshot):
         if not re.fullmatch(r"[a-f0-9]{20}", key) or not isinstance(row, dict):
             raise ValueError("Invalid pending paper")
         fields = {"paper", "status", "attempts", "first_pending_at"}
+        if row.get("status") == "pending_notification":
+            fields.add("topics")
+            topics = row.get("topics")
+            if (
+                not isinstance(topics, list)
+                or not topics
+                or not all(isinstance(topic, str) and topic.strip() for topic in topics)
+                or len(set(topics)) != len(topics)
+            ):
+                raise ValueError("Invalid notification topics")
         if key in snapshot["expired"]:
             fields |= {"expired_at", "expiration_reason"}
             if row.get("expiration_reason") not in ("max_age", "max_attempts"):
@@ -47,6 +57,7 @@ def validate(snapshot):
         if set(row) != fields or row["status"] not in (
             "pending_abstract",
             "pending_model",
+            "pending_notification",
         ):
             raise ValueError("Invalid pending status")
         if type(row["attempts"]) is not int or row["attempts"] < 0:
@@ -63,6 +74,7 @@ def validate(snapshot):
             "url",
             "urls",
             "venue",
+            "scholar_profiles",
         }:
             raise ValueError("Invalid paper metadata")
         if (
@@ -74,17 +86,21 @@ def validate(snapshot):
         for field in ("abstract", "url", "venue"):
             if not isinstance(paper.get(field, ""), str):
                 raise ValueError("Invalid paper text")
-        for field in ("authors", "urls"):
+        for field in ("authors", "urls", "scholar_profiles"):
             if not isinstance(paper.get(field, []), list) or not all(
                 isinstance(v, str) for v in paper.get(field, [])
             ):
                 raise ValueError("Invalid paper list")
+        if any(
+            not re.fullmatch(r"[A-Za-z0-9_-]{6,32}", p) for p in paper.get("scholar_profiles", [])
+        ):
+            raise ValueError("Invalid Scholar profile")
     for key, retry in snapshot["retries"].items():
         if key not in snapshot["pending"] or not isinstance(retry, dict):
             raise ValueError("Retry without pending paper")
         if set(retry) != {"attempts", "last_attempt_at", "next_retry_at"}:
             raise ValueError("Invalid retry fields")
-        if not isinstance(retry["attempts"], int) or retry["attempts"] < 1:
+        if not isinstance(retry["attempts"], int) or retry["attempts"] < 0:
             raise ValueError("Invalid retry count")
         if not all(
             isinstance(retry[f], (int, float)) and retry[f] >= 0
@@ -96,9 +112,12 @@ def validate(snapshot):
             "semantic_scholar",
             "ieee",
             "arxiv",
+            "arxiv_web",
             "crossref",
             "usenix",
             "ntu",
+            "google_research",
+            "google_scholar",
         } or not isinstance(limits, dict):
             raise ValueError("Invalid source limits")
         if set(limits) - {"next_start", "cooldown_until", "failures"} or not all(

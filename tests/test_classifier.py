@@ -1,6 +1,7 @@
 """Offline classification and retry behavior."""
 
 import email
+from datetime import date
 import importlib.util
 import json
 from pathlib import Path
@@ -12,8 +13,11 @@ from unittest.mock import Mock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from scholar_scout.classifier import ScholarClassifier
+from scholar_scout.abstract_sources import AbstractResolver
 from scholar_scout.config import ResearchTopic, load_config
 from scholar_scout.topic_classification import TopicClassifier
+from scholar_scout.notifications import SlackNotifier
+from slack_sdk.errors import SlackApiError
 
 ROOT = Path(__file__).resolve().parents[1]
 ABSTRACT = "We reduce KV cache memory during LLM serving. " * 8
@@ -77,10 +81,20 @@ class ClassifierTests(unittest.TestCase):
         )
 
     def test_full_abstract_classification_preserves_independent_matches(self):
+        self.mail.set_payload(
+            self.mail.get_payload().replace(
+                "https://arxiv.org/abs/2601.00001",
+                "https://scholar.google.co.uk/scholar_url?url=https%3A%2F%2Farxiv.org%2Fabs%2F2601.00001",
+            )
+        )
         self.client.models.generate_content.return_value = response(
             matches=("LLM Inference", "Video & Embodied Intelligence")
         )
         results = self.app.classify_papers([self.mail])
+        self.assertEqual(
+            self.app.resolver.resolve.call_args.args[0]["url"],
+            "https://arxiv.org/abs/2601.00001",
+        )
         self.assertEqual(len(results), 1)
         self.assertEqual(
             [topic.name for topic in results[0][1]],
@@ -173,10 +187,17 @@ class ClassifierTests(unittest.TestCase):
         self.assertEqual(self.app.pending, {})
 
     def test_missing_abstract_survives_restart_without_original_email(self):
+        self.mail.set_payload(
+            self.mail.get_payload()
+            + '<a href="https://scholar.google.co.uk/citations?user=profile1">Author</a>'
+        )
         self.app.resolver.resolve.return_value = (None, [])
         self.assertEqual(self.app.classify_papers([self.mail]), [])
         self.client.models.generate_content.assert_not_called()
         restarted = ScholarClassifier(self.config)
+        self.assertEqual(
+            next(iter(restarted.pending.values()))["paper"]["scholar_profiles"], ["profile1"]
+        )
         restarted.resolver.resolve = Mock(return_value=(self.record, []))
         self.assertEqual(len(restarted.classify_papers([])), 1)
         self.assertEqual(ScholarClassifier(self.config).pending, {})
@@ -211,14 +232,24 @@ class ClassifierTests(unittest.TestCase):
                 self.assertEqual(len(restarted.expired), 1)
 
     def test_age_limit_stops_before_network_and_cooldown_does_not_count(self):
-        self.app.resolver.resolve.return_value = (None, [])
+        self.app.resolver = AbstractResolver(self.app.state_dir / "abstracts")
+        resolver = self.app.resolver
+        resolver.recovery.max_rounds = 0
+        resolver.limiter.clock = lambda: 100
+        for service in ("arxiv", "arxiv_web", "semantic_scholar", "crossref"):
+            resolver.limiter.defer(service, "60")
         with patch("scholar_scout.classifier.time.time", return_value=100):
             self.app.classify_papers([self.mail])
+        self.assertTrue(self.app.run_failed)
+        self.client.models.generate_content.assert_not_called()
+        self.assertEqual(ScholarClassifier(self.config).pending, self.app.pending)
         row = next(iter(self.app.pending.values()))
+        self.assertEqual(row["attempts"], 0)
+        self.app.resolver.resolve = Mock(return_value=(None, []))
         self.app.resolver.retry_deferred = True
         with patch("scholar_scout.classifier.time.time", return_value=200):
             self.app.classify_papers([])
-        self.assertEqual(next(iter(self.app.pending.values()))["attempts"], 1)
+        self.assertEqual(next(iter(self.app.pending.values()))["attempts"], 0)
         self.app.resolver.resolve.reset_mock()
         deadline = row["first_pending_at"] + self.config.pending_policy.max_age_days * 86400
         with patch("scholar_scout.classifier.time.time", return_value=deadline):
@@ -269,27 +300,132 @@ class ClassifierTests(unittest.TestCase):
         stored = ScholarClassifier(self.config).pending
         self.assertEqual(next(iter(stored.values()))["paper"], candidate)
 
-    def test_mail_failure_propagates_without_deleting_or_notifying(self):
+    def test_entrypoint_reports_failures_without_misleading_notifications(self):
         spec = importlib.util.spec_from_file_location(
             "entrypoint", ROOT / "scripts/run_classifier.py"
         )
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
-        with (
-            patch.object(sys, "argv", ["run_classifier.py"]),
-            patch.object(module, "load_dotenv"),
-            patch.object(module, "load_config", return_value=self.config),
-            patch.object(module, "EmailClient") as email_client,
-            patch.object(module, "ScholarClassifier") as classifier,
-            patch.object(module, "SlackNotifier") as notifier,
-        ):
-            client = email_client.return_value.__enter__.return_value
-            client.fetch_scholar_alerts.side_effect = RuntimeError("Failed to fetch email 2")
-            with self.assertRaisesRegex(RuntimeError, "Failed to fetch email 2"):
-                module.main()
-        client.delete_old_emails.assert_not_called()
-        classifier.assert_not_called()
-        notifier.assert_not_called()
+        self.client.models.generate_content.return_value = response(matches=())
+        for case in ("mail_failure", "outage", "missing_abstract", "no_matches", "empty_mailbox"):
+            with self.subTest(case=case):
+                self.app.pending.clear()
+                self.app.resolver.had_source_failure = case == "outage"
+                self.app.resolver.retry_deferred = case == "outage"
+                self.app.resolver.resolve.return_value = (
+                    self.record if case == "no_matches" else None,
+                    [],
+                )
+                with (
+                    patch.object(sys, "argv", ["run_classifier.py"]),
+                    patch.object(module, "load_dotenv"),
+                    patch.object(module, "load_config", return_value=self.config),
+                    patch.object(module, "EmailClient") as email_client,
+                    patch.object(module, "ScholarClassifier", return_value=self.app) as classifier,
+                    patch.object(module, "SlackNotifier") as notifier,
+                ):
+                    client = email_client.return_value.__enter__.return_value
+                    client.fetch_scholar_alerts.return_value = (
+                        [] if case == "empty_mailbox" else [self.mail]
+                    )
+                    if case == "mail_failure":
+                        client.fetch_scholar_alerts.side_effect = RuntimeError(
+                            "Failed to fetch email"
+                        )
+                        with self.assertRaisesRegex(RuntimeError, "Failed to fetch email"):
+                            module.main()
+                        client.delete_old_emails.assert_not_called()
+                        classifier.assert_not_called()
+                        notifier.assert_not_called()
+                        continue
+                    if case == "outage":
+                        with self.assertRaisesRegex(RuntimeError, "pending state retained"):
+                            module.main()
+                        notifier.return_value.notify_matches.assert_not_called()
+                        self.assertTrue(json.loads(self.app.pending_path.read_text()))
+                    else:
+                        module.main()
+                    notify = notifier.return_value
+                    self.assertEqual(
+                        notify.send_weekly_update.called, case in ("no_matches", "empty_mailbox")
+                    )
+                    self.assertEqual(
+                        notify.send_pending_update.call_args.kwargs["run_failed"], case == "outage"
+                    )
+        for failed_topic in ("LLM Inference", "Video & Embodied Intelligence"):
+            with self.subTest(failed_topic=failed_topic):
+                self.app.pending.clear()
+                self.app.resolver.resolve.return_value = (self.record, [])
+                self.client.models.generate_content.return_value = response(
+                    matches=("LLM Inference", "Video & Embodied Intelligence")
+                )
+                with (
+                    patch.object(sys, "argv", ["run_classifier.py"]),
+                    patch.object(module, "load_dotenv"),
+                    patch.object(module, "load_config", return_value=self.config),
+                    patch.object(module, "EmailClient") as email_client,
+                    patch.object(module, "ScholarClassifier", return_value=self.app) as factory,
+                    patch.object(module, "SlackNotifier", SlackNotifier),
+                    patch("scholar_scout.notifications.WebClient") as slack,
+                ):
+                    client = email_client.return_value.__enter__.return_value
+                    client.fetch_scholar_alerts.return_value = [self.mail]
+                    client.search_period = (None, date(2026, 10, 9))
+
+                    def send(**kwargs):
+                        if kwargs["text"].startswith("Scholar Scout:"):
+                            return {"ok": True}
+                        saved = json.loads(self.app.pending_path.read_text())
+                        self.assertEqual(
+                            next(iter(saved.values()))["status"], "pending_notification"
+                        )
+                        if f"New paper matching topic: {failed_topic}\n" in kwargs["text"]:
+                            raise SlackApiError("Failure", {"error": "channel_not_found"})
+                        return {"ok": True}
+
+                    slack.return_value.chat_postMessage.side_effect = send
+                    with self.assertRaisesRegex(RuntimeError, "notifications failed"):
+                        module.main()
+                    pending = next(iter(self.app.pending.values()))
+                    remaining = (
+                        ["LLM Inference", "Video & Embodied Intelligence"]
+                        if failed_topic == "LLM Inference"
+                        else [failed_topic]
+                    )
+                    self.assertEqual(pending["topics"], remaining)
+                    self.assertEqual(pending["paper"]["abstract"], ABSTRACT)
+                    self.assertEqual(pending["attempts"], 1)
+                    self.assertFalse(
+                        any(
+                            "Weekly Scholar Scout Update" in call.kwargs["text"]
+                            for call in slack.return_value.chat_postMessage.call_args_list
+                        )
+                    )
+                    from tests.test_state_persistence import state
+
+                    snapshot = state.collect(self.app.state_dir)
+                    with tempfile.TemporaryDirectory() as restored_dir:
+                        state.restore(Path(restored_dir), snapshot)
+                        restarted = ScholarClassifier(
+                            self.config.model_copy(update={"state_dir": restored_dir})
+                        )
+                        restarted.resolver.resolve = Mock(side_effect=AssertionError("No fetch"))
+                        self.client.models.generate_content.reset_mock()
+                        factory.return_value = restarted
+                        client.fetch_scholar_alerts.return_value = []
+                        slack.return_value.chat_postMessage.reset_mock(side_effect=True)
+                        module.main()
+                        restarted.resolver.resolve.assert_not_called()
+                        self.client.models.generate_content.assert_not_called()
+                        self.assertEqual(json.loads(restarted.pending_path.read_text()), {})
+                        sent = [
+                            call.kwargs["text"]
+                            for call in slack.return_value.chat_postMessage.call_args_list
+                            if "New paper matching topic:" in call.kwargs["text"]
+                        ]
+                        self.assertEqual(len(sent), len(remaining))
+                        for text, topic in zip(sent, remaining):
+                            self.assertIn(f"New paper matching topic: {topic}\n", text)
 
 
 if __name__ == "__main__":

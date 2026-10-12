@@ -71,6 +71,10 @@ class SlackNotifier:
                     logger.info(f"Notification sent to channel {channel} for topic {topic.name}")
                 except SlackApiError as e:
                     logger.error(f"Failed to send notification to {channel}: {e.response['error']}")
+                    raise RuntimeError("Paper notification failed") from None
+                except Exception as exc:
+                    logger.error("Paper notification failed (%s)", type(exc).__name__)
+                    raise RuntimeError("Paper notification failed") from None
 
     def send_weekly_update(
         self, papers_by_topic: dict[str, list[Paper]], *, period: tuple[date | None, date]
@@ -109,7 +113,9 @@ class SlackNotifier:
                     f"Failed to send weekly update for {topic.name} to {channel}: {e.response['error']}"
                 )
 
-    def send_pending_update(self, pending: dict, newly_expired: dict | None = None) -> None:
+    def send_pending_update(
+        self, pending: dict, newly_expired: dict | None = None, *, run_failed: bool = False
+    ) -> None:
         newly_expired = newly_expired or {}
         if not pending and not newly_expired:
             return
@@ -120,6 +126,7 @@ class SlackNotifier:
         labels = {
             "pending_abstract": "Awaiting source abstract",
             "pending_model": "Awaiting a valid model response",
+            "pending_notification": "Awaiting Slack delivery",
         }
         header = (
             f"Scholar Scout: {len(pending)} pending, {len(newly_expired)} stopped retrying "
@@ -127,6 +134,11 @@ class SlackNotifier:
             "Pending papers retry within the configured limits. Stopped papers are retained "
             "without a topic decision; no manual review is required.\n"
         )
+        if run_failed:
+            header += (
+                "No papers could be classified because source or model requests failed. "
+                "Weekly summaries were not sent.\n"
+            )
         messages, message = [], header
         for key, row in {**pending, **newly_expired}.items():
             paper = row["paper"]

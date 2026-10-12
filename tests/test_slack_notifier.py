@@ -128,10 +128,11 @@ class TestSlackNotifier(unittest.TestCase):
         expired = self.pending()
         for row in expired.values():
             row["expiration_reason"] = "max_attempts"
-        self.notifier.send_pending_update({}, expired)
+        self.notifier.send_pending_update({}, expired, run_failed=True)
         call = self.client.chat_postMessage.call_args
         self.assertEqual(call.kwargs["channel"], self.config.pending_user_id)
         self.assertIn("Stopped retrying: attempt limit", call.kwargs["text"])
+        self.assertIn("No papers could be classified", call.kwargs["text"])
         self.client.reset_mock()
         self.notifier.send_pending_update({}, {})
         self.client.chat_postMessage.assert_not_called()
@@ -164,18 +165,19 @@ class TestSlackNotifier(unittest.TestCase):
                     self.config.pending_user_id,
                 )
 
-    def test_paper_send_failure_is_logged_and_other_topics_continue(self):
-        self.client.chat_postMessage.side_effect = [
-            SlackApiError("Error", {"error": "channel_not_found"}),
-            {"ok": True},
-        ]
-        with self.assertLogs("scholar_scout.notifications", level="ERROR") as logs:
-            self.notifier.notify_matches([(self.paper, [self.topics[0], self.topics[2]])])
-        self.assertIn("channel_not_found", str(logs.output))
-        self.assertEqual(
-            [call.kwargs["channel"] for call in self.client.chat_postMessage.call_args_list],
-            ["C123456789", "#inference"],
-        )
+    def test_paper_send_failure_propagates_without_secret_logging(self):
+        for error in (
+            SlackApiError("secret-token", {"error": "channel_not_found"}),
+            TimeoutError("secret-token"),
+        ):
+            with self.subTest(error=type(error).__name__):
+                self.client.reset_mock()
+                self.client.chat_postMessage.side_effect = error
+                with self.assertLogs("scholar_scout.notifications", level="ERROR") as logs:
+                    with self.assertRaisesRegex(RuntimeError, "Paper notification failed"):
+                        self.notifier.notify_matches([(self.paper, self.topics)])
+                self.assertNotIn("secret-token", str(logs.output))
+                self.client.chat_postMessage.assert_called_once()
 
 
 if __name__ == "__main__":
