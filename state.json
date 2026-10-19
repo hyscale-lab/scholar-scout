@@ -3,7 +3,7 @@
   "pending": {
     "ed35bdcb92501fd108b6": {
       "first_pending_at": 1791160093.3925445,
-      "attempts": 3,
+      "attempts": 4,
       "paper": {
         "title": "Halder, Linus 167 Han, Tao 77 Hannig, Frank 93, 101 Hawich, Malte 163 Hemani, Ahmed 17",
         "authors": [
@@ -26,7 +26,7 @@
     },
     "d060f8926cc24ef4b925": {
       "first_pending_at": 1791160115.943283,
-      "attempts": 3,
+      "attempts": 4,
       "paper": {
         "title": "c© Copyright 2016 Will Scott Censorship Resistant Web Applications Will Scott A dissertation",
         "authors": [
@@ -46,7 +46,7 @@
     },
     "60273c157cff0cd7cad2": {
       "first_pending_at": 1791160120.8006656,
-      "attempts": 3,
+      "attempts": 4,
       "paper": {
         "title": "DynBranch: Speculative Subgraph Reuse for Dynamic Agentic LLM Serving",
         "authors": [
@@ -67,7 +67,7 @@
     },
     "afe5795730c1fda36825": {
       "first_pending_at": 1791765087.0158312,
-      "attempts": 1,
+      "attempts": 2,
       "paper": {
         "title": "CeeTrain: Fast Geo-Distributed Model Training Across Heterogeneous GPUs and Networks in Cloud-Edge-End Computing Environments",
         "authors": [
@@ -91,7 +91,7 @@
     },
     "6c3390b50a4ede2ef1b4": {
       "first_pending_at": 1791765097.3729684,
-      "attempts": 1,
+      "attempts": 2,
       "paper": {
         "title": "Alexander Ford",
         "authors": [
@@ -112,7 +112,7 @@
     },
     "33694d99acf05168d861": {
       "first_pending_at": 1791765116.6781723,
-      "attempts": 1,
+      "attempts": 2,
       "paper": {
         "title": "Condition-Informed Failure Prioritisation for Rotating Equipment: Connecting Sensor Evidence with FMEA",
         "authors": [
@@ -130,7 +130,7 @@
     },
     "41fa5a52c35f79323e02": {
       "first_pending_at": 1791765117.9074395,
-      "attempts": 1,
+      "attempts": 2,
       "paper": {
         "title": "TensorMLD: A Tensorized and Compressed qLDPC Maximum-Likelihood Decoder for Accurate and Fast Detection of the Most Likely Logical Error",
         "authors": [
@@ -154,7 +154,7 @@
     },
     "9805e27bfbc26b6e4609": {
       "first_pending_at": 1791765141.6728091,
-      "attempts": 1,
+      "attempts": 2,
       "paper": {
         "title": "Parallel restore-optimized snapshot compression for cost-efficient inference serving",
         "authors": [
@@ -176,7 +176,7 @@
     },
     "405b29705847b7d438f9": {
       "first_pending_at": 1791765142.7218702,
-      "attempts": 1,
+      "attempts": 2,
       "paper": {
         "title": "Isolation in the Age of Agents",
         "authors": [
@@ -191,68 +191,295 @@
         ]
       },
       "status": "pending_abstract"
+    },
+    "b6eecdbf5478288955b5": {
+      "first_pending_at": 1792369535.2743318,
+      "attempts": 1,
+      "paper": {
+        "title": "AlphaCu: A Transformation-Driven Synthesis Framework for LLM-Based GPU Kernel Generation",
+        "authors": [
+          "Y Zhou",
+          "X Ma",
+          "Z Liu",
+          "Q Wang",
+          "W Cui",
+          "W Sun",
+          "H Wang"
+        ],
+        "abstract": "Large language models show promise for code generation, yet their effectiveness in producing high-performance GPU kernels remains insufficiently understood. Recent agentic workflows improve over direct prompting through specialized generation …",
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3832783.3837433",
+        "venue": "",
+        "id": "b6eecdbf5478288955b5",
+        "urls": [
+          "https://dl.acm.org/doi/pdf/10.1145/3832783.3837433"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "af5e50601dcbfeddfaf6": {
+      "first_pending_at": 1792369548.1192737,
+      "attempts": 1,
+      "paper": {
+        "title": "Securing Agentic AI with OS-Level Intent-Driven Capabilities",
+        "authors": [
+          "M Lourenço",
+          "M Neugschwandtner",
+          "N Santos",
+          "R Bruno"
+        ],
+        "abstract": "AI agents are increasingly deployed to perform complex real-world tasks, enabling unprecedented levels of automation and flexibility. However, this emerging paradigm challenges existing system-level security models, which were designed around static …",
+        "url": "https://os-for-agent.github.io/papers/AgenticOS_SOSP_2026_paper_20.pdf",
+        "venue": "",
+        "id": "af5e50601dcbfeddfaf6",
+        "urls": [
+          "https://os-for-agent.github.io/papers/AgenticOS_SOSP_2026_paper_20.pdf"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "6f692b4b52c035b52106": {
+      "first_pending_at": 1792369549.1123548,
+      "attempts": 1,
+      "paper": {
+        "title": "Lead-Lag Origination for Prioritizing Financial KOL Narratives",
+        "authors": [
+          "Y Liu",
+          "Y Lu"
+        ],
+        "abstract": "LLM-based financial agents increasingly use external information streams for forecasts, alerts, and trading decisions. Financial social media often reacts before slower channels, but its value is concentrated in the brief window before cascades …",
+        "url": "https://ycsama0703.github.io/assets/papers/llr-icaif26.pdf",
+        "venue": "",
+        "id": "6f692b4b52c035b52106",
+        "urls": [
+          "https://ycsama0703.github.io/assets/papers/llr-icaif26.pdf"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "68fbfc73e1e7efa77fbe": {
+      "first_pending_at": 1792369557.9391196,
+      "attempts": 1,
+      "paper": {
+        "title": "Learn from Human-driving Accidents to Attack Autonomous Driving: Practical Multi-Vehicle Attacks on Decision-making",
+        "authors": [
+          "X Han",
+          "H Tian",
+          "Y Zhou",
+          "J Zhang",
+          "G Deng",
+          "S Xu"
+        ],
+        "abstract": "Decision-making is crucial in Level-4 Autonomous Driving Systems (ADSs), eg, Baidu Apollo [1] and Google Waymo [2]. Although a few studies have investigated the vulnerabilities of the decision-making module, they suffer from some practicality …",
+        "url": "https://ieeexplore.ieee.org/abstract/document/11731502/",
+        "venue": "",
+        "id": "68fbfc73e1e7efa77fbe",
+        "urls": [
+          "https://ieeexplore.ieee.org/abstract/document/11731502/"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "674dc4e85dbc0836015f": {
+      "first_pending_at": 1792369558.4097004,
+      "attempts": 1,
+      "paper": {
+        "title": "SnapShare: Isolation-Preserving Deduplication for Serverless Snapshots",
+        "authors": [
+          "L Kondrashov",
+          "L Zhang",
+          "AFP de Jesus",
+          "H Pistor",
+          "M Cali"
+        ],
+        "abstract": "The efficiency of serverless computing fundamentally depends on rapid function startup, a challenge increasingly addressed by restoring from virtual machine snapshots. However, because content deduplication techniques can open timing …",
+        "url": "https://arxiv.org/pdf/2610.13318",
+        "venue": "",
+        "id": "674dc4e85dbc0836015f",
+        "urls": [
+          "https://arxiv.org/pdf/2610.13318"
+        ]
+      },
+      "status": "pending_model"
+    },
+    "ce6b34882837e6fd02bc": {
+      "first_pending_at": 1792369650.0476868,
+      "attempts": 1,
+      "paper": {
+        "title": "Deploying RDMA for Large-Scale Inference and Training Workloads",
+        "authors": [
+          "Y Huang",
+          "Y Cui",
+          "H Zhou",
+          "J Tong",
+          "Z Wu"
+        ],
+        "abstract": "RDMA can reduce communication overhead in distributed machine learning systems, but realizing these benefits in production requires more than replacing TCP. Variable-size messages, concurrent connections, bursty incasts, and service failures …",
+        "url": "https://arxiv.org/pdf/2610.12815",
+        "venue": "",
+        "id": "ce6b34882837e6fd02bc",
+        "urls": [
+          "https://arxiv.org/pdf/2610.12815"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "10df8913df5f12c21f17": {
+      "first_pending_at": 1792369654.186153,
+      "attempts": 1,
+      "paper": {
+        "title": "Parallel monotonic synchronizer",
+        "authors": [
+          "WJ Dally"
+        ],
+        "abstract": "Abstract Systems and methods are disclosed related to synchronizing a monotonic signal. A monotonic signal indicates an event at which the signal changes in only one direction (either rising or falling edges). The signal is restored before each event …",
+        "url": "https://patents.google.com/patent/US20260238199A1/en",
+        "venue": "",
+        "id": "10df8913df5f12c21f17",
+        "urls": [
+          "https://patents.google.com/patent/US20260238199A1/en"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "76591a5a1e72328b12ec": {
+      "first_pending_at": 1792369720.8534148,
+      "attempts": 1,
+      "paper": {
+        "title": "Cluster-Level Infrastructure for More Efficient Serverless Computing",
+        "authors": [
+          "L Cvetković"
+        ],
+        "abstract": "Serverless computing is an emerging cloud paradigm that allows developers to build and run applications without managing the underlying infrastructure. Instead, the cloud provider automatically handles resource provisioning and workload scaling …",
+        "url": "https://www.research-collection.ethz.ch/bitstreams/02f681d6-ce7d-4e37-a4cc-c92991bba916/download",
+        "venue": "",
+        "id": "76591a5a1e72328b12ec",
+        "urls": [
+          "https://www.research-collection.ethz.ch/bitstreams/02f681d6-ce7d-4e37-a4cc-c92991bba916/download"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "8e6a8be9f9dde05af488": {
+      "first_pending_at": 1792369722.0778217,
+      "attempts": 1,
+      "paper": {
+        "title": "VibeKernel: Long-Horizon GPU Kernel Optimization with General-Purpose Coding Agents",
+        "authors": [
+          "P Trummer",
+          "X Yao",
+          "A Klimovic"
+        ],
+        "abstract": "GPU kernel optimization is highly iterative yet straightforward to evaluate, which has motivated systems that place language models inside specialized, kernel-specific search procedures. We ask whether a general-purpose coding agent can do the …",
+        "url": "https://openreview.net/forum?id=WIihTnl976",
+        "venue": "",
+        "id": "8e6a8be9f9dde05af488",
+        "urls": [
+          "https://openreview.net/forum?id=WIihTnl976"
+        ]
+      },
+      "status": "pending_abstract"
     }
   },
   "expired": {},
   "retries": {
     "ed35bdcb92501fd108b6": {
-      "attempts": 3,
-      "last_attempt_at": 1791765070.9901235,
-      "next_retry_at": 1791779470.9901242
+      "attempts": 4,
+      "last_attempt_at": 1792369507.4309454,
+      "next_retry_at": 1792398307.430946
     },
     "d060f8926cc24ef4b925": {
-      "attempts": 3,
-      "last_attempt_at": 1791765073.6825655,
-      "next_retry_at": 1791779473.6825662
+      "attempts": 4,
+      "last_attempt_at": 1792369510.5068417,
+      "next_retry_at": 1792398310.5068421
     },
     "afe5795730c1fda36825": {
-      "attempts": 1,
-      "last_attempt_at": 1791765089.6336489,
-      "next_retry_at": 1791768689.633649
+      "attempts": 2,
+      "last_attempt_at": 1792369517.2191584,
+      "next_retry_at": 1792376717.219159
     },
     "6c3390b50a4ede2ef1b4": {
-      "attempts": 1,
-      "last_attempt_at": 1791765100.4435995,
-      "next_retry_at": 1791768700.4435997
+      "attempts": 2,
+      "last_attempt_at": 1792369520.366584,
+      "next_retry_at": 1792376720.3665843
     },
     "33694d99acf05168d861": {
-      "attempts": 1,
-      "last_attempt_at": 1791765117.906754,
-      "next_retry_at": 1791768717.9067543
+      "attempts": 2,
+      "last_attempt_at": 1792369523.4187922,
+      "next_retry_at": 1792376723.4187925
     },
     "41fa5a52c35f79323e02": {
-      "attempts": 1,
-      "last_attempt_at": 1791765121.0553188,
-      "next_retry_at": 1791768721.055319
+      "attempts": 2,
+      "last_attempt_at": 1792369526.560969,
+      "next_retry_at": 1792376726.5609698
     },
     "9805e27bfbc26b6e4609": {
-      "attempts": 1,
-      "last_attempt_at": 1791765142.7210093,
-      "next_retry_at": 1791768742.7210095
+      "attempts": 2,
+      "last_attempt_at": 1792369529.6411786,
+      "next_retry_at": 1792376729.6411788
     },
     "405b29705847b7d438f9": {
+      "attempts": 2,
+      "last_attempt_at": 1792369532.7284203,
+      "next_retry_at": 1792376732.7284205
+    },
+    "b6eecdbf5478288955b5": {
       "attempts": 1,
-      "last_attempt_at": 1791765145.8218987,
-      "next_retry_at": 1791768745.821899
+      "last_attempt_at": 1792369536.0975902,
+      "next_retry_at": 1792373136.0975907
+    },
+    "af5e50601dcbfeddfaf6": {
+      "attempts": 1,
+      "last_attempt_at": 1792369549.1115355,
+      "next_retry_at": 1792373149.1115358
+    },
+    "6f692b4b52c035b52106": {
+      "attempts": 1,
+      "last_attempt_at": 1792369552.2147415,
+      "next_retry_at": 1792373152.2147417
+    },
+    "68fbfc73e1e7efa77fbe": {
+      "attempts": 1,
+      "last_attempt_at": 1792369558.4088023,
+      "next_retry_at": 1792373158.4088025
+    },
+    "ce6b34882837e6fd02bc": {
+      "attempts": 1,
+      "last_attempt_at": 1792369654.1852837,
+      "next_retry_at": 1792373254.185284
+    },
+    "10df8913df5f12c21f17": {
+      "attempts": 1,
+      "last_attempt_at": 1792369656.4330606,
+      "next_retry_at": 1792373256.4330614
+    },
+    "76591a5a1e72328b12ec": {
+      "attempts": 1,
+      "last_attempt_at": 1792369722.0768383,
+      "next_retry_at": 1792373322.0768385
+    },
+    "8e6a8be9f9dde05af488": {
+      "attempts": 1,
+      "last_attempt_at": 1792369725.0606353,
+      "next_retry_at": 1792373325.0606356
     }
   },
   "source_limits": {
     "ieee": {
-      "next_start": 1791765070.477649,
+      "next_start": 1792369559.939394,
       "failures": 0
     },
     "crossref": {
-      "next_start": 1791765143.7221627,
+      "next_start": 1792369723.0781376,
       "failures": 0,
       "cooldown_until": 1791160180.7705195
     },
     "semantic_scholar": {
-      "next_start": 1791765134.3086386,
+      "next_start": 1792369723.252774,
       "failures": 1,
-      "cooldown_until": 1791765192.6492605
+      "cooldown_until": 1792369781.5927489
     },
     "arxiv": {
-      "next_start": 1791765148.7549095,
+      "next_start": 1792369727.877812,
       "failures": 0,
       "cooldown_until": 1791160174.5414577
     }
