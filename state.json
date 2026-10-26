@@ -1,73 +1,9 @@
 {
   "version": 1,
   "pending": {
-    "ed35bdcb92501fd108b6": {
-      "first_pending_at": 1791160093.3925445,
-      "attempts": 4,
-      "paper": {
-        "title": "Halder, Linus 167 Han, Tao 77 Hannig, Frank 93, 101 Hawich, Malte 163 Hemani, Ahmed 17",
-        "authors": [
-          "S Agwa",
-          "E Aliagha",
-          "D Anand",
-          "K Ando",
-          "SM Anik",
-          "J Arndt"
-        ],
-        "abstract": "Author Index Page 1 Author Index Agwa, Shady 153 Aliagha, Ensieh 117 Anand, Digvijay 109 Ando, Kota 173 Anik, Shafayat Mowla 65 Arndt, Jakob 175 Asai, Tetsuya 173 Aysu, Aydin 109 Barrera, Javier 17 Benini, Luca 165 Blume, Holger 163, 175 …",
-        "url": "https://ieeexplore.ieee.org/abstract/document/11695636/",
-        "venue": "",
-        "id": "ed35bdcb92501fd108b6",
-        "urls": [
-          "https://ieeexplore.ieee.org/abstract/document/11695636/"
-        ]
-      },
-      "status": "pending_abstract"
-    },
-    "d060f8926cc24ef4b925": {
-      "first_pending_at": 1791160115.943283,
-      "attempts": 4,
-      "paper": {
-        "title": "c© Copyright 2016 Will Scott Censorship Resistant Web Applications Will Scott A dissertation",
-        "authors": [
-          "T Anderson",
-          "A Krishnamurthy",
-          "T Kohno"
-        ],
-        "abstract": "c©Copyright 2016 Will Scott Censorship Resistant Web Applications Will Scott A dissertation submitted in partial fulfillment of the requirements for the degree of Doctor of Philosophy University of Washington 2016 Reading Committee: Thomas Anderson, Chair …",
-        "url": "https://digital.lib.washington.edu/server/api/core/bitstreams/20eab2b7-f875-4924-89fb-5d9e502c5d4e/content",
-        "venue": "",
-        "id": "d060f8926cc24ef4b925",
-        "urls": [
-          "https://digital.lib.washington.edu/server/api/core/bitstreams/20eab2b7-f875-4924-89fb-5d9e502c5d4e/content"
-        ]
-      },
-      "status": "pending_abstract"
-    },
-    "60273c157cff0cd7cad2": {
-      "first_pending_at": 1791160120.8006656,
-      "attempts": 4,
-      "paper": {
-        "title": "DynBranch: Speculative Subgraph Reuse for Dynamic Agentic LLM Serving",
-        "authors": [
-          "J Shen",
-          "N Wadlom",
-          "Z Su",
-          "Y Lu"
-        ],
-        "abstract": "Agentic LLM workflows decide their execution paths at runtime. Downstream computation may be predictable, or may have run before, yet it cannot begin until the model or the user resolves the branch. We call this serialization the branch …",
-        "url": "https://arxiv.org/pdf/2609.31047",
-        "venue": "",
-        "id": "60273c157cff0cd7cad2",
-        "urls": [
-          "https://arxiv.org/pdf/2609.31047"
-        ]
-      },
-      "status": "pending_model"
-    },
     "afe5795730c1fda36825": {
       "first_pending_at": 1791765087.0158312,
-      "attempts": 2,
+      "attempts": 3,
       "paper": {
         "title": "CeeTrain: Fast Geo-Distributed Model Training Across Heterogeneous GPUs and Networks in Cloud-Edge-End Computing Environments",
         "authors": [
@@ -91,7 +27,7 @@
     },
     "6c3390b50a4ede2ef1b4": {
       "first_pending_at": 1791765097.3729684,
-      "attempts": 2,
+      "attempts": 3,
       "paper": {
         "title": "Alexander Ford",
         "authors": [
@@ -112,7 +48,7 @@
     },
     "33694d99acf05168d861": {
       "first_pending_at": 1791765116.6781723,
-      "attempts": 2,
+      "attempts": 3,
       "paper": {
         "title": "Condition-Informed Failure Prioritisation for Rotating Equipment: Connecting Sensor Evidence with FMEA",
         "authors": [
@@ -130,7 +66,7 @@
     },
     "41fa5a52c35f79323e02": {
       "first_pending_at": 1791765117.9074395,
-      "attempts": 2,
+      "attempts": 3,
       "paper": {
         "title": "TensorMLD: A Tensorized and Compressed qLDPC Maximum-Likelihood Decoder for Accurate and Fast Detection of the Most Likely Logical Error",
         "authors": [
@@ -154,7 +90,7 @@
     },
     "9805e27bfbc26b6e4609": {
       "first_pending_at": 1791765141.6728091,
-      "attempts": 2,
+      "attempts": 3,
       "paper": {
         "title": "Parallel restore-optimized snapshot compression for cost-efficient inference serving",
         "authors": [
@@ -176,7 +112,7 @@
     },
     "405b29705847b7d438f9": {
       "first_pending_at": 1791765142.7218702,
-      "attempts": 2,
+      "attempts": 3,
       "paper": {
         "title": "Isolation in the Age of Agents",
         "authors": [
@@ -194,7 +130,7 @@
     },
     "b6eecdbf5478288955b5": {
       "first_pending_at": 1792369535.2743318,
-      "attempts": 1,
+      "attempts": 2,
       "paper": {
         "title": "AlphaCu: A Transformation-Driven Synthesis Framework for LLM-Based GPU Kernel Generation",
         "authors": [
@@ -218,7 +154,7 @@
     },
     "af5e50601dcbfeddfaf6": {
       "first_pending_at": 1792369548.1192737,
-      "attempts": 1,
+      "attempts": 2,
       "paper": {
         "title": "Securing Agentic AI with OS-Level Intent-Driven Capabilities",
         "authors": [
@@ -239,7 +175,7 @@
     },
     "6f692b4b52c035b52106": {
       "first_pending_at": 1792369549.1123548,
-      "attempts": 1,
+      "attempts": 2,
       "paper": {
         "title": "Lead-Lag Origination for Prioritizing Financial KOL Narratives",
         "authors": [
@@ -256,54 +192,9 @@
       },
       "status": "pending_abstract"
     },
-    "68fbfc73e1e7efa77fbe": {
-      "first_pending_at": 1792369557.9391196,
-      "attempts": 1,
-      "paper": {
-        "title": "Learn from Human-driving Accidents to Attack Autonomous Driving: Practical Multi-Vehicle Attacks on Decision-making",
-        "authors": [
-          "X Han",
-          "H Tian",
-          "Y Zhou",
-          "J Zhang",
-          "G Deng",
-          "S Xu"
-        ],
-        "abstract": "Decision-making is crucial in Level-4 Autonomous Driving Systems (ADSs), eg, Baidu Apollo [1] and Google Waymo [2]. Although a few studies have investigated the vulnerabilities of the decision-making module, they suffer from some practicality …",
-        "url": "https://ieeexplore.ieee.org/abstract/document/11731502/",
-        "venue": "",
-        "id": "68fbfc73e1e7efa77fbe",
-        "urls": [
-          "https://ieeexplore.ieee.org/abstract/document/11731502/"
-        ]
-      },
-      "status": "pending_abstract"
-    },
-    "674dc4e85dbc0836015f": {
-      "first_pending_at": 1792369558.4097004,
-      "attempts": 1,
-      "paper": {
-        "title": "SnapShare: Isolation-Preserving Deduplication for Serverless Snapshots",
-        "authors": [
-          "L Kondrashov",
-          "L Zhang",
-          "AFP de Jesus",
-          "H Pistor",
-          "M Cali"
-        ],
-        "abstract": "The efficiency of serverless computing fundamentally depends on rapid function startup, a challenge increasingly addressed by restoring from virtual machine snapshots. However, because content deduplication techniques can open timing …",
-        "url": "https://arxiv.org/pdf/2610.13318",
-        "venue": "",
-        "id": "674dc4e85dbc0836015f",
-        "urls": [
-          "https://arxiv.org/pdf/2610.13318"
-        ]
-      },
-      "status": "pending_model"
-    },
     "ce6b34882837e6fd02bc": {
       "first_pending_at": 1792369650.0476868,
-      "attempts": 1,
+      "attempts": 2,
       "paper": {
         "title": "Deploying RDMA for Large-Scale Inference and Training Workloads",
         "authors": [
@@ -325,7 +216,7 @@
     },
     "10df8913df5f12c21f17": {
       "first_pending_at": 1792369654.186153,
-      "attempts": 1,
+      "attempts": 2,
       "paper": {
         "title": "Parallel monotonic synchronizer",
         "authors": [
@@ -343,7 +234,7 @@
     },
     "76591a5a1e72328b12ec": {
       "first_pending_at": 1792369720.8534148,
-      "attempts": 1,
+      "attempts": 2,
       "paper": {
         "title": "Cluster-Level Infrastructure for More Efficient Serverless Computing",
         "authors": [
@@ -361,7 +252,7 @@
     },
     "8e6a8be9f9dde05af488": {
       "first_pending_at": 1792369722.0778217,
-      "attempts": 1,
+      "attempts": 2,
       "paper": {
         "title": "VibeKernel: Long-Horizon GPU Kernel Optimization with General-Purpose Coding Agents",
         "authors": [
@@ -378,108 +269,405 @@
         ]
       },
       "status": "pending_abstract"
+    },
+    "56ca97dc6817488e92e0": {
+      "first_pending_at": 1792974310.1295342,
+      "attempts": 1,
+      "paper": {
+        "title": "Reducing Pipeline Bubbles in Message-Efficient State Machine Replication",
+        "authors": [
+          "Y Wan",
+          "I Choi",
+          "N Shivaraman",
+          "A Shenoi",
+          "X Liu",
+          "T Luo"
+        ],
+        "abstract": "Round-based pipelining in state machine replication (SMR) protocols reduces amortized bottleneck message complexity to 𝑂 (1), but waiting for network propagation and accommodating timing variation create pipeline bubbles that can …",
+        "url": "https://yiliangw.github.io/assets/files/chora.pdf",
+        "venue": "",
+        "id": "56ca97dc6817488e92e0",
+        "urls": [
+          "https://yiliangw.github.io/assets/files/chora.pdf"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "3e4e527db9c08a2c67eb": {
+      "first_pending_at": 1792974313.2940702,
+      "attempts": 1,
+      "paper": {
+        "title": "VU Research Portal",
+        "authors": [
+          "B Johannesmeyer",
+          "R Isemann",
+          "C Giuffrida",
+          "H Bos"
+        ],
+        "abstract": "The drivers of modern operating systems use Direct Memory Access (DMA) to efficiently communicate with peripheral devices. Since the memory accessed by DMA is a shared resource between driver and device, it is a possible source of race …",
+        "url": "https://research.vu.nl/ws/portalfiles/portal/469007378/Dynamic_Detection_of_Vulnerable_DMA_Race_Conditions.pdf",
+        "venue": "",
+        "id": "3e4e527db9c08a2c67eb",
+        "urls": [
+          "https://research.vu.nl/ws/portalfiles/portal/469007378/Dynamic_Detection_of_Vulnerable_DMA_Race_Conditions.pdf"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "9e3aa91e8965c5f9c4c3": {
+      "first_pending_at": 1792974316.3341777,
+      "attempts": 1,
+      "paper": {
+        "title": "Large-scale Blockchain Prototyping on a Single Machine",
+        "authors": [
+          "S Qu",
+          "A Arpaci-Dusseau",
+          "R Arpaci-Dusseau"
+        ],
+        "abstract": "We present Chain-in-the-Box (CBox), an emulation-based prototyping and evaluation framework for blockchain systems. CBox modularizes blockchain systems using a staged event-driven model to facilitate prototyping and performance analysis …",
+        "url": "https://fc26.ifca.ai/preproceedings/26.pdf",
+        "venue": "",
+        "id": "9e3aa91e8965c5f9c4c3",
+        "urls": [
+          "https://fc26.ifca.ai/preproceedings/26.pdf"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "932ed21f9ae19bc7a965": {
+      "first_pending_at": 1792974319.5096965,
+      "attempts": 1,
+      "paper": {
+        "title": "Automated Hardware Synthesis at Scale: A View From The Trenches",
+        "authors": [
+          "S Campanoni",
+          "EP Astor",
+          "J Euphrosine",
+          "T Hong"
+        ],
+        "abstract": "The rapid evolution of machine learning (ML) demands agile hardware accelerator development. Historically, producing these performance-critical chips required large engineering teams to manually write optimized SystemVerilog RTL–an expensive …",
+        "url": "https://www.computer.org/csdl/magazine/mi/5555/01/11738772/2kBriJtSFfW",
+        "venue": "",
+        "id": "932ed21f9ae19bc7a965",
+        "urls": [
+          "https://www.computer.org/csdl/magazine/mi/5555/01/11738772/2kBriJtSFfW"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "957edf9075de50dfa5b4": {
+      "first_pending_at": 1792974322.496774,
+      "attempts": 1,
+      "paper": {
+        "title": "Design Docs Are All You Need: An AI-native Roofline Performance Tool",
+        "authors": [
+          "S Kushnir",
+          "K Noorbakhsh",
+          "K Sreedhar",
+          "M Liu",
+          "L Cheng"
+        ],
+        "abstract": "Machine-learning performance modeling is a uniquely hostile terrain for long-lived software: the assumptions baked into today's abstractions are invalidated by tomorrow's models and systems, forcing perpetual refactoring of performance …",
+        "url": "https://openreview.net/pdf?id=Qhbxfu81C5",
+        "venue": "",
+        "id": "957edf9075de50dfa5b4",
+        "urls": [
+          "https://openreview.net/pdf?id=Qhbxfu81C5"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "61061f77d66c17110368": {
+      "first_pending_at": 1792974331.370655,
+      "attempts": 1,
+      "paper": {
+        "title": "AgentTwin: Dual-Oracle Synthesis of Executable Abstractions from Production Systems",
+        "authors": [
+          "Y Zhang",
+          "J Park",
+          "E Liang",
+          "S Taneja",
+          "A Cheng",
+          "I Stoica"
+        ],
+        "abstract": "AI-driven systems research depends on fast, faithful executable evaluators, but constructing one for a production service is itself a systems problem. Relevant behavior is distributed across source code, mutable state, external services …",
+        "url": "https://openreview.net/pdf?id=0IFE8aTzWw",
+        "venue": "",
+        "id": "61061f77d66c17110368",
+        "urls": [
+          "https://openreview.net/pdf?id=0IFE8aTzWw"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "58e36b62711e611c7d8f": {
+      "first_pending_at": 1792974337.0534666,
+      "attempts": 1,
+      "paper": {
+        "title": "Flashpoint: Privileged-Software Isolation on RISC-V for Dynamic Root of Trust",
+        "authors": [
+          "NS Kalani",
+          "C Castes",
+          "G Chen",
+          "A Doukhan",
+          "D Bucher"
+        ],
+        "abstract": "Bugs in the large platform firmware executing in the highest privilege mode put the entire system's security at risk. We present a solution to isolate software in the highest privilege mode on RISC-V. Our solution is a hardwaresoftware co-design …",
+        "url": "https://infoscience.epfl.ch/entities/publication/8a0c684b-87ae-4567-b3ce-df16cd89961f",
+        "venue": "",
+        "id": "58e36b62711e611c7d8f",
+        "urls": [
+          "https://infoscience.epfl.ch/entities/publication/8a0c684b-87ae-4567-b3ce-df16cd89961f"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "609b9ba751bceb7d38e3": {
+      "first_pending_at": 1792974339.4234178,
+      "attempts": 1,
+      "paper": {
+        "title": "ExclaveFL: Verifiable Claims for Federated Learning using Exclaves",
+        "authors": [
+          "J Guo",
+          "K Vaswani",
+          "A Paverd",
+          "P Pietzuch"
+        ],
+        "abstract": "In federated learning (FL), data providers jointly train a machine learning model without sharing training data. This makes it challenging to provide verifiable claims about the trained model, eg, related to the employed training data, data sanitization …",
+        "url": "https://lsds.doc.ic.ac.uk/sites/default/files/socc26.pdf",
+        "venue": "",
+        "id": "609b9ba751bceb7d38e3",
+        "urls": [
+          "https://lsds.doc.ic.ac.uk/sites/default/files/socc26.pdf"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "41b5199df9e7ed97d7ee": {
+      "first_pending_at": 1792974358.6344976,
+      "attempts": 1,
+      "paper": {
+        "title": "A Characterization of Google Workload Traces",
+        "authors": [
+          "M Giordano",
+          "A Jain",
+          "E Deiana",
+          "D Bruening",
+          "A Sharma"
+        ],
+        "abstract": "In this work, we perform an in-depth characterization of the microarchitectural performance of modern datacenter workloads. Google recently released hundreds of gigabytes of trace data from production, offering a unique view into current-day …",
+        "url": "https://homes.cs.washington.edu/~mgiordan/papers/googletraces.pdf",
+        "venue": "",
+        "id": "41b5199df9e7ed97d7ee",
+        "urls": [
+          "https://homes.cs.washington.edu/~mgiordan/papers/googletraces.pdf",
+          "https://scholar.google.co.uk/scholar_url?url=https://homes.cs.washington.edu/~mgiordan/papers/googletraces.pdf&hl=en&sa=X&d=10507823279316082876&ei=-vvbareuGPC96rQP1rXIyQE&scisig=ACTRDVH4o0FrAZnLqjI0LR1ZbHc7&oi=scholaralrt&hist=rqYEyb0AAAAJ:12256154803998201071:ACTRDVFEnR_VC9YfRVxgANskGh1i&html=&pos=0&folt=art"
+        ]
+      },
+      "status": "pending_abstract"
     }
   },
-  "expired": {},
-  "retries": {
+  "expired": {
     "ed35bdcb92501fd108b6": {
-      "attempts": 4,
-      "last_attempt_at": 1792369507.4309454,
-      "next_retry_at": 1792398307.430946
+      "first_pending_at": 1791160093.3925445,
+      "attempts": 5,
+      "paper": {
+        "title": "Halder, Linus 167 Han, Tao 77 Hannig, Frank 93, 101 Hawich, Malte 163 Hemani, Ahmed 17",
+        "authors": [
+          "S Agwa",
+          "E Aliagha",
+          "D Anand",
+          "K Ando",
+          "SM Anik",
+          "J Arndt"
+        ],
+        "abstract": "Author Index Page 1 Author Index Agwa, Shady 153 Aliagha, Ensieh 117 Anand, Digvijay 109 Ando, Kota 173 Anik, Shafayat Mowla 65 Arndt, Jakob 175 Asai, Tetsuya 173 Aysu, Aydin 109 Barrera, Javier 17 Benini, Luca 165 Blume, Holger 163, 175 …",
+        "url": "https://ieeexplore.ieee.org/abstract/document/11695636/",
+        "venue": "",
+        "id": "ed35bdcb92501fd108b6",
+        "urls": [
+          "https://ieeexplore.ieee.org/abstract/document/11695636/"
+        ]
+      },
+      "status": "pending_abstract",
+      "expired_at": 1792974247.8069804,
+      "expiration_reason": "max_attempts"
     },
     "d060f8926cc24ef4b925": {
-      "attempts": 4,
-      "last_attempt_at": 1792369510.5068417,
-      "next_retry_at": 1792398310.5068421
+      "first_pending_at": 1791160115.943283,
+      "attempts": 5,
+      "paper": {
+        "title": "c© Copyright 2016 Will Scott Censorship Resistant Web Applications Will Scott A dissertation",
+        "authors": [
+          "T Anderson",
+          "A Krishnamurthy",
+          "T Kohno"
+        ],
+        "abstract": "c©Copyright 2016 Will Scott Censorship Resistant Web Applications Will Scott A dissertation submitted in partial fulfillment of the requirements for the degree of Doctor of Philosophy University of Washington 2016 Reading Committee: Thomas Anderson, Chair …",
+        "url": "https://digital.lib.washington.edu/server/api/core/bitstreams/20eab2b7-f875-4924-89fb-5d9e502c5d4e/content",
+        "venue": "",
+        "id": "d060f8926cc24ef4b925",
+        "urls": [
+          "https://digital.lib.washington.edu/server/api/core/bitstreams/20eab2b7-f875-4924-89fb-5d9e502c5d4e/content"
+        ]
+      },
+      "status": "pending_abstract",
+      "expired_at": 1792974251.0348525,
+      "expiration_reason": "max_attempts"
     },
+    "60273c157cff0cd7cad2": {
+      "first_pending_at": 1791160120.8006656,
+      "attempts": 5,
+      "paper": {
+        "title": "DynBranch: Speculative Subgraph Reuse for Dynamic Agentic LLM Serving",
+        "authors": [
+          "J Shen",
+          "N Wadlom",
+          "Z Su",
+          "Y Lu"
+        ],
+        "abstract": "Agentic LLM workflows decide their execution paths at runtime. Downstream computation may be predictable, or may have run before, yet it cannot begin until the model or the user resolves the branch. We call this serialization the branch …",
+        "url": "https://arxiv.org/pdf/2609.31047",
+        "venue": "",
+        "id": "60273c157cff0cd7cad2",
+        "urls": [
+          "https://arxiv.org/pdf/2609.31047"
+        ]
+      },
+      "status": "pending_model",
+      "expired_at": 1792974257.5614953,
+      "expiration_reason": "max_attempts"
+    }
+  },
+  "retries": {
     "afe5795730c1fda36825": {
-      "attempts": 2,
-      "last_attempt_at": 1792369517.2191584,
-      "next_retry_at": 1792376717.219159
+      "attempts": 3,
+      "last_attempt_at": 1792974258.0183706,
+      "next_retry_at": 1792988658.0183709
     },
     "6c3390b50a4ede2ef1b4": {
-      "attempts": 2,
-      "last_attempt_at": 1792369520.366584,
-      "next_retry_at": 1792376720.3665843
+      "attempts": 3,
+      "last_attempt_at": 1792974261.2923272,
+      "next_retry_at": 1792988661.2923274
     },
     "33694d99acf05168d861": {
-      "attempts": 2,
-      "last_attempt_at": 1792369523.4187922,
-      "next_retry_at": 1792376723.4187925
+      "attempts": 3,
+      "last_attempt_at": 1792974264.2010658,
+      "next_retry_at": 1792988664.2010663
     },
     "41fa5a52c35f79323e02": {
-      "attempts": 2,
-      "last_attempt_at": 1792369526.560969,
-      "next_retry_at": 1792376726.5609698
+      "attempts": 3,
+      "last_attempt_at": 1792974267.3466249,
+      "next_retry_at": 1792988667.3466253
     },
     "9805e27bfbc26b6e4609": {
-      "attempts": 2,
-      "last_attempt_at": 1792369529.6411786,
-      "next_retry_at": 1792376729.6411788
+      "attempts": 3,
+      "last_attempt_at": 1792974270.5955763,
+      "next_retry_at": 1792988670.5955765
     },
     "405b29705847b7d438f9": {
-      "attempts": 2,
-      "last_attempt_at": 1792369532.7284203,
-      "next_retry_at": 1792376732.7284205
+      "attempts": 3,
+      "last_attempt_at": 1792974273.5130837,
+      "next_retry_at": 1792988673.513084
     },
     "b6eecdbf5478288955b5": {
-      "attempts": 1,
-      "last_attempt_at": 1792369536.0975902,
-      "next_retry_at": 1792373136.0975907
+      "attempts": 2,
+      "last_attempt_at": 1792974276.8180747,
+      "next_retry_at": 1792981476.8180752
     },
     "af5e50601dcbfeddfaf6": {
-      "attempts": 1,
-      "last_attempt_at": 1792369549.1115355,
-      "next_retry_at": 1792373149.1115358
+      "attempts": 2,
+      "last_attempt_at": 1792974279.696108,
+      "next_retry_at": 1792981479.6961086
     },
     "6f692b4b52c035b52106": {
-      "attempts": 1,
-      "last_attempt_at": 1792369552.2147415,
-      "next_retry_at": 1792373152.2147417
-    },
-    "68fbfc73e1e7efa77fbe": {
-      "attempts": 1,
-      "last_attempt_at": 1792369558.4088023,
-      "next_retry_at": 1792373158.4088025
+      "attempts": 2,
+      "last_attempt_at": 1792974283.2605586,
+      "next_retry_at": 1792981483.2605588
     },
     "ce6b34882837e6fd02bc": {
-      "attempts": 1,
-      "last_attempt_at": 1792369654.1852837,
-      "next_retry_at": 1792373254.185284
+      "attempts": 2,
+      "last_attempt_at": 1792974300.805795,
+      "next_retry_at": 1792981500.8057957
     },
     "10df8913df5f12c21f17": {
-      "attempts": 1,
-      "last_attempt_at": 1792369656.4330606,
-      "next_retry_at": 1792373256.4330614
+      "attempts": 2,
+      "last_attempt_at": 1792974303.9310172,
+      "next_retry_at": 1792981503.9310176
     },
     "76591a5a1e72328b12ec": {
-      "attempts": 1,
-      "last_attempt_at": 1792369722.0768383,
-      "next_retry_at": 1792373322.0768385
+      "attempts": 2,
+      "last_attempt_at": 1792974306.9838893,
+      "next_retry_at": 1792981506.9838896
     },
     "8e6a8be9f9dde05af488": {
+      "attempts": 2,
+      "last_attempt_at": 1792974310.1285408,
+      "next_retry_at": 1792981510.1285412
+    },
+    "56ca97dc6817488e92e0": {
       "attempts": 1,
-      "last_attempt_at": 1792369725.0606353,
-      "next_retry_at": 1792373325.0606356
+      "last_attempt_at": 1792974313.2931566,
+      "next_retry_at": 1792977913.2931569
+    },
+    "3e4e527db9c08a2c67eb": {
+      "attempts": 1,
+      "last_attempt_at": 1792974316.3331807,
+      "next_retry_at": 1792977916.333181
+    },
+    "9e3aa91e8965c5f9c4c3": {
+      "attempts": 1,
+      "last_attempt_at": 1792974319.5087197,
+      "next_retry_at": 1792977919.508721
+    },
+    "932ed21f9ae19bc7a965": {
+      "attempts": 1,
+      "last_attempt_at": 1792974322.4958432,
+      "next_retry_at": 1792977922.4958434
+    },
+    "957edf9075de50dfa5b4": {
+      "attempts": 1,
+      "last_attempt_at": 1792974325.5879002,
+      "next_retry_at": 1792977925.5879004
+    },
+    "61061f77d66c17110368": {
+      "attempts": 1,
+      "last_attempt_at": 1792974331.944159,
+      "next_retry_at": 1792977931.9441595
+    },
+    "58e36b62711e611c7d8f": {
+      "attempts": 1,
+      "last_attempt_at": 1792974339.4222984,
+      "next_retry_at": 1792977939.422299
+    },
+    "609b9ba751bceb7d38e3": {
+      "attempts": 1,
+      "last_attempt_at": 1792974341.196894,
+      "next_retry_at": 1792977941.1968942
+    },
+    "41b5199df9e7ed97d7ee": {
+      "attempts": 1,
+      "last_attempt_at": 1792974359.8323445,
+      "next_retry_at": 1792977959.8323448
     }
   },
   "source_limits": {
     "ieee": {
-      "next_start": 1792369559.939394,
+      "next_start": 1792974285.2618968,
       "failures": 0
     },
     "crossref": {
-      "next_start": 1792369723.0781376,
+      "next_start": 1792974359.6348748,
       "failures": 0,
       "cooldown_until": 1791160180.7705195
     },
     "semantic_scholar": {
-      "next_start": 1792369723.252774,
-      "failures": 1,
-      "cooldown_until": 1792369781.5927489
+      "next_start": 1792974312.2562947,
+      "failures": 2,
+      "cooldown_until": 1792974430.419181
     },
     "arxiv": {
-      "next_start": 1792369727.877812,
+      "next_start": 1792974450.61685,
       "failures": 0,
       "cooldown_until": 1791160174.5414577
     }
