@@ -5,7 +5,7 @@ Conference Scout Orchestrator — Runs the full pipeline end-to-end.
 Steps:
     1. Extract papers from dblp + fetch abstracts via Semantic Scholar
     2. (Agent) Enrich unenriched papers — placeholder for OpenClaw API
-    3. Classify papers via Gemini embeddings
+    3. Classify papers via Gemini generative classification
     4. Upload classified_papers.json to Slack
 
 Usage:
@@ -96,11 +96,11 @@ def step_agent_enrich(config):
 
 
 # ===========================================================================
-# Step 3 — Classify papers via Gemini embeddings
+# Step 3 — Classify papers via Gemini generative model
 # ===========================================================================
 def step_classify(config):
     logger.info("=" * 60)
-    logger.info("STEP 3: Classifying papers via Gemini embeddings")
+    logger.info("STEP 3: Classifying papers via Gemini generative model")
     logger.info("=" * 60)
 
     from classify_papers import run_classification

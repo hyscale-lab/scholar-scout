@@ -11,11 +11,13 @@ Usage (standalone):
     python papers_extractor.py
 """
 
+import gzip
 import json
 import logging
+import os
 import re
 import time
-import xml.etree.ElementTree as ET
+from lxml import etree as ET
 from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional
 from urllib.parse import quote, urljoin
@@ -209,6 +211,143 @@ def fetch_conference_volumes(index_url: str, session: requests.Session,
     return venue_name, volumes
 
 
+
+def fetch_local_dblp_papers(
+    dataset_path: str,
+    conferences_config: ConferencesConfig,
+) -> List[Dict]:
+    """Extract recent configured conference papers from a local DBLP XML dump.
+
+    The dump is read twice with iterparse so its full decompressed contents are
+    never loaded into memory. Selection follows the same proceedings mdate,
+    year, and max_volumes rules as fetch_conference_volumes().
+    """
+    today = datetime.now(timezone.utc).date()
+    threshold = today - timedelta(days=conferences_config.volume_date_filter_days)
+    current_year = today.year
+
+    conference_slugs = {
+        extract_venue_from_index_url(url).lower(): extract_venue_from_index_url(url)
+        for url in conferences_config.urls
+    }
+    selected_volumes = {}
+
+    logger.info("Reading DBLP proceedings from local dataset: %s", dataset_path)
+    # Pass 1: identify the configured, recent proceedings volumes.
+    with gzip.open(dataset_path, "rb") as stream:
+        for _, elem in ET.iterparse(
+            stream,
+            events=("end",),
+            load_dtd=True,
+            resolve_entities=True,
+            no_network=True,
+            huge_tree=True,
+        ):
+            if elem.tag == "proceedings":
+                key = elem.get("key", "")
+                parts = key.split("/")
+                slug = parts[1].lower() if len(parts) >= 3 and parts[0] == "conf" else ""
+                if slug in conference_slugs:
+                    url_elem = elem.find("url")
+                    year_elem = elem.find("year")
+                    booktitle_elem = elem.find("booktitle")
+                    mdate = elem.get("mdate", "")
+                    year_text = year_elem.text if year_elem is not None else ""
+                    year = int(year_text) if year_text and year_text.isdigit() else 0
+                    booktitle = booktitle_elem.text if booktitle_elem is not None and booktitle_elem.text else ""
+
+                    try:
+                        volume_date = datetime.strptime(mdate, "%Y-%m-%d").date()
+                    except ValueError:
+                        volume_date = None
+
+                    if (
+                        url_elem is not None
+                        and url_elem.text
+                        and volume_date is not None
+                        and volume_date >= threshold
+                        and year >= current_year - 1
+                    ):
+                        selected_volumes.setdefault(slug, {})[key] = {
+                            "year": year,
+                            "booktitle": booktitle,
+                            "mdate": mdate,
+                        }
+            # Clear only complete top-level DBLP records. Clearing nested
+            # elements here would erase their text before the parent is parsed.
+            if elem.tag in {"article", "inproceedings", "proceedings", "book", "incollection", "phdthesis", "mastersthesis", "www", "data", "person"}:
+                elem.clear()
+
+    # Apply the same per-conference volume limit as the online pipeline.
+    selected_keys = set()
+    volume_to_venue = {}
+    for slug, volumes_by_key in selected_volumes.items():
+        ordered = sorted(
+            volumes_by_key.items(),
+            key=lambda item: item[1]["year"],
+            reverse=True,
+        )[:conferences_config.max_volumes]
+        for key, volume in ordered:
+            selected_keys.add(key)
+            volume_to_venue[key] = normalize_venue(volume["booktitle"]) or conference_slugs[slug]
+            logger.info(
+                "  Local volume selected: %s %s (mdate: %s)",
+                volume["booktitle"], volume["year"], volume["mdate"],
+            )
+
+    if not selected_keys:
+        logger.warning(
+            "No DBLP proceedings matched the configured conference/date filters. "
+            "The existing volume_date_filter_days=%s and current/previous-year filter "
+            "may exclude all volumes; no papers will be extracted.",
+            conferences_config.volume_date_filter_days,
+        )
+        return []
+
+    logger.info("Selected %d local DBLP volumes; scanning papers", len(selected_keys))
+    papers = []
+    # Pass 2: collect papers whose crossref points at one of the selected volumes.
+    with gzip.open(dataset_path, "rb") as stream:
+        for _, elem in ET.iterparse(
+            stream,
+            events=("end",),
+            load_dtd=True,
+            resolve_entities=True,
+            no_network=True,
+            huge_tree=True,
+        ):
+            if elem.tag == "inproceedings":
+                crossref_elem = elem.find("crossref")
+                crossref = crossref_elem.text.strip() if crossref_elem is not None and crossref_elem.text else ""
+                if crossref in selected_keys:
+                    key = elem.get("key", "")
+                    title_elem = elem.find("title")
+                    title = "".join(title_elem.itertext()).strip() if title_elem is not None else ""
+                    authors = [
+                        "".join(author.itertext()).strip()
+                        for author in elem.findall("author")
+                        if "".join(author.itertext()).strip()
+                    ]
+                    ee_links = [ee.text.strip() for ee in elem.findall("ee") if ee.text and ee.text.strip()]
+                    paper = {
+                        "key": key,
+                        "mdate": elem.get("mdate", ""),
+                        "title": title,
+                        "authors": authors,
+                        "venue": volume_to_venue[crossref],
+                        "ee": ee_links[0] if ee_links else "",
+                        "dblp_url": f"https://dblp.org/rec/{key}" if key else "",
+                    }
+                    if len(ee_links) > 1:
+                        paper["ee_others"] = ee_links[1:]
+                    papers.append(paper)
+            if elem.tag in {"article", "inproceedings", "proceedings", "book", "incollection", "phdthesis", "mastersthesis", "www", "data", "person"}:
+                elem.clear()
+
+    logger.info("Extracted %d papers from local DBLP dataset", len(papers))
+    return papers
+
+
 def fetch_volume_papers(volume_url: str, venue_name: str, session: requests.Session) -> List[Dict]:
     """Fetch and parse a volume TOC page to extract paper metadata."""
     logger.info(f"  Fetching volume TOC: {volume_url}")
@@ -389,21 +528,28 @@ def run_pipeline(conferences_config: ConferencesConfig,
     logger.info("=" * 60)
 
     all_papers = []
-    for index_url in conferences_config.urls:
-        logger.info(f"\nProcessing: {index_url}")
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    local_dataset = os.path.join(project_root, "data", "dblp", "dblp.xml.gz")
 
-        venue_name, volumes = fetch_conference_volumes(
-            index_url, session,
-            max_volumes=conferences_config.max_volumes,
-            volume_date_filter_days=conferences_config.volume_date_filter_days,
-        )
-        if not volumes:
-            logger.info("  No new volumes found, skipping")
-            continue
+    if os.path.isfile(local_dataset):
+        logger.info("Using local DBLP XML dataset; per-conference HTTP scraping is disabled")
+        all_papers = fetch_local_dblp_papers(local_dataset, conferences_config)
+    else:
+        for index_url in conferences_config.urls:
+            logger.info(f"\nProcessing: {index_url}")
 
-        for volume in volumes:
-            papers = fetch_volume_papers(volume["url"], venue_name, session)
-            all_papers.extend(papers)
+            venue_name, volumes = fetch_conference_volumes(
+                index_url, session,
+                max_volumes=conferences_config.max_volumes,
+                volume_date_filter_days=conferences_config.volume_date_filter_days,
+            )
+            if not volumes:
+                logger.info("  No new volumes found, skipping")
+                continue
+
+            for volume in volumes:
+                papers = fetch_volume_papers(volume["url"], venue_name, session)
+                all_papers.extend(papers)
 
     logger.info(f"\nPhase 1 complete: {len(all_papers)} papers from new volumes")
 
@@ -435,6 +581,9 @@ def run_pipeline(conferences_config: ConferencesConfig,
     logger.info("\n" + "=" * 60)
     logger.info("PHASE 3: Writing output files")
     logger.info("=" * 60)
+
+    os.makedirs(os.path.dirname(os.path.abspath(output_enriched)), exist_ok=True)
+    os.makedirs(os.path.dirname(os.path.abspath(output_unenriched)), exist_ok=True)
 
     with open(output_enriched, "w", encoding="utf-8") as f:
         json.dump(enriched_papers, f, indent=2, ensure_ascii=False)

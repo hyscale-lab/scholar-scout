@@ -20,11 +20,16 @@ class SlackConfig(BaseModel):
     default_channel_id: str
 
 
+# class GeminiConfig(BaseModel):
+#     """Gemini AI client configuration."""
+#     api_key: Union[str, dict]
+#     gen_ai_model: str = "gemini-2.5-flash"
+#     embedding_model: str = "gemini-embedding-001"
+
 class GeminiConfig(BaseModel):
     """Gemini AI client configuration."""
     api_key: Union[str, dict]
-    gen_ai_model: str = "gemini-2.5-flash"
-    embedding_model: str = "gemini-embedding-001"
+    gen_ai_model: str = "gemini-3.8-flash"
 
 
 class ConferencesConfig(BaseModel):

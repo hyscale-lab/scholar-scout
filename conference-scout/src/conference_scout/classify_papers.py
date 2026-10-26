@@ -19,7 +19,8 @@ from collections import Counter
 from google import genai
 
 from config import AppConfig, load_config
-from embedding_classification import GeminiEmbeddingSetup
+# from embedding_classification import GeminiEmbeddingSetup
+from generative_classification import GeminiGenerativeClassifier
 
 logger = logging.getLogger(__name__)
 
@@ -80,43 +81,92 @@ def validate_agent_enriched(filepath: str) -> list:
     return valid
 
 
-def build_classification_text(paper: dict) -> str:
-    """Build the text to classify from title + abstract."""
-    title = paper.get("title", "").strip()
-    abstract = paper.get("abstract", "").strip()
+# def build_classification_text(paper: dict) -> str:
+#     """Build the text to classify from title + abstract."""
+#     title = paper.get("title", "").strip()
+#     abstract = paper.get("abstract", "").strip()
 
-    if abstract:
-        return f"{title} {abstract}"
-    else:
-        return title
+#     if abstract:
+#         return f"{title} {abstract}"
+#     else:
+#         return title
 
 
-def classify_all_papers(papers: list, classifier: GeminiEmbeddingSetup,
-                        minimal_output: bool = True) -> list:
-    """Classify all papers and return the final output list."""
-    results = []
+def _paper_identity(paper: dict) -> str:
+    """Stable identity used to resume a classification checkpoint."""
+    key = paper.get("key")
+    if key:
+        return str(key)
+    return "|".join(
+        str(paper.get(field, "") or "")
+        for field in ("title", "venue", "ee")
+    )
+
+
+def _write_json(filepath: str, data) -> None:
+    """Write JSON atomically so an interrupted run does not corrupt the file."""
+    temp_path = filepath + ".tmp"
+    with open(temp_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+    os.replace(temp_path, filepath)
+
+
+def classify_all_papers(
+    papers: list,
+    classifier: GeminiGenerativeClassifier,
+    minimal_output: bool = True,
+    checkpoint_file: str | None = None,
+    failed_file: str | None = None,
+) -> list:
+    """Classify papers, checkpoint successes, and continue past individual failures."""
+    completed = {}
+    failed = []
+
+    # Resume successful classifications from a prior interrupted run.
+    if checkpoint_file and os.path.isfile(checkpoint_file):
+        try:
+            with open(checkpoint_file, "r", encoding="utf-8") as f:
+                checkpoint = json.load(f)
+            if isinstance(checkpoint, dict) and isinstance(checkpoint.get("completed"), dict):
+                completed = checkpoint["completed"]
+                logger.info("Resuming %d previously classified papers from %s",
+                            len(completed), checkpoint_file)
+        except (OSError, json.JSONDecodeError) as exc:
+            logger.warning("Ignoring unreadable checkpoint %s: %s", checkpoint_file, exc)
+
     total = len(papers)
 
     for i, paper in enumerate(papers):
+        identity = _paper_identity(paper)
+        if identity in completed:
+            logger.info("[%d/%d] Already classified; skipping: %s",
+                        i + 1, total, paper.get("title", "")[:60])
+            continue
+
         title = paper.get("title", "")
-        title_short = title[:60]
-        logger.info(f"[{i + 1}/{total}] Classifying: {title_short}...")
+        abstract = paper.get("abstract", "")
+        logger.info("[%d/%d] Classifying: %s...", i + 1, total, title[:60])
 
-        # Build text for embedding
-        text = build_classification_text(paper)
-
-        # Classify using embeddings
-        categories = classifier.gemini_embedding_classify(text)
+        try:
+            categories = classifier.classify(title, abstract)
+        except Exception as exc:
+            logger.exception("Classification failed for %r; will record for retry", title)
+            failed.append({
+                "identity": identity,
+                "paper": paper,
+                "error": f"{type(exc).__name__}: {exc}",
+            })
+            if failed_file:
+                _write_json(failed_file, failed)
+            continue
 
         if not categories:
             categories = ["Others"]
 
-        # Build output entry
         authors = paper.get("authors", [])
-        if isinstance(authors, list):
-            authors_str = ", ".join(authors)
-        else:
-            authors_str = str(authors)
+        authors_str = (
+            ", ".join(authors) if isinstance(authors, list) else str(authors)
+        )
 
         result = {
             "paper_title": title,
@@ -126,19 +176,35 @@ def classify_all_papers(papers: list, classifier: GeminiEmbeddingSetup,
             "category": categories,
         }
 
-        # Include extra fields if not minimal output
         if not minimal_output:
-            if paper.get("key"):
-                result["key"] = paper["key"]
-            if paper.get("mdate"):
-                result["mdate"] = paper["mdate"]
-            if paper.get("dblp_url"):
-                result["dblp_url"] = paper["dblp_url"]
-            if paper.get("abstract"):
-                result["abstract"] = paper["abstract"]
+            for field in ("key", "mdate", "dblp_url", "abstract"):
+                if paper.get(field):
+                    result[field] = paper[field]
 
-        logger.info(f"  → {categories}")
-        results.append(result)
+        completed[identity] = result
+        logger.info("  → %s", categories)
+
+        # Save after each successful paper; reruns can resume without repeating it.
+        if checkpoint_file:
+            _write_json(checkpoint_file, {"completed": completed})
+
+    # Return successes in original input order.
+    results = [
+        completed[_paper_identity(paper)]
+        for paper in papers
+        if _paper_identity(paper) in completed
+    ]
+
+    if checkpoint_file:
+        _write_json(checkpoint_file, {"completed": completed})
+    if failed_file:
+        _write_json(failed_file, failed)
+
+    if failed:
+        logger.warning(
+            "%d papers failed after retries. Details saved to %s",
+            len(failed), failed_file or "(no failure file configured)",
+        )
 
     return results
 
@@ -183,7 +249,7 @@ def run_classification(config: AppConfig,
             raise RuntimeError("GEMINI_API_KEY not set. Add it to .env or export it.")
         client = genai.Client(api_key=api_key)
 
-    classifier = GeminiEmbeddingSetup(config, client)
+    classifier = GeminiGenerativeClassifier(config, client)
 
     # Load enriched papers
     enriched = load_papers(enriched_file)
@@ -207,14 +273,23 @@ def run_classification(config: AppConfig,
 
     # Classify
     logger.info("=" * 60)
-    logger.info("Classifying papers via Gemini embeddings")
+    logger.info("Classifying papers via Gemini generative")
     logger.info("=" * 60)
 
-    results = classify_all_papers(all_papers, classifier, minimal_output)
+    output_root, output_ext = os.path.splitext(output_file)
+    checkpoint_file = output_root + ".checkpoint.json"
+    failed_file = output_root + ".failed.json"
 
-    # Write output
-    with open(output_file, "w", encoding="utf-8") as f:
-        json.dump(results, f, indent=2, ensure_ascii=False)
+    results = classify_all_papers(
+        all_papers,
+        classifier,
+        minimal_output,
+        checkpoint_file=checkpoint_file,
+        failed_file=failed_file,
+    )
+
+    # Write the final output atomically.
+    _write_json(output_file, results)
 
     # Summary
     logger.info("=" * 60)

@@ -1,7 +1,6 @@
 gemini:
   api_key: ${GEMINI_API_KEY}
-  gen_ai_model: "gemini-2.5-flash"
-  embedding_model: "gemini-embedding-001"
+  gen_ai_model: "gemini-3.8-flash"
 
 slack:
   api_token: ${SLACK_API_TOKEN}
@@ -29,51 +28,120 @@ conferences:
 
 research_topics:
   - name: "LLM Inference"
-    keywords: ["llm", "inference", "serving", "latency", "throughput"]
+    keywords:
+      - "llm inference"
+      - "llm serving"
+      - "scheduling"
+      - "batching"
+      - "kv cache"
+      - "quantization"
+      - "offloading"
     description: >-
-      Research related to LLM inference serving systems, architectures, and
-      applications, including latency optimization, throughput improvement,
-      and deployment strategies
+      Systems or measured execution-efficiency contributions to large language
+      model inference and serving, including scheduling, batching, kernels,
+      memory and KV caches, quantization, offloading, parallel execution,
+      deployment, and systems measurement. Training alone and merely using an
+      LLM for another problem are insufficient. Multimodal or agent papers
+      qualify only if their actual contribution directly optimizes or
+      characterizes LLM inference execution.
     taxonomy:
-      - "Large language model inference speed and latency optimization"
-      - "LLM serving throughput and tokens per second"
-      - "Model quantization and accuracy trade-offs during inference"
-      - "Inference performance efficiency of generative transformers"
-      - "Optimizing GPU memory bandwidth for LLM deployment"
+      - "LLM inference scheduling and batching"
+      - "Inference kernels and parallel execution"
+      - "Memory management and KV cache optimization"
+      - "Quantization and offloading for inference"
+      - "LLM serving, deployment, and systems measurement"
 
   - name: "Serverless Computing"
-    keywords: ["serverless", "faas", "function-as-a-service", "cloud"]
+    keywords:
+      - "serverless"
+      - "FaaS"
+      - "function-as-a-service"
+      - "cold start"
+      - "elasticity"
+      - "serverless scheduling"
     description: >-
-      Research on serverless computing platforms, Function-as-a-Service (FaaS),
-      and cloud-native architectures
+      Systems for serverless and Function-as-a-Service execution and associated
+      cloud-native function or workflow architectures, including cold starts,
+      elasticity, isolation, resource sharing, lifecycle management, scheduling,
+      and programming or execution abstractions. Generic cloud, containers,
+      distributed systems, and classic systems research are not automatically
+      serverless.
     taxonomy:
-      - "Serverless computing architecture and FaaS execution"
-      - "Cold start latency and function warm-up strategies"
-      - "Auto-scaling and elasticity in serverless environments"
-      - "Event-driven cloud function performance and overhead"
-      - "Managing stateless microservices in serverless platforms"
+      - "Serverless and FaaS execution architectures"
+      - "Cold starts and function lifecycle management"
+      - "Elasticity, isolation, and resource sharing"
+      - "Scheduling and resource management for serverless workloads"
+      - "Serverless programming and execution abstractions"
 
-  - name: "VLM Inference"
-    keywords: ["vlm", "vision-language", "vision language model", "multimodal", "inference", "serving", "latency", "throughput"]
+  - name: "Agentic Execution Environment"
+    keywords:
+      - "AI agent runtime"
+      - "agent execution"
+      - "sandbox"
+      - "tool execution"
+      - "agent orchestration"
+      - "checkpointing"
+      - "agent workflow"
     description: >-
-      Research on VLM inference and serving systems, including vision-language
-      model deployment, latency optimization, throughput improvement, and
-      multimodal inference pipelines
+      Systems enabling the execution of AI agents, including tool and OS
+      interfaces, sandboxes, runtime authorization and isolation, checkpointing,
+      state management, orchestration, workflow scheduling, and resource
+      management of agent trajectories. Includes execution substrates used
+      during agent learning. Agent applications, model alignment, planning
+      accuracy, and ordinary non-AI software agents alone are insufficient.
     taxonomy:
-      - "Vision-language model deployment and multimodal serving systems"
-      - "Optimizing latency in multimodal inference pipelines and visual encoders"
-      - "Throughput improvement for high-concurrency VLM serving workloads"
-      - "Visual token compression and prefix caching for efficient VLM inference"
-      - "Hardware-aware acceleration of cross-modal attention in VLM deployment"
+      - "AI agent runtimes and execution environments"
+      - "Tool and operating-system interfaces for agents"
+      - "Agent sandboxing, authorization, and isolation"
+      - "Agent checkpointing and state management"
+      - "Agent orchestration, workflow scheduling, and resource management"
+      - "Execution substrates for agent learning"
+
+  - name: "Video & Embodied Intelligence"
+    keywords:
+      - "vision-language model"
+      - "VLM"
+      - "video understanding"
+      - "video generation"
+      - "visual world model"
+      - "vision-language-action"
+      - "embodied AI"
+    description: >-
+      Systems and measured execution-efficiency contributions for vision-language
+      models, including image-capable VLMs, video understanding, retrieval and
+      generation, visual world models, vision-language-action models, and
+      embodied workloads. Relevant contributions include serving, decoding,
+      deployment, scheduling, memory and caching, communication, hardware,
+      real-time execution, and control-loop efficiency. Capability or accuracy
+      improvements alone, generic multimodal training, image-only diffusion,
+      rendering alone, and video network transport alone are outside scope.
+    taxonomy:
+      - "VLM serving and inference efficiency"
+      - "Video understanding, retrieval, and generation systems"
+      - "Visual world model execution systems"
+      - "Vision-language-action and embodied workload execution"
+      - "Scheduling, memory, caching, and hardware for visual workloads"
+      - "Real-time inference and embodied control-loop efficiency"
 
   - name: "Sustainable Computing"
-    keywords: ["green computing", "energy efficiency", "carbon footprint"]
+    keywords:
+      - "energy efficiency"
+      - "power efficiency"
+      - "carbon-aware scheduling"
+      - "carbon footprint"
+      - "data center energy"
+      - "embodied carbon"
     description: >-
-      Research on reducing the environmental impact of computing systems,
-      including energy efficiency and carbon footprint reduction
+      Systems research explicitly targeting computing energy or power efficiency,
+      or environmental and carbon reduction. Includes energy-aware hardware and
+      runtime configurations, carbon-aware scheduling, data-center power
+      reduction, and embodied-carbon reduction. Relevant energy or environmental
+      evidence is required. Lower latency, FLOPs, memory use, monetary cost, or
+      GPU count alone does not establish this topic. Explicit energy-performance
+      trade-offs are allowed.
     taxonomy:
-      - "Energy-efficient computing for same-outcome performance"
-      - "Reducing carbon footprint of data center workloads"
-      - "Green computing and power usage effectiveness PUE"
-      - "Cost-effective resource allocation for sustainable power"
-      - "Minimizing energy consumption without performance degradation"
+      - "Energy-aware computing hardware and runtime configurations"
+      - "Carbon-aware scheduling and workload placement"
+      - "Data-center power and energy reduction"
+      - "Computing embodied-carbon reduction"
+      - "Measured energy-performance trade-offs"
