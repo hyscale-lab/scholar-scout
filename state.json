@@ -1,112 +1,9 @@
 {
   "version": 1,
   "pending": {
-    "6c3390b50a4ede2ef1b4": {
-      "first_pending_at": 1791765097.3729684,
-      "attempts": 4,
-      "paper": {
-        "title": "Alexander Ford",
-        "authors": [
-          "A Ford",
-          "D Baker",
-          "J Hellerstein",
-          "F Dimaio"
-        ],
-        "abstract": "1 © Copyright 2018 Alexander Ford 2 Nonparametric Structure Models in Local Protein Conformation Sampling and Design Alexander Ford A dissertation submitted in partial fulfillment of the requirements for the degree of Doctor of Philosophy University of …",
-        "url": "https://digital.lib.washington.edu/server/api/core/bitstreams/31a785d9-5889-4e3a-9863-952583e43f31/content",
-        "venue": "",
-        "id": "6c3390b50a4ede2ef1b4",
-        "urls": [
-          "https://digital.lib.washington.edu/server/api/core/bitstreams/31a785d9-5889-4e3a-9863-952583e43f31/content"
-        ]
-      },
-      "status": "pending_abstract"
-    },
-    "33694d99acf05168d861": {
-      "first_pending_at": 1791765116.6781723,
-      "attempts": 4,
-      "paper": {
-        "title": "Condition-Informed Failure Prioritisation for Rotating Equipment: Connecting Sensor Evidence with FMEA",
-        "authors": [
-          "DG Andersen"
-        ],
-        "abstract": "Rotating equipment maintenance decisions are often divided between two information structures: failure mode and effects analysis (FMEA), which expresses engineering consequence and detectability, and condition monitoring, which …",
-        "url": "https://www.researchgate.net/profile/Sahith-Basani/publication/415203247_Condition-Informed_Failure_Prioritisation_for_Rotating_Equipment_Connecting_Sensor_Evidence_with_FMEA/links/6ac15df5db7d3b1c53a09ed0/Condition-Informed-Failure-Prioritisation-for-Rotating-Equipment-Connecting-Sensor-Evidence-with-FMEA.pdf",
-        "venue": "",
-        "id": "33694d99acf05168d861",
-        "urls": [
-          "https://www.researchgate.net/profile/Sahith-Basani/publication/415203247_Condition-Informed_Failure_Prioritisation_for_Rotating_Equipment_Connecting_Sensor_Evidence_with_FMEA/links/6ac15df5db7d3b1c53a09ed0/Condition-Informed-Failure-Prioritisation-for-Rotating-Equipment-Connecting-Sensor-Evidence-with-FMEA.pdf"
-        ]
-      },
-      "status": "pending_abstract"
-    },
-    "41fa5a52c35f79323e02": {
-      "first_pending_at": 1791765117.9074395,
-      "attempts": 4,
-      "paper": {
-        "title": "TensorMLD: A Tensorized and Compressed qLDPC Maximum-Likelihood Decoder for Accurate and Fast Detection of the Most Likely Logical Error",
-        "authors": [
-          "L Lu",
-          "D Xiang",
-          "K Zhou",
-          "B Jin",
-          "C Tao",
-          "W Tian",
-          "A Wu"
-        ],
-        "abstract": "Quantum error correction is vital for building reliable quantum computers, and quantum Low Density Parity Check (qLDPC) codes are highly promising due to their efficient encoding. However, current decoders often struggle with low decoding …",
-        "url": "https://kaiwenzhou2003.github.io/paper_files/MICRO2026_TensorMLD.pdf",
-        "venue": "",
-        "id": "41fa5a52c35f79323e02",
-        "urls": [
-          "https://kaiwenzhou2003.github.io/paper_files/MICRO2026_TensorMLD.pdf"
-        ]
-      },
-      "status": "pending_abstract"
-    },
-    "9805e27bfbc26b6e4609": {
-      "first_pending_at": 1791765141.6728091,
-      "attempts": 4,
-      "paper": {
-        "title": "Parallel restore-optimized snapshot compression for cost-efficient inference serving",
-        "authors": [
-          "R Stoyanov",
-          "F Finn",
-          "D Feigin",
-          "A Vagin",
-          "R Bruno"
-        ],
-        "abstract": "Inference services incur cold-start costs from KVcacheprofiling and CUDA-graph construction. Container checkpointsavoid repeated initialization, but large memory imagesconsume storage and serial reconstruction delays restoration. We present …",
-        "url": "https://ora.ox.ac.uk/objects/uuid:45cb38ed-627f-4605-a3b0-2788c859e89a/files/sw9505333q",
-        "venue": "",
-        "id": "9805e27bfbc26b6e4609",
-        "urls": [
-          "https://ora.ox.ac.uk/objects/uuid:45cb38ed-627f-4605-a3b0-2788c859e89a/files/sw9505333q"
-        ]
-      },
-      "status": "pending_abstract"
-    },
-    "405b29705847b7d438f9": {
-      "first_pending_at": 1791765142.7218702,
-      "attempts": 4,
-      "paper": {
-        "title": "Isolation in the Age of Agents",
-        "authors": [
-          "MM Swift"
-        ],
-        "abstract": "ABSTRACT AI agents are changing the isolation landscape of modern cloud infrastructure. Unlike traditional workloads, agents execute heterogeneous and dynamic sequences of tools that read and write files, spawn processes, install …",
-        "url": "https://anjali05.github.io/papers/agenticos26.pdf",
-        "venue": "",
-        "id": "405b29705847b7d438f9",
-        "urls": [
-          "https://anjali05.github.io/papers/agenticos26.pdf"
-        ]
-      },
-      "status": "pending_abstract"
-    },
     "b6eecdbf5478288955b5": {
       "first_pending_at": 1792369535.2743318,
-      "attempts": 3,
+      "attempts": 4,
       "paper": {
         "title": "AlphaCu: A Transformation-Driven Synthesis Framework for LLM-Based GPU Kernel Generation",
         "authors": [
@@ -130,7 +27,7 @@
     },
     "af5e50601dcbfeddfaf6": {
       "first_pending_at": 1792369548.1192737,
-      "attempts": 3,
+      "attempts": 4,
       "paper": {
         "title": "Securing Agentic AI with OS-Level Intent-Driven Capabilities",
         "authors": [
@@ -151,7 +48,7 @@
     },
     "6f692b4b52c035b52106": {
       "first_pending_at": 1792369549.1123548,
-      "attempts": 3,
+      "attempts": 4,
       "paper": {
         "title": "Lead-Lag Origination for Prioritizing Financial KOL Narratives",
         "authors": [
@@ -170,7 +67,7 @@
     },
     "ce6b34882837e6fd02bc": {
       "first_pending_at": 1792369650.0476868,
-      "attempts": 3,
+      "attempts": 4,
       "paper": {
         "title": "Deploying RDMA for Large-Scale Inference and Training Workloads",
         "authors": [
@@ -192,7 +89,7 @@
     },
     "10df8913df5f12c21f17": {
       "first_pending_at": 1792369654.186153,
-      "attempts": 3,
+      "attempts": 4,
       "paper": {
         "title": "Parallel monotonic synchronizer",
         "authors": [
@@ -210,7 +107,7 @@
     },
     "76591a5a1e72328b12ec": {
       "first_pending_at": 1792369720.8534148,
-      "attempts": 3,
+      "attempts": 4,
       "paper": {
         "title": "Cluster-Level Infrastructure for More Efficient Serverless Computing",
         "authors": [
@@ -228,7 +125,7 @@
     },
     "8e6a8be9f9dde05af488": {
       "first_pending_at": 1792369722.0778217,
-      "attempts": 3,
+      "attempts": 4,
       "paper": {
         "title": "VibeKernel: Long-Horizon GPU Kernel Optimization with General-Purpose Coding Agents",
         "authors": [
@@ -248,7 +145,7 @@
     },
     "56ca97dc6817488e92e0": {
       "first_pending_at": 1792974310.1295342,
-      "attempts": 2,
+      "attempts": 3,
       "paper": {
         "title": "Reducing Pipeline Bubbles in Message-Efficient State Machine Replication",
         "authors": [
@@ -271,7 +168,7 @@
     },
     "3e4e527db9c08a2c67eb": {
       "first_pending_at": 1792974313.2940702,
-      "attempts": 2,
+      "attempts": 3,
       "paper": {
         "title": "VU Research Portal",
         "authors": [
@@ -292,7 +189,7 @@
     },
     "9e3aa91e8965c5f9c4c3": {
       "first_pending_at": 1792974316.3341777,
-      "attempts": 2,
+      "attempts": 3,
       "paper": {
         "title": "Large-scale Blockchain Prototyping on a Single Machine",
         "authors": [
@@ -312,7 +209,7 @@
     },
     "932ed21f9ae19bc7a965": {
       "first_pending_at": 1792974319.5096965,
-      "attempts": 2,
+      "attempts": 3,
       "paper": {
         "title": "Automated Hardware Synthesis at Scale: A View From The Trenches",
         "authors": [
@@ -333,7 +230,7 @@
     },
     "957edf9075de50dfa5b4": {
       "first_pending_at": 1792974322.496774,
-      "attempts": 2,
+      "attempts": 3,
       "paper": {
         "title": "Design Docs Are All You Need: An AI-native Roofline Performance Tool",
         "authors": [
@@ -355,7 +252,7 @@
     },
     "61061f77d66c17110368": {
       "first_pending_at": 1792974331.370655,
-      "attempts": 2,
+      "attempts": 3,
       "paper": {
         "title": "AgentTwin: Dual-Oracle Synthesis of Executable Abstractions from Production Systems",
         "authors": [
@@ -378,7 +275,7 @@
     },
     "58e36b62711e611c7d8f": {
       "first_pending_at": 1792974337.0534666,
-      "attempts": 2,
+      "attempts": 3,
       "paper": {
         "title": "Flashpoint: Privileged-Software Isolation on RISC-V for Dynamic Root of Trust",
         "authors": [
@@ -400,7 +297,7 @@
     },
     "609b9ba751bceb7d38e3": {
       "first_pending_at": 1792974339.4234178,
-      "attempts": 2,
+      "attempts": 3,
       "paper": {
         "title": "ExclaveFL: Verifiable Claims for Federated Learning using Exclaves",
         "authors": [
@@ -421,7 +318,7 @@
     },
     "41b5199df9e7ed97d7ee": {
       "first_pending_at": 1792974358.6344976,
-      "attempts": 2,
+      "attempts": 3,
       "paper": {
         "title": "A Characterization of Google Workload Traces",
         "authors": [
@@ -442,186 +339,30 @@
       },
       "status": "pending_abstract"
     },
-    "29bd378691594271ea70": {
-      "first_pending_at": 1793578720.2843413,
+    "b33559ad249594ceba7e": {
+      "first_pending_at": 1793594446.950581,
       "attempts": 1,
       "paper": {
-        "title": "Artemis: Accelerating Mixture-Of-Experts Training Via Dynamic Expert Parallelism",
+        "title": "Batching the Reflective Optimization Loop: Parallel Proposals Make GEPA Faster and Better",
         "authors": [
-          "Z Meng",
-          "L Diao",
-          "Z Qian",
-          "W Lin",
-          "C Wu"
+          "J Zhang",
+          "LA Agrawal",
+          "S Tan",
+          "D Lee",
+          "LE Erdogan"
         ],
-        "abstract": "Mixture-of-Experts (MoE) is a key architecture for scaling foundation models, increasing parameter capacity at nearconstant computational cost. However, under expert parallelism, skewed token-to-expert assignments create device-level …",
-        "url": "https://ieeexplore.ieee.org/abstract/document/11728360/",
+        "abstract": "Reflective text optimization makes agentic systems better, but the optimization loop is itself a resource-hungry workload whose sequential structure leaves parallel evaluation capacity idle. We extend the open-source GEPA optimizer to propose and …",
+        "url": "https://arxiv.org/abs/2610.36774",
         "venue": "",
-        "id": "29bd378691594271ea70",
+        "scholar_profiles": [
+          "I1EvjZsAAAAJ"
+        ],
+        "id": "b33559ad249594ceba7e",
         "urls": [
-          "https://ieeexplore.ieee.org/abstract/document/11728360/"
+          "https://arxiv.org/abs/2610.36774"
         ]
       },
-      "status": "pending_abstract"
-    },
-    "3f181c5a0076e18180f8": {
-      "first_pending_at": 1793578722.7037218,
-      "attempts": 1,
-      "paper": {
-        "title": "SonicAR: Augmenting Human Hearing through AR Glasses",
-        "authors": [
-          "P Wang",
-          "R Si",
-          "J Du",
-          "L Shangguan",
-          "Z An"
-        ],
-        "abstract": "Visualizing and interacting with the sounding objects is an important capability for AR glasses, with applications in accessibility, maintenance, and safety awareness. Marking where a sound comes from in the surrounding scene is the key to such …",
-        "url": "https://dl.acm.org/doi/abs/10.1145/3795866.3848424",
-        "venue": "",
-        "id": "3f181c5a0076e18180f8",
-        "urls": [
-          "https://dl.acm.org/doi/abs/10.1145/3795866.3848424"
-        ]
-      },
-      "status": "pending_abstract"
-    },
-    "47c87ca90ad5319ad3a6": {
-      "first_pending_at": 1793578725.6080449,
-      "attempts": 1,
-      "paper": {
-        "title": "OrbitWiz—A Cognitive Digital Twin for Space Data Center Design and Evaluation",
-        "authors": [
-          "X Liu",
-          "Q Zhang",
-          "J Qin",
-          "Y Wen"
-        ],
-        "abstract": "The cycle for designing and evaluating a space data center (SDC) is significantly longer than that of the GPU. To solve the cycle mismatch problem, we present the OrbitWiz, which accelerates iterative design of SDC utilizing multiphysics simulation …",
-        "url": "https://dl.acm.org/doi/abs/10.1145/3795866.3848456",
-        "venue": "",
-        "id": "47c87ca90ad5319ad3a6",
-        "urls": [
-          "https://dl.acm.org/doi/abs/10.1145/3795866.3848456"
-        ]
-      },
-      "status": "pending_abstract"
-    },
-    "b5e950f534da3d6f6102": {
-      "first_pending_at": 1793578728.6691177,
-      "attempts": 1,
-      "paper": {
-        "title": "Low Latency Networked XR Exergames",
-        "authors": [
-          "YZ Tsai",
-          "H Minsky",
-          "E Marcus",
-          "B McDonald",
-          "C Garland"
-        ],
-        "abstract": "Remote multiplayer extended reality (XR) can provide immersive shared experiences across physical distance and enable people with different mobility capabilities to play together. Supporting such experiences requires low-latency …",
-        "url": "https://dl.acm.org/doi/abs/10.1145/3795866.3848470",
-        "venue": "",
-        "id": "b5e950f534da3d6f6102",
-        "urls": [
-          "https://dl.acm.org/doi/abs/10.1145/3795866.3848470"
-        ]
-      },
-      "status": "pending_abstract"
-    },
-    "264435b8535a205bd30e": {
-      "first_pending_at": 1793578740.7207386,
-      "attempts": 1,
-      "paper": {
-        "title": "The Persona-Switch Jailbreak Backdoor in LLMs: From Payload Retrieval to Trigger-Gated Persona-State Selection",
-        "authors": [
-          "Y Su",
-          "W Zhou",
-          "T Zhang",
-          "H Qiu",
-          "W Zhang",
-          "N Yu",
-          "J Zhang"
-        ],
-        "abstract": "Jailbreak backdoors typically pair a trigger with non-refusing responses, but under capability-based evaluation such payload-retrieval attacks often suppress refusal without producing actionable harm. We propose the persona-switch backdoor, where …",
-        "url": "https://aclanthology.org/2026.emnlp-main.1553.pdf",
-        "venue": "",
-        "id": "264435b8535a205bd30e",
-        "urls": [
-          "https://aclanthology.org/2026.emnlp-main.1553.pdf"
-        ]
-      },
-      "status": "pending_abstract"
-    },
-    "11eaf6ebf8107f9121aa": {
-      "first_pending_at": 1793578749.2070923,
-      "attempts": 1,
-      "paper": {
-        "title": "MathDebugger: A Benchmark for Type-Aware Error Detection in Synthetic Math Data",
-        "authors": [
-          "H Liang",
-          "M Qiang",
-          "Y Li",
-          "Z He",
-          "X Ma",
-          "R An",
-          "Y Guo",
-          "Z Zhu"
-        ],
-        "abstract": "Synthetic math data is widely used to scale LLM training, but its correctness is not guaranteed. We introduce MathDebugger, the first text-only, type-aware benchmark for jointly detecting* and* classifying errors in synthetic mathematical questions and …",
-        "url": "https://scholar.google.com.sg/scholar_url?url=https://aclanthology.org/2026.emnlp-main.608.pdf&hl=en&sa=X&d=16045157465030325012&ei=vcThar3aK7-I6rQPnpHdkAg&scisig=AIL1Nv7UTjzgzKg4QsKoTtDsFAMG&oi=scholaralrt&hist=rqYEyb0AAAAJ:18329242875950717972:AIL1Nv7XWeJOJtEc1eewD2ajAN6Y&html=&pos=0&folt=art",
-        "venue": "",
-        "id": "11eaf6ebf8107f9121aa",
-        "urls": [
-          "https://scholar.google.com.sg/scholar_url?url=https://aclanthology.org/2026.emnlp-main.608.pdf&hl=en&sa=X&d=16045157465030325012&ei=vcThar3aK7-I6rQPnpHdkAg&scisig=AIL1Nv7UTjzgzKg4QsKoTtDsFAMG&oi=scholaralrt&hist=rqYEyb0AAAAJ:18329242875950717972:AIL1Nv7XWeJOJtEc1eewD2ajAN6Y&html=&pos=0&folt=art"
-        ]
-      },
-      "status": "pending_abstract"
-    },
-    "919917c2c7d992c00d02": {
-      "first_pending_at": 1793578751.3663836,
-      "attempts": 1,
-      "paper": {
-        "title": "Operating System Policies in the Wild",
-        "authors": [
-          "Y Qin",
-          "A Virmani",
-          "S Bolat",
-          "A Chaudhary",
-          "NTU Hasan"
-        ],
-        "abstract": "Operating system policies determine what should happen and when. They have a large impact on performance, and are the subject of much research. However, they are largely discussed in isolation: the single question of what thread to run next on a …",
-        "url": "https://www.cis.upenn.edu/~sga001/papers/policy-atc26.pdf",
-        "venue": "",
-        "id": "919917c2c7d992c00d02",
-        "urls": [
-          "https://www.cis.upenn.edu/~sga001/papers/policy-atc26.pdf"
-        ]
-      },
-      "status": "pending_abstract"
-    },
-    "82e85a6e978ca3f1075b": {
-      "first_pending_at": 1793578754.3987129,
-      "attempts": 1,
-      "paper": {
-        "title": "Chorus: GPU–CPU Cooperative LLM Serving for Length-Skewed Decode",
-        "authors": [
-          "D Chen",
-          "Y Zhou",
-          "S Yao",
-          "R Chen",
-          "B Yuan",
-          "S Wang"
-        ],
-        "abstract": "Online LLM serving is increasingly constrained by GPU memory capacity during decode. In length-skewed workloads, a small fraction of long requests keeps large key-value (KV) caches resident across many decode steps, exhausting GPU high …",
-        "url": "https://www.ruichuan.org/papers/chorus-atc26.pdf",
-        "venue": "",
-        "id": "82e85a6e978ca3f1075b",
-        "urls": [
-          "https://www.ruichuan.org/papers/chorus-atc26.pdf"
-        ]
-      },
-      "status": "pending_abstract"
+      "status": "pending_model"
     }
   },
   "expired": {
@@ -694,153 +435,201 @@
       "status": "pending_model",
       "expired_at": 1792974257.5614953,
       "expiration_reason": "max_attempts"
+    },
+    "6c3390b50a4ede2ef1b4": {
+      "first_pending_at": 1791765097.3729684,
+      "attempts": 5,
+      "paper": {
+        "title": "Alexander Ford",
+        "authors": [
+          "A Ford",
+          "D Baker",
+          "J Hellerstein",
+          "F Dimaio"
+        ],
+        "abstract": "1 © Copyright 2018 Alexander Ford 2 Nonparametric Structure Models in Local Protein Conformation Sampling and Design Alexander Ford A dissertation submitted in partial fulfillment of the requirements for the degree of Doctor of Philosophy University of …",
+        "url": "https://digital.lib.washington.edu/server/api/core/bitstreams/31a785d9-5889-4e3a-9863-952583e43f31/content",
+        "venue": "",
+        "id": "6c3390b50a4ede2ef1b4",
+        "urls": [
+          "https://digital.lib.washington.edu/server/api/core/bitstreams/31a785d9-5889-4e3a-9863-952583e43f31/content"
+        ]
+      },
+      "status": "pending_abstract",
+      "expired_at": 1793594107.8533497,
+      "expiration_reason": "max_attempts"
+    },
+    "33694d99acf05168d861": {
+      "first_pending_at": 1791765116.6781723,
+      "attempts": 5,
+      "paper": {
+        "title": "Condition-Informed Failure Prioritisation for Rotating Equipment: Connecting Sensor Evidence with FMEA",
+        "authors": [
+          "DG Andersen"
+        ],
+        "abstract": "Rotating equipment maintenance decisions are often divided between two information structures: failure mode and effects analysis (FMEA), which expresses engineering consequence and detectability, and condition monitoring, which …",
+        "url": "https://www.researchgate.net/profile/Sahith-Basani/publication/415203247_Condition-Informed_Failure_Prioritisation_for_Rotating_Equipment_Connecting_Sensor_Evidence_with_FMEA/links/6ac15df5db7d3b1c53a09ed0/Condition-Informed-Failure-Prioritisation-for-Rotating-Equipment-Connecting-Sensor-Evidence-with-FMEA.pdf",
+        "venue": "",
+        "id": "33694d99acf05168d861",
+        "urls": [
+          "https://www.researchgate.net/profile/Sahith-Basani/publication/415203247_Condition-Informed_Failure_Prioritisation_for_Rotating_Equipment_Connecting_Sensor_Evidence_with_FMEA/links/6ac15df5db7d3b1c53a09ed0/Condition-Informed-Failure-Prioritisation-for-Rotating-Equipment-Connecting-Sensor-Evidence-with-FMEA.pdf"
+        ]
+      },
+      "status": "pending_abstract",
+      "expired_at": 1793594110.5259542,
+      "expiration_reason": "max_attempts"
+    },
+    "41fa5a52c35f79323e02": {
+      "first_pending_at": 1791765117.9074395,
+      "attempts": 5,
+      "paper": {
+        "title": "TensorMLD: A Tensorized and Compressed qLDPC Maximum-Likelihood Decoder for Accurate and Fast Detection of the Most Likely Logical Error",
+        "authors": [
+          "L Lu",
+          "D Xiang",
+          "K Zhou",
+          "B Jin",
+          "C Tao",
+          "W Tian",
+          "A Wu"
+        ],
+        "abstract": "Quantum error correction is vital for building reliable quantum computers, and quantum Low Density Parity Check (qLDPC) codes are highly promising due to their efficient encoding. However, current decoders often struggle with low decoding …",
+        "url": "https://kaiwenzhou2003.github.io/paper_files/MICRO2026_TensorMLD.pdf",
+        "venue": "",
+        "id": "41fa5a52c35f79323e02",
+        "urls": [
+          "https://kaiwenzhou2003.github.io/paper_files/MICRO2026_TensorMLD.pdf"
+        ]
+      },
+      "status": "pending_abstract",
+      "expired_at": 1793594293.5184941,
+      "expiration_reason": "max_attempts"
+    },
+    "9805e27bfbc26b6e4609": {
+      "first_pending_at": 1791765141.6728091,
+      "attempts": 5,
+      "paper": {
+        "title": "Parallel restore-optimized snapshot compression for cost-efficient inference serving",
+        "authors": [
+          "R Stoyanov",
+          "F Finn",
+          "D Feigin",
+          "A Vagin",
+          "R Bruno"
+        ],
+        "abstract": "Inference services incur cold-start costs from KVcacheprofiling and CUDA-graph construction. Container checkpointsavoid repeated initialization, but large memory imagesconsume storage and serial reconstruction delays restoration. We present …",
+        "url": "https://ora.ox.ac.uk/objects/uuid:45cb38ed-627f-4605-a3b0-2788c859e89a/files/sw9505333q",
+        "venue": "",
+        "id": "9805e27bfbc26b6e4609",
+        "urls": [
+          "https://ora.ox.ac.uk/objects/uuid:45cb38ed-627f-4605-a3b0-2788c859e89a/files/sw9505333q"
+        ]
+      },
+      "status": "pending_abstract",
+      "expired_at": 1793594295.7463052,
+      "expiration_reason": "max_attempts"
+    },
+    "405b29705847b7d438f9": {
+      "first_pending_at": 1791765142.7218702,
+      "attempts": 5,
+      "paper": {
+        "title": "Isolation in the Age of Agents",
+        "authors": [
+          "MM Swift"
+        ],
+        "abstract": "ABSTRACT AI agents are changing the isolation landscape of modern cloud infrastructure. Unlike traditional workloads, agents execute heterogeneous and dynamic sequences of tools that read and write files, spawn processes, install …",
+        "url": "https://anjali05.github.io/papers/agenticos26.pdf",
+        "venue": "",
+        "id": "405b29705847b7d438f9",
+        "urls": [
+          "https://anjali05.github.io/papers/agenticos26.pdf"
+        ]
+      },
+      "status": "pending_abstract",
+      "expired_at": 1793594298.8733993,
+      "expiration_reason": "max_attempts"
     }
   },
   "retries": {
-    "6c3390b50a4ede2ef1b4": {
-      "attempts": 4,
-      "last_attempt_at": 1793578647.480446,
-      "next_retry_at": 0
-    },
-    "33694d99acf05168d861": {
-      "attempts": 4,
-      "last_attempt_at": 1793578650.568674,
-      "next_retry_at": 0
-    },
-    "41fa5a52c35f79323e02": {
-      "attempts": 4,
-      "last_attempt_at": 1793578653.68846,
-      "next_retry_at": 0
-    },
-    "9805e27bfbc26b6e4609": {
-      "attempts": 4,
-      "last_attempt_at": 1793578656.7375252,
-      "next_retry_at": 0
-    },
-    "405b29705847b7d438f9": {
-      "attempts": 4,
-      "last_attempt_at": 1793578661.7649646,
-      "next_retry_at": 0
-    },
     "b6eecdbf5478288955b5": {
-      "attempts": 3,
-      "last_attempt_at": 1793578664.8685825,
-      "next_retry_at": 1793593064.868583
+      "attempts": 4,
+      "last_attempt_at": 1793594301.95795,
+      "next_retry_at": 1793623101.9579504
     },
     "af5e50601dcbfeddfaf6": {
-      "attempts": 3,
-      "last_attempt_at": 1793578668.0569637,
-      "next_retry_at": 1793593068.056964
+      "attempts": 4,
+      "last_attempt_at": 1793594305.7032924,
+      "next_retry_at": 1793623105.7032926
     },
     "6f692b4b52c035b52106": {
-      "attempts": 3,
-      "last_attempt_at": 1793578671.0600872,
-      "next_retry_at": 1793593071.0600874
+      "attempts": 4,
+      "last_attempt_at": 1793594308.1271524,
+      "next_retry_at": 1793623108.1271527
     },
     "ce6b34882837e6fd02bc": {
-      "attempts": 3,
-      "last_attempt_at": 1793578677.246713,
-      "next_retry_at": 1793593077.2467132
+      "attempts": 4,
+      "last_attempt_at": 1793594314.3616068,
+      "next_retry_at": 1793623114.361607
     },
     "10df8913df5f12c21f17": {
-      "attempts": 3,
-      "last_attempt_at": 1793578680.349177,
-      "next_retry_at": 1793593080.3491771
+      "attempts": 4,
+      "last_attempt_at": 1793594317.4299705,
+      "next_retry_at": 1793623117.4299707
     },
     "76591a5a1e72328b12ec": {
-      "attempts": 3,
-      "last_attempt_at": 1793578683.4450316,
-      "next_retry_at": 1793593083.4450321
+      "attempts": 4,
+      "last_attempt_at": 1793594320.5313737,
+      "next_retry_at": 1793623120.531374
     },
     "8e6a8be9f9dde05af488": {
-      "attempts": 3,
-      "last_attempt_at": 1793578686.794768,
-      "next_retry_at": 1793593086.7947686
+      "attempts": 4,
+      "last_attempt_at": 1793594323.7139482,
+      "next_retry_at": 1793623123.7139485
     },
     "56ca97dc6817488e92e0": {
-      "attempts": 2,
-      "last_attempt_at": 1793578689.6452339,
-      "next_retry_at": 1793585889.645234
+      "attempts": 3,
+      "last_attempt_at": 1793594327.1855772,
+      "next_retry_at": 1793608727.1855774
     },
     "3e4e527db9c08a2c67eb": {
-      "attempts": 2,
-      "last_attempt_at": 1793578692.767126,
-      "next_retry_at": 1793585892.7671266
+      "attempts": 3,
+      "last_attempt_at": 1793594329.8364515,
+      "next_retry_at": 1793608729.8364518
     },
     "9e3aa91e8965c5f9c4c3": {
-      "attempts": 2,
-      "last_attempt_at": 1793578695.9301717,
-      "next_retry_at": 1793585895.930172
+      "attempts": 3,
+      "last_attempt_at": 1793594332.95148,
+      "next_retry_at": 1793608732.9514802
     },
     "932ed21f9ae19bc7a965": {
-      "attempts": 2,
-      "last_attempt_at": 1793578698.9440274,
-      "next_retry_at": 1793585898.944028
+      "attempts": 3,
+      "last_attempt_at": 1793594336.0783575,
+      "next_retry_at": 1793608736.0783577
     },
     "957edf9075de50dfa5b4": {
-      "attempts": 2,
-      "last_attempt_at": 1793578702.0477202,
-      "next_retry_at": 1793585902.0477204
+      "attempts": 3,
+      "last_attempt_at": 1793594339.175681,
+      "next_retry_at": 1793608739.1756814
     },
     "61061f77d66c17110368": {
-      "attempts": 2,
-      "last_attempt_at": 1793578705.2316356,
-      "next_retry_at": 1793585905.2316358
+      "attempts": 3,
+      "last_attempt_at": 1793594342.7951176,
+      "next_retry_at": 1793608742.7951179
     },
     "58e36b62711e611c7d8f": {
-      "attempts": 2,
-      "last_attempt_at": 1793578708.5342095,
-      "next_retry_at": 1793585908.5342097
+      "attempts": 3,
+      "last_attempt_at": 1793594345.3722389,
+      "next_retry_at": 1793608745.372239
     },
     "609b9ba751bceb7d38e3": {
-      "attempts": 2,
-      "last_attempt_at": 1793578711.6394522,
-      "next_retry_at": 1793585911.6394527
+      "attempts": 3,
+      "last_attempt_at": 1793594348.4533741,
+      "next_retry_at": 1793608748.4533744
     },
     "41b5199df9e7ed97d7ee": {
-      "attempts": 2,
-      "last_attempt_at": 1793578714.4436734,
-      "next_retry_at": 1793585914.4436736
-    },
-    "29bd378691594271ea70": {
-      "attempts": 1,
-      "last_attempt_at": 1793578722.7026277,
-      "next_retry_at": 1793582322.702628
-    },
-    "3f181c5a0076e18180f8": {
-      "attempts": 1,
-      "last_attempt_at": 1793578725.6069646,
-      "next_retry_at": 1793582325.6069648
-    },
-    "47c87ca90ad5319ad3a6": {
-      "attempts": 1,
-      "last_attempt_at": 1793578728.6679986,
-      "next_retry_at": 1793582328.6679988
-    },
-    "b5e950f534da3d6f6102": {
-      "attempts": 1,
-      "last_attempt_at": 1793578731.8767269,
-      "next_retry_at": 1793582331.8767273
-    },
-    "264435b8535a205bd30e": {
-      "attempts": 1,
-      "last_attempt_at": 1793578743.649462,
-      "next_retry_at": 1793582343.6494622
-    },
-    "11eaf6ebf8107f9121aa": {
-      "attempts": 1,
-      "last_attempt_at": 1793578751.3651078,
-      "next_retry_at": 1793582351.3651083
-    },
-    "919917c2c7d992c00d02": {
-      "attempts": 1,
-      "last_attempt_at": 1793578754.3974583,
-      "next_retry_at": 1793582354.397459
-    },
-    "82e85a6e978ca3f1075b": {
-      "attempts": 1,
-      "last_attempt_at": 1793578758.8624573,
-      "next_retry_at": 1793582358.8624575
+      "attempts": 3,
+      "last_attempt_at": 1793594351.5560164,
+      "next_retry_at": 1793608751.5560167
     }
   },
   "source_limits": {
@@ -849,19 +638,26 @@
       "failures": 0
     },
     "crossref": {
-      "next_start": 1793578755.3990078,
+      "next_start": 1793594349.4545517,
       "failures": 0,
       "cooldown_until": 1791160180.7705195
     },
     "semantic_scholar": {
-      "next_start": 1793578711.5569055,
-      "failures": 2,
-      "cooldown_until": 1793578829.6809225
+      "next_start": 1793594297.1336544,
+      "failures": 1,
+      "cooldown_until": 1793594355.3684487
     },
     "arxiv": {
-      "next_start": 1793578763.7574506,
+      "next_start": 1793594354.2743237,
       "failures": 0,
       "cooldown_until": 1791160174.5414577
+    },
+    "arxiv_web": {
+      "failures": 0
+    },
+    "google_scholar": {
+      "next_start": 1793594452.9510267,
+      "failures": 0
     }
   }
 }
