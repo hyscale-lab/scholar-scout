@@ -23,7 +23,7 @@ conferences:
     - "https://dblp.org/db/conf/words2/index.html"
     - "https://dblp.org/db/conf/sesame/index.html"
   max_volumes: 5
-  volume_date_filter_days: 30
+  volume_date_filter_days: 50
   semantic_scholar_api_key: ${SEMANTIC_SCHOLAR_API_KEY}
 
 research_topics:

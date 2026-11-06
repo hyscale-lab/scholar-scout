@@ -531,27 +531,12 @@ def run_pipeline(conferences_config: ConferencesConfig,
     project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
     local_dataset = os.path.join(project_root, "data", "dblp", "dblp.xml.gz")
 
-    if os.path.isfile(local_dataset):
-        logger.info("Using local DBLP XML dataset; per-conference HTTP scraping is disabled")
-        all_papers = fetch_local_dblp_papers(local_dataset, conferences_config)
-    else:
-        for index_url in conferences_config.urls:
-            logger.info(f"\nProcessing: {index_url}")
+    from dblp_dataset import ensure_dblp_dataset
 
-            venue_name, volumes = fetch_conference_volumes(
-                index_url, session,
-                max_volumes=conferences_config.max_volumes,
-                volume_date_filter_days=conferences_config.volume_date_filter_days,
-            )
-            if not volumes:
-                logger.info("  No new volumes found, skipping")
-                continue
-
-            for volume in volumes:
-                papers = fetch_volume_papers(volume["url"], venue_name, session)
-                all_papers.extend(papers)
-
-    logger.info(f"\nPhase 1 complete: {len(all_papers)} papers from new volumes")
+    # Download once on a fresh clone, then reuse the local dataset.
+    ensure_dblp_dataset(os.path.dirname(local_dataset))
+    logger.info("Using local DBLP XML dataset; per-conference HTTP scraping is disabled")
+    all_papers = fetch_local_dblp_papers(local_dataset, conferences_config)
 
     # ========== PHASE 2: Abstract Enrichment ==========
     logger.info("\n" + "=" * 60)
