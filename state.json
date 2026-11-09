@@ -1,6 +1,108 @@
 {
   "version": 1,
-  "pending": {},
+  "pending": {
+    "f15dbe7e28f248bd9449": {
+      "first_pending_at": 1794183484.9393022,
+      "attempts": 1,
+      "paper": {
+        "title": "ESA: Improving GPU Utilization with Elastic Isolation for ML Inference Services",
+        "authors": [
+          "T Kim",
+          "S Agarwal",
+          "R Ausavarungnirun",
+          "J Gandhi"
+        ],
+        "abstract": "GPU compute density continues to increase, exposing plentiful resources that often remain under-utilized. ML inference, for example, often serves small batch requests and over-provisions resources to meet strict peak-load latency deadlines, leading to …",
+        "url": "https://pact2026.github.io/program/papers/pact26-final130.pdf",
+        "venue": "",
+        "scholar_profiles": [
+          "nFONGREAAAAJ"
+        ],
+        "id": "f15dbe7e28f248bd9449",
+        "urls": [
+          "https://pact2026.github.io/program/papers/pact26-final130.pdf"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "235a5d178bdf5987a992": {
+      "first_pending_at": 1794183575.7002933,
+      "attempts": 1,
+      "paper": {
+        "title": "Be My Ears: Enabling Semantic Alerting for Earphone Wearers with Pheme",
+        "authors": [
+          "Z Ren",
+          "Y Yang",
+          "L Shangguan"
+        ],
+        "abstract": "Active Noise Cancellation (ANC) earphones provide immersive listening experiences but induce auditory isolation to earphone users, leaving them vulnerable to hazards and socially disconnected. We present Pheme, an agentic …",
+        "url": "https://dl.acm.org/doi/full/10.1145/3830398.3830640",
+        "venue": "",
+        "scholar_profiles": [
+          "JsQoLTQAAAAJ"
+        ],
+        "id": "235a5d178bdf5987a992",
+        "urls": [
+          "https://dl.acm.org/doi/full/10.1145/3830398.3830640"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "bfed0d27fef3d43e1879": {
+      "first_pending_at": 1794183623.0885398,
+      "attempts": 1,
+      "paper": {
+        "title": "Chameleon+: A Heterogeneous and Disaggregated Accelerator System for Efficient RAG Serving",
+        "authors": [
+          "Y He",
+          "W Jiang",
+          "M Zeller",
+          "R Waleffe",
+          "T Hoefler",
+          "G Alonso"
+        ],
+        "abstract": "Retrieval-augmented generation (RAG) augments a large language model (LLM) with contextspecific knowledge retrieved from a vector database during text generation. However, RAG serving remains challenging because its two core stages …",
+        "url": "https://www.research-collection.ethz.ch/bitstreams/330d1d13-0095-48d2-ae8b-fd2b0419f91c/download",
+        "venue": "",
+        "scholar_profiles": [
+          "DdBvcBEAAAAJ",
+          "fkNjVcIAAAAJ"
+        ],
+        "id": "bfed0d27fef3d43e1879",
+        "urls": [
+          "https://www.research-collection.ethz.ch/bitstreams/330d1d13-0095-48d2-ae8b-fd2b0419f91c/download"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "ca1b136a1f9d28e4c80f": {
+      "first_pending_at": 1794183686.0555604,
+      "attempts": 1,
+      "paper": {
+        "title": "An AI-native experimental laboratory for autonomous biomolecular operations",
+        "authors": [
+          "M Wu",
+          "Z Wang",
+          "J Wang",
+          "Z Dong",
+          "J Yang",
+          "Q Li",
+          "T Huang"
+        ],
+        "abstract": "Developing artificial intelligence (AI)-native experimental laboratories for autonomous scientific exploration with minimal human intervention represents a long- standing goal. Although autonomous experimental systems are emerging 1, 2, 3, 4 …",
+        "url": "https://www.nature.com/articles/s41586-026-11228-6",
+        "venue": "",
+        "scholar_profiles": [
+          "qd9xSkYAAAAJ"
+        ],
+        "id": "ca1b136a1f9d28e4c80f",
+        "urls": [
+          "https://www.nature.com/articles/s41586-026-11228-6"
+        ]
+      },
+      "status": "pending_abstract"
+    }
+  },
   "expired": {
     "ed35bdcb92501fd108b6": {
       "first_pending_at": 1791160093.3925445,
@@ -186,24 +288,45 @@
       "expiration_reason": "max_attempts"
     }
   },
-  "retries": {},
+  "retries": {
+    "f15dbe7e28f248bd9449": {
+      "attempts": 1,
+      "last_attempt_at": 1794183568.3654146,
+      "next_retry_at": 1794187168.3654149
+    },
+    "235a5d178bdf5987a992": {
+      "attempts": 1,
+      "last_attempt_at": 1794183581.5269942,
+      "next_retry_at": 1794187181.526995
+    },
+    "bfed0d27fef3d43e1879": {
+      "attempts": 1,
+      "last_attempt_at": 1794183625.8279257,
+      "next_retry_at": 1794187225.827926
+    },
+    "ca1b136a1f9d28e4c80f": {
+      "attempts": 1,
+      "last_attempt_at": 1794183688.5283866,
+      "next_retry_at": 1794187288.5283868
+    }
+  },
   "source_limits": {
     "ieee": {
-      "next_start": 1793578722.2848005,
+      "next_start": 1794183699.5190752,
       "failures": 0
     },
     "crossref": {
-      "next_start": 1793594349.4545517,
+      "next_start": 1794183688.3261104,
       "failures": 0,
       "cooldown_until": 1791160180.7705195
     },
     "semantic_scholar": {
-      "next_start": 1793594297.1336544,
-      "failures": 1,
-      "cooldown_until": 1793594355.3684487
+      "next_start": 1794183569.7627342,
+      "failures": 3,
+      "cooldown_until": 1794183808.364535
     },
     "arxiv": {
-      "next_start": 1793594354.2743237,
+      "next_start": 1794183712.3469906,
       "failures": 0,
       "cooldown_until": 1791160174.5414577
     },
@@ -211,7 +334,7 @@
       "failures": 0
     },
     "google_scholar": {
-      "next_start": 1793594452.9510267,
+      "next_start": 1794183710.9644403,
       "failures": 0
     }
   }
