@@ -3,7 +3,7 @@
   "pending": {
     "f15dbe7e28f248bd9449": {
       "first_pending_at": 1794183484.9393022,
-      "attempts": 1,
+      "attempts": 2,
       "paper": {
         "title": "ESA: Improving GPU Utilization with Elastic Isolation for ML Inference Services",
         "authors": [
@@ -25,32 +25,9 @@
       },
       "status": "pending_abstract"
     },
-    "235a5d178bdf5987a992": {
-      "first_pending_at": 1794183575.7002933,
-      "attempts": 1,
-      "paper": {
-        "title": "Be My Ears: Enabling Semantic Alerting for Earphone Wearers with Pheme",
-        "authors": [
-          "Z Ren",
-          "Y Yang",
-          "L Shangguan"
-        ],
-        "abstract": "Active Noise Cancellation (ANC) earphones provide immersive listening experiences but induce auditory isolation to earphone users, leaving them vulnerable to hazards and socially disconnected. We present Pheme, an agentic …",
-        "url": "https://dl.acm.org/doi/full/10.1145/3830398.3830640",
-        "venue": "",
-        "scholar_profiles": [
-          "JsQoLTQAAAAJ"
-        ],
-        "id": "235a5d178bdf5987a992",
-        "urls": [
-          "https://dl.acm.org/doi/full/10.1145/3830398.3830640"
-        ]
-      },
-      "status": "pending_abstract"
-    },
     "bfed0d27fef3d43e1879": {
       "first_pending_at": 1794183623.0885398,
-      "attempts": 1,
+      "attempts": 2,
       "paper": {
         "title": "Chameleon+: A Heterogeneous and Disaggregated Accelerator System for Efficient RAG Serving",
         "authors": [
@@ -77,7 +54,7 @@
     },
     "ca1b136a1f9d28e4c80f": {
       "first_pending_at": 1794183686.0555604,
-      "attempts": 1,
+      "attempts": 2,
       "paper": {
         "title": "An AI-native experimental laboratory for autonomous biomolecular operations",
         "authors": [
@@ -98,6 +75,207 @@
         "id": "ca1b136a1f9d28e4c80f",
         "urls": [
           "https://www.nature.com/articles/s41586-026-11228-6"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "cca3253ddae344939ccf": {
+      "first_pending_at": 1794788484.8671844,
+      "attempts": 1,
+      "paper": {
+        "title": "Erasynth: Improving Quantum Uncomputation with Structural Measurements",
+        "authors": [
+          "M Zhang",
+          "A Wu",
+          "P Pang",
+          "L Lu",
+          "Z Wang",
+          "F Liu",
+          "Z Liu"
+        ],
+        "abstract": "In quantum computing, safely clearing temporary ancilla qubits, a process known as uncomputation, is essential to prevent irreversible computational errors caused by entanglement. The typical uncomputation process removes entanglement by …",
+        "url": "https://dl.acm.org/doi/abs/10.1145/3845814.3850084",
+        "venue": "",
+        "scholar_profiles": [
+          "8R8FO9IAAAAJ"
+        ],
+        "id": "cca3253ddae344939ccf",
+        "urls": [
+          "https://dl.acm.org/doi/abs/10.1145/3845814.3850084"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "f3d81e423466653746b5": {
+      "first_pending_at": 1794788503.4311988,
+      "attempts": 1,
+      "paper": {
+        "title": "Unipool: Efficient Management of Pre-Provisioned Resources for Container Platforms",
+        "authors": [
+          "H Yu",
+          "E Saurez",
+          "Í Goiri",
+          "H Wang",
+          "R Fonseca"
+        ],
+        "abstract": "Cloud platforms reduce deployment latency by pre-initializing resources, but fragmented resource management across cloud layers often leads to substantial over-provisioning and increased cost. Through production trace analysis and replay …",
+        "url": "https://intellisys.haow.us/assets/pdf/atc26-final1903.pdf",
+        "venue": "",
+        "scholar_profiles": [
+          "VuvKPiQAAAAJ"
+        ],
+        "id": "f3d81e423466653746b5",
+        "urls": [
+          "https://intellisys.haow.us/assets/pdf/atc26-final1903.pdf"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "854b588be78d8ad2cd75": {
+      "first_pending_at": 1794788511.0470483,
+      "attempts": 1,
+      "paper": {
+        "title": "LinAC: Exposing Reduction Parallelism in Linear Attention through Affine Composition",
+        "authors": [
+          "R Zhong",
+          "Y Chen",
+          "Y Jin",
+          "S Zheng",
+          "Q Zhang",
+          "K Lei"
+        ],
+        "abstract": "Linear attention replaces softmax attention with recurrent state updates, reducing time and memory complexity to linear in sequence length. However, the resulting sequential dependence along the sequence dimension severely limits GPU …",
+        "url": "https://dl.acm.org/doi/abs/10.1145/3845814.3850088",
+        "venue": "",
+        "scholar_profiles": [
+          "_mBdZBMAAAAJ"
+        ],
+        "id": "854b588be78d8ad2cd75",
+        "urls": [
+          "https://dl.acm.org/doi/abs/10.1145/3845814.3850088"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "c9074fb29b39e3c45c9f": {
+      "first_pending_at": 1794788565.8311992,
+      "attempts": 1,
+      "paper": {
+        "title": "The 1/W Law: Context Length is the Dominant Energy Lever in LLM Inference Fleets",
+        "authors": [
+          "H Chen",
+          "X Liu",
+          "Y Liu",
+          "J Jiang",
+          "C Niu",
+          "B He"
+        ],
+        "abstract": "Energy efficiency in LLM inference is often treated as a property of the model, the hardware, or the serving software. We show that, for decode-dominated serving, a simpler systems variable dominates: the serving context window. Because KV-cache …",
+        "url": "https://chenxuniu.github.io/assets/pdf/neurips2026-one-over-w-law.pdf",
+        "venue": "",
+        "scholar_profiles": [
+          "_8wfjeAAAAAJ"
+        ],
+        "id": "c9074fb29b39e3c45c9f",
+        "urls": [
+          "https://chenxuniu.github.io/assets/pdf/neurips2026-one-over-w-law.pdf"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "0c744e396bf77f009797": {
+      "first_pending_at": 1794788634.0739112,
+      "attempts": 1,
+      "paper": {
+        "title": "Evaluating In-Network Collectives for AI/ML Workloads with ATLAHS",
+        "authors": [
+          "W Stämpfli",
+          "M Khalilov",
+          "T Bonato",
+          "T Schneider"
+        ],
+        "abstract": "In-network collectives (INC) can accelerate many collective network operations by moving computations away from the CPU, either into the NIC or into switches. The benefits are reductions in both traffic and latency, at the cost of higher system …",
+        "url": "https://www.computer.org/csdl/proceedings-article/sc-w/2026/122100d376/2lkuHvGnDDG",
+        "venue": "",
+        "scholar_profiles": [
+          "DdBvcBEAAAAJ"
+        ],
+        "id": "0c744e396bf77f009797",
+        "urls": [
+          "https://www.computer.org/csdl/proceedings-article/sc-w/2026/122100d376/2lkuHvGnDDG"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "43f4be273423a1da6734": {
+      "first_pending_at": 1794788651.559771,
+      "attempts": 1,
+      "paper": {
+        "title": "The Kernel Always Knows: Understanding Isolation via Kernel Objects",
+        "authors": [
+          "Anjali",
+          "MM Swift"
+        ],
+        "abstract": "Good fences make good neighbors. Robert Frost, Mending Wall Cloud providers employ a spectrum of isolation platforms–ranging from lightweight containers to hardware-assisted microVMs, each designed on the principles of limiting interaction …",
+        "url": "https://dl.acm.org/doi/abs/10.1145/3815789.3827955",
+        "venue": "",
+        "scholar_profiles": [
+          "pqIGLH4AAAAJ"
+        ],
+        "id": "43f4be273423a1da6734",
+        "urls": [
+          "https://dl.acm.org/doi/abs/10.1145/3815789.3827955"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "16c4601ddc4433a0d69d": {
+      "first_pending_at": 1794788653.9713185,
+      "attempts": 1,
+      "paper": {
+        "title": "On Evaluating Performance of LLM Inference Systems",
+        "authors": [
+          "A Agrawal",
+          "N Kedia",
+          "A Agarwal",
+          "J Mohan",
+          "N Kwatra"
+        ],
+        "abstract": "The rapid evolution of Large Language Model (LLM) inference systems has led to significant improvements in serving efficiency. However, our systematic analysis reveals that current evaluation methodologies suffer from fundamental flaws that …",
+        "url": "https://dl.acm.org/doi/abs/10.1145/3815789.3827963",
+        "venue": "",
+        "scholar_profiles": [
+          "7P-gZioAAAAJ"
+        ],
+        "id": "16c4601ddc4433a0d69d",
+        "urls": [
+          "https://dl.acm.org/doi/abs/10.1145/3815789.3827963"
+        ]
+      },
+      "status": "pending_abstract"
+    },
+    "d7a392d5e4c15a3a5344": {
+      "first_pending_at": 1794788674.736076,
+      "attempts": 1,
+      "paper": {
+        "title": "QPAR: A Plug-In Parallel Framework for Qubit Routing",
+        "authors": [
+          "J Liu",
+          "R Zhang",
+          "M Zhang",
+          "Z Song",
+          "Q Chen",
+          "J Leng"
+        ],
+        "abstract": "Qubit routing, a key stage of quantum compiler, inserts additional operations (eg, SWAP gates) to ensure quantum circuit instructions executable on physical hardware. The effectiveness of routing in terms of minimizing additional operations is …",
+        "url": "https://www.computer.org/csdl/proceedings-article/sc/2026/478900b916/2lkuAMQ9wLC",
+        "venue": "",
+        "scholar_profiles": [
+          "8R8FO9IAAAAJ"
+        ],
+        "id": "d7a392d5e4c15a3a5344",
+        "urls": [
+          "https://www.computer.org/csdl/proceedings-article/sc/2026/478900b916/2lkuAMQ9wLC"
         ]
       },
       "status": "pending_abstract"
@@ -290,43 +468,78 @@
   },
   "retries": {
     "f15dbe7e28f248bd9449": {
-      "attempts": 1,
-      "last_attempt_at": 1794183568.3654146,
-      "next_retry_at": 1794187168.3654149
-    },
-    "235a5d178bdf5987a992": {
-      "attempts": 1,
-      "last_attempt_at": 1794183581.5269942,
-      "next_retry_at": 1794187181.526995
+      "attempts": 2,
+      "last_attempt_at": 1794788343.4818232,
+      "next_retry_at": 1794795543.4818242
     },
     "bfed0d27fef3d43e1879": {
-      "attempts": 1,
-      "last_attempt_at": 1794183625.8279257,
-      "next_retry_at": 1794187225.827926
+      "attempts": 2,
+      "last_attempt_at": 1794788478.8821352,
+      "next_retry_at": 1794795678.8821359
     },
     "ca1b136a1f9d28e4c80f": {
+      "attempts": 2,
+      "last_attempt_at": 1794788484.8666663,
+      "next_retry_at": 1794795684.8666666
+    },
+    "cca3253ddae344939ccf": {
       "attempts": 1,
-      "last_attempt_at": 1794183688.5283866,
-      "next_retry_at": 1794187288.5283868
+      "last_attempt_at": 1794788490.3078814,
+      "next_retry_at": 1794792090.3078818
+    },
+    "f3d81e423466653746b5": {
+      "attempts": 1,
+      "last_attempt_at": 1794788511.046525,
+      "next_retry_at": 1794792111.0465252
+    },
+    "854b588be78d8ad2cd75": {
+      "attempts": 1,
+      "last_attempt_at": 1794788516.7098708,
+      "next_retry_at": 1794792116.709871
+    },
+    "c9074fb29b39e3c45c9f": {
+      "attempts": 1,
+      "last_attempt_at": 1794788568.4768713,
+      "next_retry_at": 1794792168.4768715
+    },
+    "0c744e396bf77f009797": {
+      "attempts": 1,
+      "last_attempt_at": 1794788637.8466828,
+      "next_retry_at": 1794792237.8466837
+    },
+    "43f4be273423a1da6734": {
+      "attempts": 1,
+      "last_attempt_at": 1794788653.9707189,
+      "next_retry_at": 1794792253.9707193
+    },
+    "16c4601ddc4433a0d69d": {
+      "attempts": 1,
+      "last_attempt_at": 1794788657.4876764,
+      "next_retry_at": 1794792257.4876766
+    },
+    "d7a392d5e4c15a3a5344": {
+      "attempts": 1,
+      "last_attempt_at": 1794788680.8120031,
+      "next_retry_at": 1794792280.8120034
     }
   },
   "source_limits": {
     "ieee": {
-      "next_start": 1794183699.5190752,
+      "next_start": 1794788548.3135593,
       "failures": 0
     },
     "crossref": {
-      "next_start": 1794183688.3261104,
+      "next_start": 1794788677.002576,
       "failures": 0,
       "cooldown_until": 1791160180.7705195
     },
     "semantic_scholar": {
-      "next_start": 1794183569.7627342,
-      "failures": 3,
-      "cooldown_until": 1794183808.364535
+      "next_start": 1794788650.4628882,
+      "failures": 1,
+      "cooldown_until": 1794788708.7144735
     },
     "arxiv": {
-      "next_start": 1794183712.3469906,
+      "next_start": 1794788683.4550493,
       "failures": 0,
       "cooldown_until": 1791160174.5414577
     },
@@ -334,7 +547,7 @@
       "failures": 0
     },
     "google_scholar": {
-      "next_start": 1794183710.9644403,
+      "next_start": 1794788677.7363129,
       "failures": 0
     }
   }
